@@ -7,16 +7,28 @@ export default function App() {
   const [serverData, setServerData] = useState('');
 
   useEffect(() => {
-    async function readServerData() {
-      const resp = await fetch('/api/hello');
-      const data = await resp.json();
+    async function fetchClimateApi() {
+      const url = `https://climate-by-zip.p.rapidapi.com/climate/30276`;
+      const options = {
+        method: 'GET',
+        headers: {
+          'x-rapidapi-key':
+            'd75e8c0e4bmsh7c809ff22addb71p1dc9a5jsn549f343c6280',
+          'x-rapidapi-host': 'climate-by-zip.p.rapidapi.com',
+        },
+      };
 
-      console.log('Data from server:', data);
-
-      setServerData(data.message);
+      try {
+        const response = await fetch(url, options);
+        const result = await response.text();
+        console.log(result);
+        setServerData(result);
+      } catch (error) {
+        console.error(error);
+      }
     }
 
-    readServerData();
+    fetchClimateApi();
   }, []);
 
   return (
