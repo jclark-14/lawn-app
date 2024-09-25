@@ -21,14 +21,14 @@ export default function ProjectDetails() {
           <h2 className="text-3xl font-semibold mb-6 text-green-700">
             Project Overview
           </h2>
-          <p className="text-lg mb-4">
+          <p className="text-lg mb-4 text-gray-700">
             LawnCare Pro is a comprehensive web application designed to provide
             personalized lawn care plans based on users' specific locations and
             needs. By leveraging climate data and horticultural expertise, the
             aim is to help users transform their outdoor spaces into the lawn of
             their dreams.
           </p>
-          <p className="text-lg mb-4">
+          <p className="text-lg mb-4 text-gray-700">
             This project showcases a full-stack implementation using modern web
             technologies and demonstrates proficiency in building scalable,
             user-centric applications.
@@ -77,27 +77,29 @@ export default function ProjectDetails() {
             Implementation Highlights
           </h2>
           <ul className="list-disc list-inside text-lg space-y-4">
-            <li>
+            <li className="text-gray-700">
               Responsive design using Tailwind CSS for a seamless experience
               across devices
             </li>
-            <li>
+            <li className="text-gray-700">
               Server-side rendering with Next.js for improved performance and
               SEO
             </li>
-            <li>
+            <li className="text-gray-700">
               RESTful API design for efficient communication between frontend
               and backend
             </li>
-            <li>
+            <li className="text-gray-700">
               Database schema optimized for quick retrieval of lawn care plans
               and user data
             </li>
-            <li>
+            <li className="text-gray-700">
               Integration with external climate data APIs for accurate,
               location-specific recommendations
             </li>
-            <li>Secure user authentication and authorization system</li>
+            <li className="text-gray-700">
+              Secure user authentication and authorization system
+            </li>
           </ul>
         </section>
 
@@ -106,19 +108,21 @@ export default function ProjectDetails() {
             Future Enhancements
           </h2>
           <ul className="list-disc list-inside text-lg space-y-4">
-            <li>
+            <li className="text-gray-700">
               Integration with IoT devices for automated lawn condition
               monitoring
             </li>
-            <li>
+            <li className="text-gray-700">
               Machine learning algorithms to improve recommendation accuracy
               over time
             </li>
-            <li>
+            <li className="text-gray-700">
               Community features allowing users to share tips and showcase their
               lawn transformations
             </li>
-            <li>Mobile app development for on-the-go lawn care management</li>
+            <li className="text-gray-700">
+              Mobile app development for on-the-go lawn care management
+            </li>
           </ul>
         </section>
       </div>
@@ -131,7 +135,7 @@ function FeatureCard({ icon, title, description }) {
     <div className="bg-white p-6 rounded-lg shadow-md">
       <div className="flex justify-center mb-4">{icon}</div>
       <h3 className="text-xl font-semibold mb-2 text-center">{title}</h3>
-      <p className="text-center">{description}</p>
+      <p className="text-center text-gray-700">{description}</p>
     </div>
   );
 }
@@ -140,7 +144,7 @@ function TechCard({ icon, name }) {
   return (
     <div className="flex flex-col items-center">
       <div className="mb-2">{icon}</div>
-      <p className="text-center font-semibold">{name}</p>
+      <p className="text-center font-semibold text-gray-700">{name}</p>
     </div>
   );
 }

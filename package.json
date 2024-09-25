@@ -44,5 +44,10 @@
     "stylelint-config-standard": "^32.0.0",
     "tsx": "^4.7.0",
     "typescript": "^5.4.3"
+  },
+  "dependencies": {
+    "lucida": "^2.0.0-47",
+    "lucide-react": "^0.445.0",
+    "react-router-dom": "^6.26.2"
   }
 }

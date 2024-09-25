@@ -1,37 +1,4 @@
-export type ClimateData = {
-  avgTemperature: number;
-  avgRainfall: number;
-  hardinessZone: string;
-  koppenZone: string;
-  ecoregion: string;
-  springTemperature: number;
-  summerTemperature: number;
-  fallTemperature: number;
-  winterTemperature: number;
-  springRainfall: number;
-  summerRainfall: number;
-  fallRainfall: number;
-  winterRainfall: number;
-  growingDays: number;
-};
-
-interface ApiClimateData {
-  ZIP: string;
-  ZIP_name: string;
-  plant_hardiness_zone: string;
-  koppen_zone: string;
-  ecoregion: string;
-  avg_first_frost: string;
-  avg_last_frost: string;
-  annual_averages: {
-    [month: string]: {
-      min: string;
-      max: string;
-      precip: string;
-    };
-  };
-}
-
+import { type ClimateData, type ApiClimateData } from '../../client/src/types';
 const apiKey = process.env.API_KEY;
 if (!apiKey) {
   throw new Error('API_KEY not found in environment variables');
@@ -53,6 +20,32 @@ function parseClimateData(apiData: ApiClimateData): ClimateData {
     apiData.avg_last_frost,
     apiData.avg_first_frost
   );
+
+  // Create monthlyTemperature and monthlyRainfall objects
+  const monthlyTemperature: { [key: string]: number } = {};
+  const monthlyRainfall: { [key: string]: number } = {};
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+
+  monthlyData.forEach((data, index) => {
+    const month = months[index];
+    monthlyTemperature[month] =
+      (parseFloat(data.min) + parseFloat(data.max)) / 2;
+    monthlyRainfall[month] = parseFloat(data.precip);
+  });
+
   return {
     avgTemperature,
     avgRainfall,
@@ -68,6 +61,8 @@ function parseClimateData(apiData: ApiClimateData): ClimateData {
     fallRainfall: seasonalRainfall.fall,
     winterRainfall: seasonalRainfall.winter,
     growingDays,
+    monthlyTemperature,
+    monthlyRainfall,
   };
 }
 

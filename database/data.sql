@@ -1,15 +1,3 @@
--- Use SQL insert statements to add any
--- starting/dummy data to your database tables
-
--- EXAMPLE:
-
---  insert into "todos"
---    ("task", "isCompleted")
---    values
---      ('Learn to code', false),
---      ('Build projects', false),
---      ('Get a job', false);
-
 
 INSERT INTO "Users" ("username", "hashedPassword")
 VALUES
@@ -20,28 +8,74 @@ VALUES
   ('mikebrown', 'hashed_password_5');
 
 
-INSERT INTO "GrassSpecies" ("name", "description", "idealTempMin", "idealTempMax", "idealRainfallMin", "idealRainfallMax", "idealHardinessZone", "idealKoppenZone")
+INSERT INTO "GrassSpecies" (
+  "name", "description", "idealTempMin", "idealTempMax", "idealRainfallMin", "idealRainfallMax",
+  "idealHardinessZone", "idealKoppenZone", "idealSpringTempMin", "idealSpringTempMax",
+  "idealSummerTempMin", "idealSummerTempMax", "idealFallTempMin", "idealFallTempMax",
+  "idealWinterTempMin", "idealWinterTempMax", "idealSpringRainfallMin", "idealSpringRainfallMax",
+  "idealSummerRainfallMin", "idealSummerRainfallMax", "idealFallRainfallMin", "idealFallRainfallMax",
+  "idealWinterRainfallMin", "idealWinterRainfallMax", "minGrowingDays", "idealEcoregion"
+)
 VALUES
-  ('Kentucky Bluegrass', 'Kentucky Bluegrass is a popular cool-season grass known for its lush, dark green color and soft texture. It forms a dense, durable turf that self-repairs through underground rhizomes. Ideal for lawns in cooler climates, it requires moderate maintenance and has good cold tolerance but may struggle in extreme heat or drought.', 60, 75, 25, 40, '3-9', 'Dfa, Dfb'),
+  ('Kentucky Bluegrass', 'Kentucky Bluegrass is a popular cool-season grass known for its lush, dark green color and soft texture. It forms a dense, durable turf that self-repairs through underground rhizomes. Ideal for lawns in cooler climates, it requires moderate maintenance and has good cold tolerance but may struggle in extreme heat or drought.',
+   60, 75, 25, 40, '3-9', 'Dfa, Dfb',
+   50, 65, 65, 80, 50, 65, 20, 40,
+   2, 4, 2, 4, 2, 4, 1, 3,
+   150, 'Temperate Broadleaf and Mixed Forests'),
 
-  ('Tall Fescue', 'Tall Fescue is a versatile cool-season grass with excellent heat and drought tolerance. It forms a coarse-textured, deep-rooted turf that stays green year-round in many areas. This low-maintenance grass adapts well to various soil types and light conditions, making it popular for both sunny and partially shaded lawns.', 60, 75, 20, 40, '4-9', 'Cfa, Cfb'),
+  ('Tall Fescue', 'Tall Fescue is a versatile cool-season grass with excellent heat and drought tolerance. It forms a coarse-textured, deep-rooted turf that stays green year-round in many areas. This low-maintenance grass adapts well to various soil types and light conditions, making it popular for both sunny and partially shaded lawns.',
+   60, 75, 20, 40, '4-9', 'Cfa, Cfb',
+   55, 70, 70, 85, 55, 70, 25, 45,
+   1.5, 3.5, 1.5, 3.5, 1.5, 3.5, 1, 3,
+   120, 'Temperate Broadleaf and Mixed Forests, Temperate Grasslands'),
 
-  ('Perennial Ryegrass', 'Perennial Ryegrass is a fast-growing, cool-season grass known for its quick germination and establishment. It produces a fine-textured, bright green turf with excellent wear tolerance, making it ideal for high-traffic areas. While it prefers cool, moist climates, it can adapt to various conditions and is often used in grass seed mixes.', 60, 75, 25, 50, '3-8', 'Cfb, Dfb'),
+  ('Perennial Ryegrass', 'Perennial Ryegrass is a fast-growing, cool-season grass known for its quick germination and establishment. It produces a fine-textured, bright green turf with excellent wear tolerance, making it ideal for high-traffic areas. While it prefers cool, moist climates, it can adapt to various conditions and is often used in grass seed mixes.',
+   60, 75, 25, 50, '3-8', 'Cfb, Dfb',
+   50, 65, 65, 80, 50, 65, 20, 40,
+   2, 4, 2, 4, 2, 4, 1.5, 3.5,
+   140, 'Temperate Broadleaf and Mixed Forests'),
 
-  ('Bermuda Grass', 'Bermuda Grass is a warm-season grass prized for its excellent heat and drought tolerance. It forms a dense, fine-textured turf that recovers quickly from damage due to its aggressive growth habit. Ideal for sunny, hot climates, it goes dormant in winter but greens up quickly in spring, making it popular for lawns and sports fields in southern regions.', 75, 95, 20, 50, '7-10', 'Cfa, BSh'),
+  ('Bermuda Grass', 'Bermuda Grass is a warm-season grass prized for its excellent heat and drought tolerance. It forms a dense, fine-textured turf that recovers quickly from damage due to its aggressive growth habit. Ideal for sunny, hot climates, it goes dormant in winter but greens up quickly in spring, making it popular for lawns and sports fields in southern regions.',
+   75, 95, 20, 50, '7-10', 'Cfa, BSh',
+   65, 85, 80, 100, 65, 85, 35, 55,
+   1, 3, 1, 3, 1, 3, 0.5, 2.5,
+   100, 'Tropical and Subtropical Grasslands, Temperate Grasslands'),
 
-  ('Zoysia Grass', 'Zoysia Grass is a warm-season grass known for its dense, carpet-like texture and good drought tolerance. It forms a thick, weed-resistant turf that requires less mowing than many other grasses. While slow to establish, once mature, it''s low-maintenance and can withstand moderate foot traffic, making it popular for lawns in transitional climate zones.', 70, 90, 20, 40, '6-11', 'Cfa, Cwa'),
+  ('Zoysia Grass', 'Zoysia Grass is a warm-season grass known for its dense, carpet-like texture and good drought tolerance. It forms a thick, weed-resistant turf that requires less mowing than many other grasses. While slow to establish, once mature, it''s low-maintenance and can withstand moderate foot traffic, making it popular for lawns in transitional climate zones.',
+   70, 90, 20, 40, '6-11', 'Cfa, Cwa',
+   60, 80, 75, 95, 60, 80, 30, 50,
+   1.5, 3.5, 1.5, 3.5, 1.5, 3.5, 1, 3,
+   110, 'Tropical and Subtropical Grasslands, Temperate Broadleaf and Mixed Forests'),
 
-  ('St. Augustine Grass', 'St. Augustine Grass is a warm-season grass with broad, coarse-textured blades, forming a dense, carpet-like turf. It has excellent shade tolerance and thrives in hot, coastal areas. While not as drought-tolerant as some warm-season grasses, it recovers quickly from stress and is popular for lawns in tropical and subtropical regions.', 75, 90, 30, 60, '8-10', 'Cfa, Aw'),
+  ('St. Augustine Grass', 'St. Augustine Grass is a warm-season grass with broad, coarse-textured blades, forming a dense, carpet-like turf. It has excellent shade tolerance and thrives in hot, coastal areas. While not as drought-tolerant as some warm-season grasses, it recovers quickly from stress and is popular for lawns in tropical and subtropical regions.',
+   75, 90, 30, 60, '8-10', 'Cfa, Aw',
+   70, 85, 80, 95, 70, 85, 40, 60,
+   2, 4, 2, 4, 2, 4, 1.5, 3.5,
+   120, 'Tropical and Subtropical Moist Broadleaf Forests'),
 
-  ('Centipede Grass', 'Centipede Grass is a warm-season grass known for its excellent low-maintenance characteristics. It forms a medium-textured, light green turf that grows slowly, requiring less mowing and fertilization. Ideal for lawns in the southeastern U.S., it prefers acidic soils and has moderate shade tolerance but poor wear resistance.', 70, 85, 30, 50, '7-10', 'Cfa'),
+  ('Centipede Grass', 'Centipede Grass is a warm-season grass known for its excellent low-maintenance characteristics. It forms a medium-textured, light green turf that grows slowly, requiring less mowing and fertilization. Ideal for lawns in the southeastern U.S., it prefers acidic soils and has moderate shade tolerance but poor wear resistance.',
+   70, 85, 30, 50, '7-10', 'Cfa',
+   65, 80, 75, 90, 65, 80, 35, 55,
+   2, 4, 2, 4, 2, 4, 1.5, 3.5,
+   130, 'Temperate Broadleaf and Mixed Forests, Tropical and Subtropical Moist Broadleaf Forests'),
 
-  ('Fine Fescue', 'Fine Fescue is a group of cool-season grasses known for their fine texture and excellent shade tolerance. They form a dense turf with narrow, needle-like blades and require little maintenance. Ideal for low-traffic areas and often used in shade mixes, Fine Fescues are drought-tolerant but may go dormant in extreme heat.', 55, 75, 15, 35, '3-7', 'Dfb, Cfb'),
+  ('Fine Fescue', 'Fine Fescue is a group of cool-season grasses known for their fine texture and excellent shade tolerance. They form a dense turf with narrow, needle-like blades and require little maintenance. Ideal for low-traffic areas and often used in shade mixes, Fine Fescues are drought-tolerant but may go dormant in extreme heat.',
+   55, 75, 15, 35, '3-7', 'Dfb, Cfb',
+   45, 65, 60, 80, 45, 65, 15, 35,
+   1, 3, 1, 3, 1, 3, 0.5, 2.5,
+   160, 'Temperate Broadleaf and Mixed Forests, Temperate Conifer Forests'),
 
-  ('Buffalo Grass', 'Buffalo Grass is a warm-season native grass known for its exceptional drought tolerance and low maintenance requirements. It forms a fine-textured, grayish-green turf that grows slowly and requires minimal mowing. Ideal for areas with low rainfall, it''s eco-friendly but has poor shade tolerance and wear resistance.', 70, 95, 10, 30, '3-10', 'BSk, Dfa'),
+  ('Buffalo Grass', 'Buffalo Grass is a warm-season native grass known for its exceptional drought tolerance and low maintenance requirements. It forms a fine-textured, grayish-green turf that grows slowly and requires minimal mowing. Ideal for areas with low rainfall, it''s eco-friendly but has poor shade tolerance and wear resistance.',
+   70, 95, 10, 30, '3-10', 'BSk, Dfa',
+   60, 85, 75, 100, 60, 85, 25, 45,
+   0.5, 2.5, 0.5, 2.5, 0.5, 2.5, 0.25, 2,
+   90, 'Temperate Grasslands, Deserts and Xeric Shrublands'),
 
-  ('Bahia Grass', 'Bahia Grass is a warm-season grass known for its excellent heat and drought tolerance. It forms a coarse-textured, open turf with deep roots, making it ideal for erosion control. While not as aesthetically pleasing as some lawn grasses, it''s low-maintenance, tolerates poor soils, and is often used for pastures and low-traffic areas in the southern U.S.', 70, 95, 25, 60, '7-11', 'Cfa, Aw');
-
+  ('Bahia Grass', 'Bahia Grass is a warm-season grass known for its excellent heat and drought tolerance. It forms a coarse-textured, open turf with deep roots, making it ideal for erosion control. While not as aesthetically pleasing as some lawn grasses, it''s low-maintenance, tolerates poor soils, and is often used for pastures and low-traffic areas in the southern U.S.',
+   70, 95, 25, 60, '7-11', 'Cfa, Aw',
+   65, 85, 80, 100, 65, 85, 35, 55,
+   1.5, 3.5, 1.5, 3.5, 1.5, 3.5, 1, 3,
+   105, 'Tropical and Subtropical Grasslands, Temperate Grasslands');
 
 -- Assume Kentucky Bluegrass has grassSpeciesId = 1
 

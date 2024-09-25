@@ -133,3 +133,8 @@ CREATE INDEX idx_userplans_userid ON "UserPlans" ("userId");
 CREATE INDEX idx_plansteps_userplanid ON "PlanSteps" ("userPlanId");
 CREATE INDEX idx_notifications_userid ON "Notifications" ("userId");
 CREATE INDEX idx_climatedata_zipcode ON "ClimateData" ("zipcode");
+
+
+ALTER TABLE "ClimateData"
+ADD COLUMN "monthlyTemperature" jsonb,
+ADD COLUMN "monthlyRainfall" jsonb;
