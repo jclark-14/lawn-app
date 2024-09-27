@@ -1,62 +1,50 @@
-import React, { useEffect, useState } from 'react';
+import React, { FormEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-export function SignUpPage(): JSX.Element {
-  const [username, setUsername] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [confirmPassword, setConfirmPassword] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+export function Registration(): JSX.Element {
+  const [formData, setFormData] = useState({
+    username: '',
+    password: '',
+    confirmPassword: '',
+  });
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [submit, setSubmit] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    async function signUp() {
-      if (!submit) return;
-      try {
-        setIsLoading(true);
-        setError(null); // Clear any previous errors
-        const req = {
-          method: 'POST',
-          headers: {
-            'Content-type': 'application/json',
-          },
-          body: JSON.stringify({ username, password }),
-        };
-        const response = await fetch('/api/auth/sign-up', req);
-        const data = await response.json();
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const { name, value } = event.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  }
 
-        if (!response.ok) {
-          if (response.status === 400) {
-            setError(
-              data.error || 'Validation failed. Please check your input.'
-            );
-          } else {
-            throw new Error('Sign-up failed');
-          }
-        } else {
-          console.log('Sign-up successful:', data);
-          navigate('/sign-in');
-        }
-      } catch (error) {
-        setError('An unexpected error occurred. Please try again.');
-        console.error('Signup error:', error);
-      } finally {
-        setIsLoading(false);
-        setSubmit(false);
-      }
-    }
-    signUp();
-  }, [submit, username, password, navigate]);
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
       setError("Passwords don't match");
       return;
     }
-    setSubmit(true);
-  };
+    try {
+      setIsLoading(true);
+      const req = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      };
+      const res = await fetch('/api/auth/sign-up', req);
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(
+          errorData.error || `Registration failed: ${res.status}`
+        );
+      }
+      navigate('/sign-in');
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <div className="relative min-h-full w-full flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
@@ -82,10 +70,8 @@ export function SignUpPage(): JSX.Element {
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm"
                 placeholder="Username"
-                value={username}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setUsername(e.target.value)
-                }
+                value={formData.username}
+                onChange={handleChange}
               />
             </div>
             <div>
@@ -99,10 +85,8 @@ export function SignUpPage(): JSX.Element {
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm"
                 placeholder="Password"
-                value={password}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setPassword(e.target.value)
-                }
+                value={formData.password}
+                onChange={handleChange}
               />
             </div>
             <div>
@@ -111,15 +95,13 @@ export function SignUpPage(): JSX.Element {
               </label>
               <input
                 id="confirm-password"
-                name="confirm-password"
+                name="confirmPassword"
                 type="password"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm"
                 placeholder="Confirm Password"
-                value={confirmPassword}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setConfirmPassword(e.target.value)
-                }
+                value={formData.confirmPassword}
+                onChange={handleChange}
               />
             </div>
           </div>

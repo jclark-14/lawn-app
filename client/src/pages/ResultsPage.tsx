@@ -43,6 +43,7 @@ export function ResultsPage() {
 
     if (zipcode) {
       fetchData();
+      localStorage.setItem('zipcode', zipcode);
     }
   }, [zipcode]);
 

@@ -88,7 +88,11 @@ app.get('/api/grass-species/:zipcode', async (req, res, next) => {
     const grassSpecies = await getGrassSpeciesForZipcode(db, zipcode);
     res.status(200).json(grassSpecies);
   } catch (err) {
-    next(err);
+    if (err instanceof ClientError && err.message === 'Invalid zipcode') {
+      res.status(400).json({ error: 'Invalid zipcode' });
+    } else {
+      next(err);
+    }
   }
 });
 

@@ -5,22 +5,41 @@ import { useNavigate } from 'react-router-dom';
 export function Homepage() {
   const navigate = useNavigate();
   const [zipcode, setZipcode] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  function handleSubmit(e) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    navigate(`/results/${zipcode}`);
-    localStorage.setItem('zipcode', JSON.stringify(zipcode));
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(`/api/grass-species/${zipcode}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.error || `HTTP error! status: ${response.status}`
+        );
+      }
+      // If the request is successful, navigate to the results page
+      navigate(`/results/${zipcode}`);
+    } catch (err) {
+      console.error('Error fetching data:', err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'An error occurred. Please try again.'
+      );
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
     <main className="relative flex-grow flex flex-col">
-      {/* Background with opacity */}
-      {/* <div className="absolute inset-0 bg-gradient-to-b from-white to-emerald-700 opacity-85 z-0"></div> */}
-
-      {/* Content */}
       <div className="relative z-10 py-12 sm:py-14 flex-grow flex flex-col justify-center">
-        <div className="px-4 sm:px-6 lg:px-8">
-          <div className="container mx-auto max-w-7xl h-full">
+        <div className="px-4 sm:px-6 lg:px-8 w-full">
+          <div className="mx-auto max-w-7xl w-full">
             <div className="text-center mb-12 sm:mb-16">
               <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-gray-700">
                 Get Your Perfect Lawn
@@ -31,19 +50,29 @@ export function Homepage() {
                 proud of!
               </p>
 
-              <form className="flex justify-center" onSubmit={handleSubmit}>
-                <input
-                  type="text"
-                  placeholder="Enter your zipcode"
-                  className="px-4 py-2 rounded-l-[8px] w-64"
-                  value={zipcode}
-                  onChange={(e) => setZipcode(e.target.value)}
-                />
-                <button
-                  type="submit"
-                  className="bg-emerald-600 text-white px-8 py-2.5 rounded-r-[8px] text-lg font-semibold transition-all ease-in-out duration-500 hover:bg-gradient-to-r from-emerald-600 to-emerald-700 shadow-md hover:shadow-lg">
-                  Get Started
-                </button>
+              <form
+                className="flex flex-col items-center relative"
+                onSubmit={handleSubmit}>
+                <div className="flex mb-2 w-full max-w-md justify-center">
+                  <input
+                    type="text"
+                    placeholder="Enter your zipcode"
+                    className="px-4 py-2 rounded-l-[8px] w-full max-w-[200px]"
+                    value={zipcode}
+                    onChange={(e) => setZipcode(e.target.value)}
+                  />
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className={`bg-emerald-600 text-white px-4 sm:px-8 py-2.5 text-nowrap rounded-r-[8px] text-lg font-semibold transition-all ease-in-out duration-500 hover:bg-gradient-to-r from-emerald-600 to-emerald-700 shadow-md hover:shadow-lg ${
+                      isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}>
+                    {isLoading ? 'Loading...' : 'Get Started'}
+                  </button>
+                </div>
+                {error && (
+                  <p className="text-red-500 mt-2 absolute top-14">{error}</p>
+                )}
               </form>
             </div>
 

@@ -18,7 +18,7 @@ export default function ProjectDetails() {
       <main className="relative z-10 flex-grow py-12 sm:py-14">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold text-center mb-12 text-gray-800">
-            LawnCare Pro: Project Details
+            Project Details
           </h1>
 
           <section className="mb-16 bg-gray-100 opacity-95 p-8 rounded-lg shadow-md">
