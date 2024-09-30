@@ -64,8 +64,6 @@ CREATE TABLE "UserPlans" (
   "userId" integer NOT NULL,
   "grassSpeciesId" integer NOT NULL,
   "planType" text NOT NULL,
-  "zipcode" text NOT NULL,
-  "matchPercentage" numeric,
   "isCompleted" boolean NOT NULL DEFAULT false,
   "isArchived" boolean NOT NULL DEFAULT false,
   "createdAt" timestamptz NOT NULL DEFAULT (now())

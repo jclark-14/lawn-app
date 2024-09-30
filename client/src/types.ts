@@ -70,27 +70,27 @@ export type GrassSpeciesWithClimate = GrassSpecies & {
   climateData: ClimateData;
 };
 
+export type PlanStep = {
+  planStepId: number;
+  userPlanId: number;
+  templateId: number | null;
+  stepDescription: string;
+  dueDate: string;
+  completed: boolean;
+  completedAt: string | null;
+  createdAt: string;
+};
+
 export type UserPlan = {
   userPlanId: number;
   userId: number;
   grassSpeciesId: number;
+  grassSpeciesName: string;
   planType: 'new_lawn' | 'lawn_improvement';
-  zipcode: string;
-  matchPercentage: number;
   isCompleted: boolean;
   isArchived: boolean;
-  createdAt: Date;
-};
-
-export type PlanStep = {
-  planStepId: number;
-  userPlanId: number;
-  templateId: number;
-  stepDescription: string;
-  dueDate: Date | null;
-  completed: boolean;
-  completedAt: Date | null;
-  createdAt: Date;
+  createdAt: string;
+  steps: PlanStep[];
 };
 
 export type Notification = {

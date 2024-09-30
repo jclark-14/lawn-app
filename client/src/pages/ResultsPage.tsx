@@ -8,11 +8,14 @@ import {
   Sprout,
   Globe,
   Home,
+  SquarePlus,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { GrassSpeciesWithClimate } from '../types';
+import { useUser } from '../components/useUser';
 
 export function ResultsPage() {
+  const { user } = useUser();
   const { zipcode } = useParams<{ zipcode: string }>();
   const [grassMatches, setGrassMatches] = useState<GrassSpeciesWithClimate[]>(
     []
@@ -62,23 +65,44 @@ export function ResultsPage() {
   const climateData = grassMatches[0]?.climateData;
 
   return (
-    <div className="py-12 sm:py-14 min-h-screen w-full">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-        <h2 className="text-3xl sm:text-4xl font-semibold mb-8 text-center text-emerald-700 tracking-tight">
-          Your Lawn Care Results for {zipcode}
+    <div className="py-12 sm:py-12 min-h-screen w-full">
+      <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
+        <h2 className="text-3xl text-emerald-700 sm:text-4xl font-bold text-center tracking-tight mb-10">
+          Lawn Care Results for {zipcode}
         </h2>
+
+        <div className="flex justify-between items-center mb-10">
+          <div className="flex justify-center">
+            <Link
+              to="/"
+              className="bg-gray-100 text-emerald-800 px-6 py-3 rounded-full text-lg font-semibold hover:bg-emerald-700  transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-emerald-700 to-emerald-600  hover:text-white hover:border-emerald-600">
+              <Home size={20} className="mr-2" />
+              Back to Home
+            </Link>
+          </div>
+
+          <div className="flex justify-center">
+            <Link
+              to={user ? '/new-plan' : '/sign-in'}
+              className="bg-gray-100 text-emerald-800 px-6 py-3 rounded-full text-lg font-semibold hover:bg-emerald-700  transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-emerald-700 to-emerald-600  hover:text-white hover:border-emerald-600">
+              <SquarePlus size={23} className="mr-2" />
+              {user ? 'New Plan' : 'Login to Create Plan'}
+            </Link>
+          </div>
+        </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Grass Matches Section */}
-          <div className="w-full lg:w-2/3">
-            <h3 className="text-2xl font-semibold mb-4 text-emerald-700">
+
+          <div className="w-full lg:w-2/3  bg-emerald-900 bg-opacity-60 rounded-lg p-4">
+            <h3 className="text-2xl font-semibold mb-4 text-gray-50">
               Top Grass Matches
             </h3>
             <div className="space-y-4">
               {grassMatches.map((grass, index) => (
                 <div
                   key={index}
-                  className="bg-white rounded-lg shadow-md overflow-hidden">
+                  className="bg-gray-100 rounded-lg shadow-md overflow-hidden">
                   <div className="p-6">
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-xl font-semibold text-emerald-700">
@@ -133,11 +157,11 @@ export function ResultsPage() {
           </div>
 
           {/* Climate Data Section */}
-          <div className="w-full lg:w-1/3">
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="text-2xl font-semibold mb-4 text-emerald-700">
-                Climate Data Overview
-              </h3>
+          <div className="w-full lg:w-1/3 bg-emerald-900 bg-opacity-60 rounded-lg p-4 h-fit">
+            <h3 className="text-2xl font-semibold mb-4 text-gray-100">
+              Climate Data Summary
+            </h3>
+            <div className="bg-gray-100 bg-opacity-100 rounded-lg shadow-md p-4">
               <div className="space-y-4">
                 <ClimateDataItem
                   icon={<Thermometer className="text-emerald-600" size={24} />}
@@ -184,15 +208,6 @@ export function ResultsPage() {
               )}
             </div>
           </div>
-        </div>
-
-        <div className="mt-8 flex justify-center">
-          <Link
-            to="/"
-            className="bg-gray-100 text-emerald-800 px-6 py-3 rounded-full text-lg font-semibold hover:bg-emerald-700 hover:text-gray-100 transition duration-300 shadow-md hover:shadow-lg flex items-center">
-            <Home size={20} className="mr-2" />
-            Back to Home
-          </Link>
         </div>
       </div>
     </div>

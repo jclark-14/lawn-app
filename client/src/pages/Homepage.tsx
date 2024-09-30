@@ -57,10 +57,11 @@ export function Homepage() {
                   <input
                     type="text"
                     placeholder="Enter your zipcode"
-                    className="px-4 py-2 rounded-l-[8px] w-full max-w-[200px]"
+                    className="px-4 py-2 rounded-l-[8px] w-full max-w-[200px] border border-gray-300 focus:outline-none focus:ring-1 focus:ring-emerald-600 focus:border-emerald-600 focus:z-10"
                     value={zipcode}
                     onChange={(e) => setZipcode(e.target.value)}
                   />
+
                   <button
                     type="submit"
                     disabled={isLoading}

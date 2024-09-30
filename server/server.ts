@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars -- Remove when used */
 import 'dotenv/config';
 import express from 'express';
-import pg from 'pg';
+import pg, { PoolClient } from 'pg';
 import argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
 import { getGrassSpeciesForZipcode } from './lib/grassSpeciesMatching';
-import { ClientError, errorMiddleware } from './lib/index.js';
+import { authMiddleware, ClientError, errorMiddleware } from './lib/index.js';
+import { setupPlanRoutes } from './lib/setupPlanRoutes';
 
 type User = {
   userId: number;
@@ -96,6 +97,95 @@ app.get('/api/grass-species/:zipcode', async (req, res, next) => {
   }
 });
 
+// ... (previous imports and setup remain the same)
+app.post('/api/plans/new', async (req, res, next) => {
+  console.log('Received new plan request:', req.body);
+  const client = await db.connect();
+  try {
+    const { userId, grassSpecies, planType, lawnType } = req.body;
+
+    // Validate input
+    if (!userId || !grassSpecies || !planType) {
+      throw new ClientError(400, 'Missing required fields');
+    }
+
+    if (planType === 'new_lawn' && !lawnType) {
+      throw new ClientError(400, 'Lawn type is required for new lawn plans');
+    }
+
+    // Start a transaction
+    await client.query('BEGIN');
+
+    // Insert the new plan
+    const insertPlanSql = `
+      INSERT INTO "UserPlans" ("userId", "grassSpeciesId", "planType")
+      VALUES ($1, $2, $3)
+      RETURNING "userPlanId"
+    `;
+    const planResult = await client.query(insertPlanSql, [
+      userId,
+      grassSpecies,
+      planType,
+    ]);
+    const userPlanId = planResult.rows[0].userPlanId;
+    console.log('Created new plan with ID:', userPlanId);
+
+    // Fetch the appropriate plan step templates
+    const fetchTemplatesSql = `
+      SELECT * FROM "PlanStepTemplates"
+      WHERE "grassSpeciesId" = $1 AND "planType" = $2
+      ORDER BY "stepOrder"
+    `;
+    const templatesResult = await client.query(fetchTemplatesSql, [
+      grassSpecies,
+      planType,
+    ]);
+    console.log('Fetched', templatesResult.rows.length, 'plan step templates');
+
+    // Insert plan steps for the new plan
+    const insertStepSql = `
+      INSERT INTO "PlanSteps" ("userPlanId", "templateId", "stepDescription", "dueDate", "completed")
+      VALUES ($1, $2, $3, $4, $5)
+    `;
+    let currentDate = new Date();
+    const insertedStepDescriptions = new Set();
+    for (const template of templatesResult.rows) {
+      if (!insertedStepDescriptions.has(template.stepDescription)) {
+        await client.query(insertStepSql, [
+          userPlanId,
+          template.templateId,
+          template.stepDescription,
+          currentDate,
+          false, // Set initial completed status to false
+        ]);
+        insertedStepDescriptions.add(template.stepDescription);
+        if (template.intervalToNextStep) {
+          currentDate = new Date(
+            currentDate.getTime() +
+              template.intervalToNextStep.days * 24 * 60 * 60 * 1000
+          );
+        }
+      }
+    }
+    console.log('Inserted', insertedStepDescriptions.size, 'unique plan steps');
+
+    // Commit the transaction
+    await client.query('COMMIT');
+    console.log('Transaction committed successfully');
+
+    res.status(201).json({ userPlanId });
+  } catch (err) {
+    console.error('Error creating new plan:', err);
+    await client.query('ROLLBACK');
+    next(err);
+  } finally {
+    client.release();
+  }
+});
+
+// ... (rest of the server code remains the same)
+
+setupPlanRoutes(app, db);
 /*
  * Handles paths that aren't handled by any other route handler.
  * It responds with `index.html` to support page refreshes with React Router.

@@ -7,7 +7,6 @@ import { Menu, X } from 'lucide-react';
 export function Header() {
   const { user, handleSignOut } = useUser();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   // Close menu when clicking outside (unchanged)
@@ -113,7 +112,7 @@ function NavLinks({ user, handleSignOut }) {
       ) : (
         <Link
           to="/sign-in"
-          className="bg-emerald-800 text-sm sm:text-lg py-1.5 px-4 rounded-[6px] bg-opacity-60 transition-all duration-500 ease-in-out hover:bg-emerald-800">
+          className="bg-emerald-800 text-sm sm:text-lg py-1.5 px-4 rounded-[6px] bg-opacity-60 transition-all duration-500 ease-in-out hover:bg-gradient-to-r from-emerald-800 to-teal-800">
           <span className="inline-block min-w-[40px] text-center">Login</span>
         </Link>
       )}
