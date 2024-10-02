@@ -161,22 +161,35 @@ app.post('/api/plans/new', authMiddleware, async (req, res, next) => {
     console.log('Created new plan with ID:', userPlanId);
 
     // Fetch the appropriate plan step templates
-    const fetchTemplatesSql = `
-      SELECT * FROM "PlanStepTemplates"
-      WHERE "grassSpeciesId" = $1 AND "planType" = $2 AND "establishmentType" = $3
-      ORDER BY "stepOrder"
-    `;
-    const templatesResult = await client.query(fetchTemplatesSql, [
-      grassSpeciesId,
-      planType,
-      establishmentType,
-    ]);
+    let fetchTemplatesSql;
+    let templateParams;
+
+    if (planType === 'lawn_improvement') {
+      fetchTemplatesSql = `
+        SELECT * FROM "PlanStepTemplates"
+        WHERE "grassSpeciesId" = $1 AND "planType" = $2
+        ORDER BY "stepOrder"
+      `;
+      templateParams = [grassSpeciesId, planType];
+    } else {
+      fetchTemplatesSql = `
+        SELECT * FROM "PlanStepTemplates"
+        WHERE "grassSpeciesId" = $1 AND "planType" = $2 AND "establishmentType" = $3
+        ORDER BY "stepOrder"
+      `;
+      templateParams = [grassSpeciesId, planType, establishmentType];
+    }
+
+    const templatesResult = await client.query(
+      fetchTemplatesSql,
+      templateParams
+    );
     console.log('Fetched', templatesResult.rows.length, 'plan step templates');
 
     // Insert plan steps for the new plan
     const insertStepSql = `
-      INSERT INTO "PlanSteps" ("userPlanId", "templateId", "stepDescription", "dueDate", "completed")
-      VALUES ($1, $2, $3, $4, $5)
+      INSERT INTO "PlanSteps" ("userPlanId", "templateId", "stepDescription", "dueDate", "completed", "stepOrder")
+      VALUES ($1, $2, $3, $4, $5, $6)
     `;
     let currentDate = new Date();
     const insertedStepDescriptions = new Set();
@@ -187,7 +200,8 @@ app.post('/api/plans/new', authMiddleware, async (req, res, next) => {
           template.templateId,
           template.stepDescription,
           currentDate,
-          false, // Set initial completed status to false
+          false,
+          template.stepOrder,
         ]);
         insertedStepDescriptions.add(template.stepDescription);
         if (template.intervalToNextStep) {

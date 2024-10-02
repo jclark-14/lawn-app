@@ -1,3 +1,4 @@
+// User-related types
 export type User = {
   userId: number;
   username: string;
@@ -9,6 +10,7 @@ export type Auth = {
   password: string;
 };
 
+// Climate-related types
 export type ClimateData = {
   avgTemperature: string | number;
   avgRainfall: string | number;
@@ -24,16 +26,11 @@ export type ClimateData = {
   fallRainfall: string | number;
   winterRainfall: string | number;
   growingDays: string | number;
-  monthlyTemperature: {
-    [key: string]: number;
-  };
-  monthlyRainfall: {
-    [key: string]: number;
-  };
+  monthlyTemperature: Record<string, number>;
+  monthlyRainfall: Record<string, number>;
 };
 
-// In your types.ts file or wherever you define your types
-
+// Grass species types
 export type GrassSpecies = {
   grassSpeciesId: number;
   name: string;
@@ -63,13 +60,14 @@ export type GrassSpecies = {
   minGrowingDays: number | null;
   idealEcoregion: string | null;
   match_percentage: number;
-  matchTier: number; // Add this line
+  matchTier: number;
 };
 
 export type GrassSpeciesWithClimate = GrassSpecies & {
   climateData: ClimateData;
 };
 
+// Plan-related types
 export type PlanStep = {
   planStepId: number;
   userPlanId: number;
@@ -87,23 +85,16 @@ export type UserPlan = {
   userId: number;
   grassSpeciesId: number;
   grassSpeciesName: string;
-  establishmentType: 'sod' | 'sod_plugs' | 'plugs' | 'seed';
+  establishmentType: 'sod' | 'sod_plugs' | 'plugs' | 'seed' | null;
   planType: 'lawn_improvement' | 'new_lawn';
   isCompleted: boolean;
   isArchived: boolean;
   createdAt: string;
+  completedAt: string | null;
   steps: PlanStep[];
 };
 
-export type Notification = {
-  notificationId: number;
-  userId: number;
-  planStepId: number;
-  message: string;
-  seen: boolean;
-  createdAt: Date;
-};
-
+// API response type for climate data
 export type ApiClimateData = {
   ZIP: string;
   ZIP_name: string;
