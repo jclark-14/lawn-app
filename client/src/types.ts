@@ -79,6 +79,7 @@ export type PlanStep = {
   completed: boolean;
   completedAt: string | null;
   createdAt: string;
+  stepOrder?: number | null;
 };
 
 export type UserPlan = {
@@ -86,7 +87,8 @@ export type UserPlan = {
   userId: number;
   grassSpeciesId: number;
   grassSpeciesName: string;
-  planType: 'new_lawn' | 'lawn_improvement';
+  establishmentType: 'sod' | 'sod_plugs' | 'plugs' | 'seed';
+  planType: 'lawn_improvement' | 'new_lawn';
   isCompleted: boolean;
   isArchived: boolean;
   createdAt: string;

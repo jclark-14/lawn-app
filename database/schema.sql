@@ -63,6 +63,7 @@ CREATE TABLE "UserPlans" (
   "userPlanId" serial PRIMARY KEY,
   "userId" integer NOT NULL,
   "grassSpeciesId" integer NOT NULL,
+  "establishmentType" text,
   "planType" text NOT NULL,
   "isCompleted" boolean NOT NULL DEFAULT false,
   "isArchived" boolean NOT NULL DEFAULT false,
@@ -125,6 +126,10 @@ ALTER TABLE "PlanSteps" ADD FOREIGN KEY ("templateId") REFERENCES "PlanStepTempl
 ALTER TABLE "Notifications" ADD FOREIGN KEY ("userId") REFERENCES "Users" ("userId");
 ALTER TABLE "Notifications" ADD FOREIGN KEY ("planStepId") REFERENCES "PlanSteps" ("planStepId");
 ALTER TABLE "ClimateData" ADD CONSTRAINT "unique_zipcode" UNIQUE ("zipcode");
+ALTER TABLE "UserPlans" ADD COLUMN "Type" text;
+ALTER TABLE "PlanStepTemplates" ADD COLUMN "establishmentType" text;
+ALTER TABLE "PlanSteps" ALTER COLUMN "templateId" DROP NOT NULL;
+ALTER TABLE "PlanSteps" ADD COLUMN "stepOrder" INTEGER;
 
 -- Indexes for performance (unchanged)
 CREATE INDEX idx_userplans_userid ON "UserPlans" ("userId");
@@ -136,3 +141,11 @@ CREATE INDEX idx_climatedata_zipcode ON "ClimateData" ("zipcode");
 ALTER TABLE "ClimateData"
 ADD COLUMN "monthlyTemperature" jsonb,
 ADD COLUMN "monthlyRainfall" jsonb;
+
+UPDATE "PlanStepTemplates"
+SET "planType" = 'new_lawn',
+    "establishmentType" = CASE
+        WHEN "planType" IN ('seed', 'sod', 'plugs', 'sod_plugs') THEN "planType"
+        ELSE NULL
+    END
+WHERE "planType" != 'lawn_improvement';

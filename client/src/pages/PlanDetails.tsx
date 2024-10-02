@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useUser } from '../components/useUser';
 import { UserPlan, PlanStep } from '../types';
-import { Edit2, Save, BookmarkPlus } from 'lucide-react';
+import { Edit2, Trash2, Save, BookmarkPlus, PlusCircle } from 'lucide-react';
 
 export function PlanDetails() {
   const { planId } = useParams<{ planId: string }>();
@@ -21,6 +21,11 @@ export function PlanDetails() {
     }
 
     const fetchPlan = async () => {
+      if (!token) {
+        console.log('Token not available, waiting...');
+        return;
+      }
+
       setIsLoading(true);
       try {
         const response = await fetch(`/api/plans/${planId}`, {
@@ -33,7 +38,9 @@ export function PlanDetails() {
         }
         const data: UserPlan = await response.json();
         setPlan(data);
+        setError(null);
       } catch (err) {
+        console.error('Error fetching plan:', err);
         setError('Failed to load plan. Please try again.');
       } finally {
         setIsLoading(false);
@@ -42,6 +49,45 @@ export function PlanDetails() {
 
     fetchPlan();
   }, [planId, token]);
+
+  const handleAddStep = async () => {
+    if (!plan || !planId) return;
+
+    const newStep: Omit<PlanStep, 'planStepId'> = {
+      userPlanId: parseInt(planId),
+      templateId: null,
+      stepDescription: 'Add step details here',
+      dueDate: new Date().toISOString().split('T')[0],
+      completed: false,
+      completedAt: null,
+      createdAt: new Date().toISOString(),
+    };
+
+    try {
+      const response = await fetch(`/api/plans/${planId}/steps`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(newStep),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add new step');
+      }
+
+      const addedStep: PlanStep = await response.json();
+
+      // Temporarily add the new step to the top of the list
+      setPlan((prevPlan) => ({
+        ...prevPlan!,
+        steps: [addedStep, ...prevPlan!.steps], // Add the new step at the top
+      }));
+    } catch (err) {
+      setError('Failed to add new step. Please try again.');
+    }
+  };
 
   const handleStepChange = async (
     index: number,
@@ -55,7 +101,6 @@ export function PlanDetails() {
     setPlan(updatedPlan);
 
     if (!isEditing && field === 'completed') {
-      // If not in edit mode and toggling completion, save immediately
       await handleSavePlan(updatedPlan);
     }
   };
@@ -69,12 +114,18 @@ export function PlanDetails() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(planToSave),
+        body: JSON.stringify({
+          ...planToSave,
+          lawnType: planToSave.establishmentType,
+        }),
       });
       if (!response.ok) {
         throw new Error('Failed to save plan');
       }
-      // Optionally, you can fetch the updated plan here
+      // Update the local state with the response data
+      const updatedPlan = await response.json();
+      setPlan(updatedPlan);
+      console.log(plan);
     } catch (err) {
       setError('Failed to save plan. Please try again.');
     } finally {
@@ -113,6 +164,33 @@ export function PlanDetails() {
     }
   };
 
+  const handleDeleteStep = async (stepId: number) => {
+    if (!plan || !planId) return;
+
+    try {
+      const response = await fetch(`/api/plans/${planId}/steps/${stepId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete step');
+      }
+
+      const updatedSteps = plan.steps.filter(
+        (step) => step.planStepId !== stepId
+      );
+      setPlan({ ...plan, steps: updatedSteps });
+    } catch (err) {
+      setError('Failed to delete step. Please try again.');
+    }
+  };
+
+  if (!token) {
+    return <div className="text-center py-8">Authenticating...</div>;
+  }
   if (isLoading) return <div className="text-center py-8">Loading...</div>;
   if (error)
     return <div className="text-red-500 text-center py-8">{error}</div>;
@@ -121,44 +199,61 @@ export function PlanDetails() {
   return (
     <div className="py-12 sm:py-20 w-full">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
-        <div className="bg-gray-100 rounded-lg shadow-lg p-6 mb-8">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold text-emerald-700">
-              {plan.planType === 'new_lawn'
-                ? 'New Lawn Plan'
-                : 'Lawn Improvement Plan'}
-            </h1>
-            <div className="flex space-x-2">
-              <button
-                onClick={handleEditSave}
-                className="bg-emerald-600 text-white px-4 py-2 rounded-md flex items-center"
-                disabled={isSaving}>
-                {isEditing ? (
-                  <>
-                    <Save size={18} className="mr-2" /> Save
-                  </>
-                ) : (
-                  <>
-                    <Edit2 size={18} className="mr-2" /> Edit
-                  </>
-                )}
-              </button>
-              <Link
-                to="#"
-                onClick={handleSaveToProfile}
-                className="bg-blue-600 text-white px-4 py-2 rounded-md flex items-center">
-                <BookmarkPlus size={18} className="mr-2" /> Confirm
-              </Link>
+        <div className="bg-emerald-900 bg-opacity-60 rounded-lg shadow-lg p-6 mb-8">
+          <div className="flex justify-between items-start mb-6">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-50">
+                {plan.grassSpeciesName}
+              </h1>
+              {plan.planType === 'new_lawn' && (
+                <p className="text-lg text-gray-50 mb-4">
+                  New Grow Plan using{' '}
+                  {plan.establishmentType.charAt(0).toUpperCase() +
+                    plan.establishmentType.slice(1)}
+                </p>
+              )}
+              {isEditing && (
+                <button
+                  onClick={handleAddStep}
+                  className="bg-gray-100 text-emerald-800 max-w-fit px-4 py-2 rounded-full text-md font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center justify-center w-full hover:bg-gradient-to-r from-emerald-700 to-teal-700 hover:text-white hover:border-emerald-600">
+                  <PlusCircle size={20} className="mr-2" /> Add Step
+                </button>
+              )}
+            </div>
+            <div className="flex flex-col items-end mt-3 space-y-4">
+              <div className="flex space-x-2">
+                <button
+                  onClick={handleEditSave}
+                  className="bg-gray-100 bg-opacity-95 text-emerald-800 px-4 py-3 rounded-full text-md font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-emerald-700 to-teal-700 hover:text-white hover:border-emerald-600"
+                  disabled={isSaving}>
+                  {isEditing ? (
+                    <>
+                      <Save size={18} className="mr-2" /> Save Changes
+                    </>
+                  ) : (
+                    <>
+                      <Edit2 size={18} className="mr-2" /> Edit Steps
+                    </>
+                  )}
+                </button>
+                <Link
+                  to="#"
+                  onClick={handleSaveToProfile}
+                  className="bg-gray-100 bg-opacity-95 text-emerald-800 px-4 py-3 rounded-full text-md font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-emerald-700 to-teal-700 hover:text-white hover:border-emerald-600">
+                  <BookmarkPlus size={18} className="mr-2" /> Add to Profile
+                </Link>
+              </div>
+              <p className="text-gray-50 text-md">
+                Add, change or delete steps then add it to your profile.
+              </p>
             </div>
           </div>
-          <p className="text-lg font-semibold text-gray-700 mb-4">
-            {plan.grassSpeciesName}
-          </p>
-          <div className="space-y-6">
+
+          <div className="space-y-4">
             {plan.steps.map((step, index) => (
               <div
                 key={step.planStepId}
-                className="bg-white p-4 rounded-md shadow">
+                className="bg-gray-50 bg-opacity-100 p-4 rounded-lg shadow">
                 <div className="flex justify-between items-start mb-2">
                   <div className="flex-1">
                     {isEditing ? (
@@ -178,6 +273,12 @@ export function PlanDetails() {
                       <p className="text-lg">{step.stepDescription}</p>
                     )}
                   </div>
+                  <button
+                    onClick={() => handleDeleteStep(step.planStepId)}
+                    className="ml-2 text-teal-800 hover:text-red-800 transition-colors duration-200"
+                    title="Delete Step">
+                    <Trash2 size={18} />
+                  </button>
                 </div>
                 <div className="flex justify-between items-center">
                   <div>
@@ -203,7 +304,7 @@ export function PlanDetails() {
                       onChange={(e) =>
                         handleStepChange(index, 'completed', e.target.checked)
                       }
-                      className="form-checkbox h-5 w-5 text-emerald-600"
+                      className="form-checkbox h-5 w-5 rounded-lg accent-gray-500 hover:ring-1 hover:cursor-pointer"
                     />
                   </div>
                 </div>

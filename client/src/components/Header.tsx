@@ -36,7 +36,7 @@ export function Header() {
       {/* Content wrapper */}
       <div className="relative z-10 flex flex-col min-h-screen">
         {/* Header */}
-        <div className="bg-green-800 bg-opacity-80 text-gray-100 w-full">
+        <div className="bg-emerald-800 bg-opacity-90 text-gray-100 w-full">
           <header className="py-3.5 px-4 sm:px-6 lg:px-8 w-full">
             <div className="max-w-7xl mx-auto w-full">
               <div className="flex items-center justify-between w-full">
@@ -48,7 +48,7 @@ export function Header() {
                     </h1>
                   </Link>
                   {user && (
-                    <span className="text-white text-md">
+                    <span className="text-gray-50 text-md">
                       Hello, {user.username}
                     </span>
                   )}
@@ -106,13 +106,13 @@ function NavLinks({ user, handleSignOut }) {
       {user ? (
         <button
           onClick={handleSignOut}
-          className="bg-emerald-800 text-sm text-gray-100 sm:text-lg py-1.5 px-4 rounded-[6px] bg-opacity-60 transition-all duration-500 ease-in-out hover:bg-emerald-800">
+          className="bg-emerald-700 text-sm text-gray-100 sm:text-lg py-1.5 px-4 rounded-[6px] border border-solid shadow-lg border-teal-800 transition-all duration-500 ease-in-out hover:bg-gradient-to-r from-emerald-800 to-teal-700">
           Logout
         </button>
       ) : (
         <Link
           to="/sign-in"
-          className="bg-emerald-800 text-sm sm:text-lg py-1.5 px-4 rounded-[6px] bg-opacity-60 transition-all duration-500 ease-in-out hover:bg-gradient-to-r from-emerald-800 to-teal-800">
+          className="bg-teal-800 text-sm sm:text-lg py-1.5 px-4 rounded-[6px] bg-opacity-60 transition-all duration-500 ease-in-out hover:bg-gradient-to-r from-emerald-800 to-teal-700">
           <span className="inline-block min-w-[40px] text-center">Login</span>
         </Link>
       )}
@@ -126,7 +126,7 @@ function NavLink({ to, children }) {
       <span className="hover:text-teal-100 transition-colors duration-300">
         {children}
       </span>
-      <span className="absolute left-0 bottom-0 w-full h-0.5 bg-white opacity-0 transition duration-300 ease-in-out group-hover:opacity-100"></span>
+      <span className="absolute left-0 bottom-0 w-full h-0.5 bg-gray-200 opacity-0 transition duration-300 ease-in-out group-hover:opacity-100"></span>
     </Link>
   );
 }

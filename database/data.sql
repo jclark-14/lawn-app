@@ -80,538 +80,770 @@ VALUES
 -- Assume Kentucky Bluegrass has grassSpeciesId = 1
 
 -- New Lawn Plan (Seed)
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (1, 'new_lawn', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (1, 'new_lawn', 2, 'Adjust soil pH to 6.2-6.8 if necessary', '14 days', NULL),
-  (1, 'new_lawn', 3, 'Remove debris and old grass', '3 days', NULL),
-  (1, 'new_lawn', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
-  (1, 'new_lawn', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
-  (1, 'new_lawn', 6, 'Apply starter fertilizer high in phosphorus', '1 day', '28 days'),
-  (1, 'new_lawn', 7, 'Sow Kentucky Bluegrass seeds at 2-3 lbs per 1000 sq ft', '1 day', NULL),
-  (1, 'new_lawn', 8, 'Lightly rake seeds into soil', '1 day', NULL),
-  (1, 'new_lawn', 9, 'Roll the area to ensure good seed-to-soil contact', '1 day', NULL),
-  (1, 'new_lawn', 10, 'Water lightly and frequently to keep soil moist', '21 days', NULL),
-  (1, 'new_lawn', 11, 'Reduce watering frequency but increase depth as grass establishes', '21 days', NULL),
-  (1, 'new_lawn', 12, 'Mow when grass reaches 2-3 inches height', '30 days', NULL),
-  (1, 'new_lawn', 13, 'Apply nitrogen-rich fertilizer 6-8 weeks after germination', '1 day', '28 days'),
-  (1, 'new_lawn', 14, 'Apply pre-emergent herbicide if needed', '1 day', '28 days'),
-  (1, 'new_lawn', 15, 'Apply post-emergent herbicide if needed', '1 day', '28 days');
+  (1, 'new_lawn', 'seed', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (1, 'new_lawn', 'seed', 2, 'Adjust soil pH to 6.2-6.8 if necessary', '14 days', NULL),
+  (1, 'new_lawn', 'seed', 3, 'Remove debris and old grass', '3 days', NULL),
+  (1, 'new_lawn', 'seed', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
+  (1, 'new_lawn', 'seed', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
+  (1, 'new_lawn', 'seed', 6, 'Apply starter fertilizer high in phosphorus', '1 day', '28 days'),
+  (1, 'new_lawn', 'seed', 7, 'Sow Kentucky Bluegrass seeds at 2-3 lbs per 1000 sq ft', '1 day', NULL),
+  (1, 'new_lawn', 'seed', 8, 'Lightly rake seeds into soil', '1 day', NULL),
+  (1, 'new_lawn', 'seed', 9, 'Roll the area to ensure good seed-to-soil contact', '1 day', NULL),
+  (1, 'new_lawn', 'seed', 10, 'Water lightly and frequently to keep soil moist', '21 days', NULL),
+  (1, 'new_lawn', 'seed', 11, 'Reduce watering frequency but increase depth as grass establishes', '21 days', NULL),
+  (1, 'new_lawn', 'seed', 12, 'Mow when grass reaches 2-3 inches height', '30 days', NULL),
+  (1, 'new_lawn', 'seed', 13, 'Apply nitrogen-rich fertilizer 6-8 weeks after germination', '1 day', '28 days'),
+  (1, 'new_lawn', 'seed', 14, 'Apply pre-emergent herbicide if needed', '1 day', '28 days'),
+  (1, 'new_lawn', 'seed', 15, 'Apply post-emergent herbicide if needed', '1 day', '28 days');
 
 -- New Lawn Plan (Sod)
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (1, 'new_lawn', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (1, 'new_lawn', 2, 'Adjust soil pH to 6.2-6.8 if necessary', '14 days', NULL),
-  (1, 'new_lawn', 3, 'Remove debris and old grass', '3 days', NULL),
-  (1, 'new_lawn', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
-  (1, 'new_lawn', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
-  (1, 'new_lawn', 6, 'Apply starter fertilizer', '1 day', '28 days'),
-  (1, 'new_lawn', 7, 'Lay Kentucky Bluegrass sod', '1 day', NULL),
-  (1, 'new_lawn', 8, 'Roll sod for good soil contact', '1 day', NULL),
-  (1, 'new_lawn', 9, 'Water deeply immediately after laying sod', '1 day', NULL),
-  (1, 'new_lawn', 10, 'Keep sod consistently moist for 2-3 weeks', '21 days', NULL),
-  (1, 'new_lawn', 11, 'Reduce watering frequency but increase depth', '14 days', NULL),
-  (1, 'new_lawn', 12, 'Mow when grass reaches 2-3 inches height', '14 days', NULL),
-  (1, 'new_lawn', 13, 'Apply nitrogen-rich fertilizer 3-4 weeks after installation', '1 day', '28 days'),
-  (1, 'new_lawn', 14, 'Apply pre-emergent herbicide if needed', '1 day', '28 days'),
-  (1, 'new_lawn', 15, 'Apply post-emergent herbicide if needed', '1 day', '28 days');
+  (1, 'new_lawn', 'new_lawn', 'sod', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (1, 'new_lawn', 'new_lawn', 'sod', 2, 'Adjust soil pH to 6.2-6.8 if necessary', '14 days', NULL),
+  (1, 'new_lawn', 'new_lawn', 'sod', 3, 'Remove debris and old grass', '3 days', NULL),
+  (1, 'new_lawn', 'new_lawn', 'sod', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
+  (1, 'new_lawn', 'new_lawn', 'sod', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
+  (1, 'new_lawn', 'new_lawn', 'sod', 6, 'Apply starter fertilizer', '1 day', '28 days'),
+  (1, 'new_lawn', 'new_lawn', 'sod', 7, 'Lay Kentucky Bluegrass sod', '1 day', NULL),
+  (1, 'new_lawn', 'new_lawn', 'sod', 8, 'Roll sod for good soil contact', '1 day', NULL),
+  (1, 'new_lawn', 'new_lawn', 'sod', 9, 'Water deeply immediately after laying sod', '1 day', NULL),
+  (1, 'new_lawn', 'new_lawn', 'sod', 10, 'Keep sod consistently moist for 2-3 weeks', '21 days', NULL),
+  (1, 'new_lawn', 'new_lawn', 'sod', 11, 'Reduce watering frequency but increase depth', '14 days', NULL),
+  (1, 'new_lawn', 'new_lawn', 'sod', 12, 'Mow when grass reaches 2-3 inches height', '14 days', NULL),
+  (1, 'new_lawn', 'new_lawn', 'sod', 13, 'Apply nitrogen-rich fertilizer 3-4 weeks after installation', '1 day', '28 days'),
+  (1, 'new_lawn', 'new_lawn', 'sod', 14, 'Apply pre-emergent herbicide if needed', '1 day', '28 days'),
+  (1, 'new_lawn', 'new_lawn', 'sod', 15, 'Apply post-emergent herbicide if needed', '1 day', '28 days');
 
 -- Lawn Improvement Plan
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (1, 'lawn_improvement', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (1, 'lawn_improvement', 2, 'Adjust soil pH to 6.2-6.8 if necessary', '14 days', NULL),
-  (1, 'lawn_improvement', 3, 'Dethatch if thatch is more than 1/2 inch thick', '1 day', NULL),
-  (1, 'lawn_improvement', 4, 'Aerate the lawn in early fall', '1 day', NULL),
-  (1, 'lawn_improvement', 5, 'Rake out dead grass and debris', '1 day', NULL),
-  (1, 'lawn_improvement', 6, 'Overseed thin areas with Kentucky Bluegrass seeds', '1 day', NULL),
-  (1, 'lawn_improvement', 7, 'Apply balanced fertilizer', '1 day', '28 days'),
-  (1, 'lawn_improvement', 8, 'Mow the lawn at 2.5-3.5 inches height', '1 day', '7 days'),
-  (1, 'lawn_improvement', 9, 'Water deeply (about 1 inch) if no rainfall', '1 day', '7 days'),
-  (1, 'lawn_improvement', 10, 'Monitor for pests and diseases', NULL, '14 days'),
-  (1, 'lawn_improvement', 11, 'Apply pre-emergent herbicide in early spring', '1 day', '28 days'),
-  (1, 'lawn_improvement', 12, 'Apply post-emergent herbicide if needed', '1 day', '28 days');
+  (1, 'lawn_improvement', null, 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (1, 'lawn_improvement', null, 2, 'Adjust soil pH to 6.2-6.8 if necessary', '14 days', NULL),
+  (1, 'lawn_improvement', null, 3, 'Dethatch if thatch is more than 1/2 inch thick', '1 day', NULL),
+  (1, 'lawn_improvement', null, 4, 'Aerate the lawn in early fall', '1 day', NULL),
+  (1, 'lawn_improvement', null, 5, 'Rake out dead grass and debris', '1 day', NULL),
+  (1, 'lawn_improvement', null, 6, 'Overseed thin areas with Kentucky Bluegrass seeds', '1 day', NULL),
+  (1, 'lawn_improvement', null, 7, 'Apply balanced fertilizer', '1 day', '28 days'),
+  (1, 'lawn_improvement', null, 8, 'Mow the lawn at 2.5-3.5 inches height', '1 day', '7 days'),
+  (1, 'lawn_improvement', null, 9, 'Water deeply (about 1 inch) if no rainfall', '1 day', '7 days'),
+  (1, 'lawn_improvement', null, 10, 'Monitor for pests and diseases', NULL, '14 days'),
+  (1, 'lawn_improvement', null, 11, 'Apply pre-emergent herbicide in early spring', '1 day', '28 days'),
+  (1, 'lawn_improvement', null, 12, 'Apply post-emergent herbicide if needed', '1 day', '28 days');
 
 -- Assume Tall Fescue has grassSpeciesId = 2
 
 -- New Lawn Plan (Seed)
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (2, 'new_lawn', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (2, 'new_lawn', 2, 'Adjust soil pH to 5.8-6.5 if necessary', '14 days', NULL),
-  (2, 'new_lawn', 3, 'Remove debris and old grass', '3 days', NULL),
-  (2, 'new_lawn', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
-  (2, 'new_lawn', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
-  (2, 'new_lawn', 6, 'Apply starter fertilizer', '1 day', '42 days'),
-  (2, 'new_lawn', 7, 'Sow Tall Fescue seeds at 6-8 lbs per 1000 sq ft', '1 day', NULL),
-  (2, 'new_lawn', 8, 'Lightly rake seeds into soil', '1 day', NULL),
-  (2, 'new_lawn', 9, 'Roll the area to ensure good seed-to-soil contact', '1 day', NULL),
-  (2, 'new_lawn', 10, 'Water deeply to moisten soil to 6-8 inches', '1 day', NULL),
-  (2, 'new_lawn', 11, 'Keep soil moist until germination (7-14 days)', '14 days', NULL),
-  (2, 'new_lawn', 12, 'Reduce watering frequency but increase depth as grass establishes', '21 days', NULL),
-  (2, 'new_lawn', 13, 'Mow when grass reaches 3-4 inches height', '21 days', NULL),
-  (2, 'new_lawn', 14, 'Apply balanced fertilizer 6-8 weeks after germination', '1 day', '42 days'),
-  (2, 'new_lawn', 15, 'Apply pre-emergent herbicide if needed', '1 day', '42 days');
+  (2, 'new_lawn', 'seed', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (2, 'new_lawn', 'seed', 2, 'Adjust soil pH to 5.8-6.5 if necessary', '14 days', NULL),
+  (2, 'new_lawn', 'seed', 3, 'Remove debris and old grass', '3 days', NULL),
+  (2, 'new_lawn', 'seed', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
+  (2, 'new_lawn', 'seed', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
+  (2, 'new_lawn', 'seed', 6, 'Apply starter fertilizer', '1 day', '42 days'),
+  (2, 'new_lawn', 'seed', 7, 'Sow Tall Fescue seeds at 6-8 lbs per 1000 sq ft', '1 day', NULL),
+  (2, 'new_lawn', 'seed', 8, 'Lightly rake seeds into soil', '1 day', NULL),
+  (2, 'new_lawn', 'seed', 9, 'Roll the area to ensure good seed-to-soil contact', '1 day', NULL),
+  (2, 'new_lawn', 'seed', 10, 'Water deeply to moisten soil to 6-8 inches', '1 day', NULL),
+  (2, 'new_lawn', 'seed', 11, 'Keep soil moist until germination (7-14 days)', '14 days', NULL),
+  (2, 'new_lawn', 'seed', 12, 'Reduce watering frequency but increase depth as grass establishes', '21 days', NULL),
+  (2, 'new_lawn', 'seed', 13, 'Mow when grass reaches 3-4 inches height', '21 days', NULL),
+  (2, 'new_lawn', 'seed', 14, 'Apply balanced fertilizer 6-8 weeks after germination', '1 day', '42 days'),
+  (2, 'new_lawn', 'seed', 15, 'Apply pre-emergent herbicide if needed', '1 day', '42 days');
 
 -- New Lawn Plan (Sod)
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (2, 'new_lawn', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (2, 'new_lawn', 2, 'Adjust soil pH to 5.8-6.5 if necessary', '14 days', NULL),
-  (2, 'new_lawn', 3, 'Remove debris and old grass', '3 days', NULL),
-  (2, 'new_lawn', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
-  (2, 'new_lawn', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
-  (2, 'new_lawn', 6, 'Apply starter fertilizer', '1 day', '42 days'),
-  (2, 'new_lawn', 7, 'Lay Tall Fescue sod', '1 day', NULL),
-  (2, 'new_lawn', 8, 'Roll sod for good soil contact', '1 day', NULL),
-  (2, 'new_lawn', 9, 'Water deeply immediately after laying sod', '1 day', NULL),
-  (2, 'new_lawn', 10, 'Keep sod consistently moist for 2 weeks', '14 days', NULL),
-  (2, 'new_lawn', 11, 'Reduce watering frequency but increase depth', '14 days', NULL),
-  (2, 'new_lawn', 12, 'Mow when grass reaches 3-4 inches height', '14 days', NULL),
-  (2, 'new_lawn', 13, 'Apply balanced fertilizer 3-4 weeks after installation', '1 day', '42 days'),
-  (2, 'new_lawn', 14, 'Apply pre-emergent herbicide if needed', '1 day', '42 days');
+  (2, 'new_lawn', 'sod', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (2, 'new_lawn', 'sod', 2, 'Adjust soil pH to 5.8-6.5 if necessary', '14 days', NULL),
+  (2, 'new_lawn', 'sod', 3, 'Remove debris and old grass', '3 days', NULL),
+  (2, 'new_lawn', 'sod', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
+  (2, 'new_lawn', 'sod', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
+  (2, 'new_lawn', 'sod', 6, 'Apply starter fertilizer', '1 day', '42 days'),
+  (2, 'new_lawn', 'sod', 7, 'Lay Tall Fescue sod', '1 day', NULL),
+  (2, 'new_lawn', 'sod', 8, 'Roll sod for good soil contact', '1 day', NULL),
+  (2, 'new_lawn', 'sod', 9, 'Water deeply immediately after laying sod', '1 day', NULL),
+  (2, 'new_lawn', 'sod', 10, 'Keep sod consistently moist for 2 weeks', '14 days', NULL),
+  (2, 'new_lawn', 'sod', 11, 'Reduce watering frequency but increase depth', '14 days', NULL),
+  (2, 'new_lawn', 'sod', 12, 'Mow when grass reaches 3-4 inches height', '14 days', NULL),
+  (2, 'new_lawn', 'sod', 13, 'Apply balanced fertilizer 3-4 weeks after installation', '1 day', '42 days'),
+  (2, 'new_lawn', 'sod', 14, 'Apply pre-emergent herbicide if needed', '1 day', '42 days');
 
 -- Lawn Improvement Plan
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (2, 'lawn_improvement', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (2, 'lawn_improvement', 2, 'Adjust soil pH to 5.8-6.5 if necessary', '14 days', NULL),
-  (2, 'lawn_improvement', 3, 'Dethatch if thatch is more than 1/2 inch thick', '1 day', NULL),
-  (2, 'lawn_improvement', 4, 'Aerate the lawn in early fall or spring', '1 day', NULL),
-  (2, 'lawn_improvement', 5, 'Rake out dead grass and debris', '1 day', NULL),
-  (2, 'lawn_improvement', 6, 'Overseed thin areas with Tall Fescue seeds', '1 day', NULL),
-  (2, 'lawn_improvement', 7, 'Apply balanced fertilizer', '1 day', '42 days'),
-  (2, 'lawn_improvement', 8, 'Mow the lawn at 2.5-3.5 inches height', '1 day', '7 days'),
-  (2, 'lawn_improvement', 9, 'Water deeply (about 1 inch) if no rainfall', '1 day', '7 days'),
-  (2, 'lawn_improvement', 10, 'Monitor for pests and diseases', NULL, '14 days'),
-  (2, 'lawn_improvement', 11, 'Apply pre-emergent herbicide in early spring', '1 day', '42 days'),
-  (2, 'lawn_improvement', 12, 'Apply post-emergent herbicide if needed', '1 day', '42 days');
+  (2, 'lawn_improvement', null, 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (2, 'lawn_improvement', null, 2, 'Adjust soil pH to 5.8-6.5 if necessary', '14 days', NULL),
+  (2, 'lawn_improvement', null, 3, 'Dethatch if thatch is more than 1/2 inch thick', '1 day', NULL),
+  (2, 'lawn_improvement', null, 4, 'Aerate the lawn in early fall or spring', '1 day', NULL),
+  (2, 'lawn_improvement', null, 5, 'Rake out dead grass and debris', '1 day', NULL),
+  (2, 'lawn_improvement', null, 6, 'Overseed thin areas with Tall Fescue seeds', '1 day', NULL),
+  (2, 'lawn_improvement', null, 7, 'Apply balanced fertilizer', '1 day', '42 days'),
+  (2, 'lawn_improvement', null, 8, 'Mow the lawn at 2.5-3.5 inches height', '1 day', '7 days'),
+  (2, 'lawn_improvement', null, 9, 'Water deeply (about 1 inch) if no rainfall', '1 day', '7 days'),
+  (2, 'lawn_improvement', null, 10, 'Monitor for pests and diseases', NULL, '14 days'),
+  (2, 'lawn_improvement', null, 11, 'Apply pre-emergent herbicide in early spring', '1 day', '42 days'),
+  (2, 'lawn_improvement', null, 12, 'Apply post-emergent herbicide if needed', '1 day', '42 days');
 
 -- Assume Perennial Ryegrass has grassSpeciesId = 3
 
 -- New Lawn Plan (Seed)
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (3, 'new_lawn', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (3, 'new_lawn', 2, 'Adjust soil pH to 6.0-7.0 if necessary', '14 days', NULL),
-  (3, 'new_lawn', 3, 'Remove debris and old grass', '3 days', NULL),
-  (3, 'new_lawn', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
-  (3, 'new_lawn', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
-  (3, 'new_lawn', 6, 'Apply starter fertilizer high in phosphorus', '1 day', '28 days'),
-  (3, 'new_lawn', 7, 'Sow Perennial Ryegrass seeds at 6-8 lbs per 1000 sq ft', '1 day', NULL),
-  (3, 'new_lawn', 8, 'Lightly rake seeds into soil', '1 day', NULL),
-  (3, 'new_lawn', 9, 'Roll the area to ensure good seed-to-soil contact', '1 day', NULL),
-  (3, 'new_lawn', 10, 'Water lightly and frequently to keep soil moist', '14 days', NULL),
-  (3, 'new_lawn', 11, 'Reduce watering frequency but increase depth as grass establishes', '14 days', NULL),
-  (3, 'new_lawn', 12, 'Mow when grass reaches 2-3 inches height', '14 days', NULL),
-  (3, 'new_lawn', 13, 'Apply balanced fertilizer 4-6 weeks after germination', '1 day', '28 days'),
-  (3, 'new_lawn', 14, 'Apply pre-emergent herbicide if needed', '1 day', '28 days'),
-  (3, 'new_lawn', 15, 'Apply post-emergent herbicide if needed', '1 day', '28 days');
+  (3, 'new_lawn', 'seed', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (3, 'new_lawn', 'seed', 2, 'Adjust soil pH to 6.0-7.0 if necessary', '14 days', NULL),
+  (3, 'new_lawn', 'seed', 3, 'Remove debris and old grass', '3 days', NULL),
+  (3, 'new_lawn', 'seed', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
+  (3, 'new_lawn', 'seed', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
+  (3, 'new_lawn', 'seed', 6, 'Apply starter fertilizer high in phosphorus', '1 day', '28 days'),
+  (3, 'new_lawn', 'seed', 7, 'Sow Perennial Ryegrass seeds at 6-8 lbs per 1000 sq ft', '1 day', NULL),
+  (3, 'new_lawn', 'seed', 8, 'Lightly rake seeds into soil', '1 day', NULL),
+  (3, 'new_lawn', 'seed', 9, 'Roll the area to ensure good seed-to-soil contact', '1 day', NULL),
+  (3, 'new_lawn', 'seed', 10, 'Water lightly and frequently to keep soil moist', '14 days', NULL),
+  (3, 'new_lawn', 'seed', 11, 'Reduce watering frequency but increase depth as grass establishes', '14 days', NULL),
+  (3, 'new_lawn', 'seed', 12, 'Mow when grass reaches 2-3 inches height', '14 days', NULL),
+  (3, 'new_lawn', 'seed', 13, 'Apply balanced fertilizer 4-6 weeks after germination', '1 day', '28 days'),
+  (3, 'new_lawn', 'seed', 14, 'Apply pre-emergent herbicide if needed', '1 day', '28 days'),
+  (3, 'new_lawn', 'seed', 15, 'Apply post-emergent herbicide if needed', '1 day', '28 days');
 
 -- Lawn Improvement Plan
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (3, 'lawn_improvement', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (3, 'lawn_improvement', 2, 'Adjust soil pH to 6.0-7.0 if necessary', '14 days', NULL),
-  (3, 'lawn_improvement', 3, 'Dethatch if thatch is more than 1/2 inch thick', '1 day', NULL),
-  (3, 'lawn_improvement', 4, 'Aerate the lawn in early fall or spring', '1 day', NULL),
-  (3, 'lawn_improvement', 5, 'Rake out dead grass and debris', '1 day', NULL),
-  (3, 'lawn_improvement', 6, 'Overseed thin areas with Perennial Ryegrass seeds', '1 day', NULL),
-  (3, 'lawn_improvement', 7, 'Apply balanced fertilizer', '1 day', '28 days'),
-  (3, 'lawn_improvement', 8, 'Mow the lawn at 1.5-2.5 inches height', '1 day', '7 days'),
-  (3, 'lawn_improvement', 9, 'Water deeply (about 1 inch) if no rainfall', '1 day', '7 days'),
-  (3, 'lawn_improvement', 10, 'Monitor for pests and diseases', NULL, '14 days'),
-  (3, 'lawn_improvement', 11, 'Apply pre-emergent herbicide in early spring', '1 day', '28 days'),
-  (3, 'lawn_improvement', 12, 'Apply post-emergent herbicide if needed', '1 day', '28 days');
+  (3, 'lawn_improvement', null, 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (3, 'lawn_improvement', null, 2, 'Adjust soil pH to 6.0-7.0 if necessary', '14 days', NULL),
+  (3, 'lawn_improvement', null, 3, 'Dethatch if thatch is more than 1/2 inch thick', '1 day', NULL),
+  (3, 'lawn_improvement', null, 4, 'Aerate the lawn in early fall or spring', '1 day', NULL),
+  (3, 'lawn_improvement', null, 5, 'Rake out dead grass and debris', '1 day', NULL),
+  (3, 'lawn_improvement', null, 6, 'Overseed thin areas with Perennial Ryegrass seeds', '1 day', NULL),
+  (3, 'lawn_improvement', null, 7, 'Apply balanced fertilizer', '1 day', '28 days'),
+  (3, 'lawn_improvement', null, 8, 'Mow the lawn at 1.5-2.5 inches height', '1 day', '7 days'),
+  (3, 'lawn_improvement', null, 9, 'Water deeply (about 1 inch) if no rainfall', '1 day', '7 days'),
+  (3, 'lawn_improvement', null, 10, 'Monitor for pests and diseases', NULL, '14 days'),
+  (3, 'lawn_improvement', null, 11, 'Apply pre-emergent herbicide in early spring', '1 day', '28 days'),
+  (3, 'lawn_improvement', null, 12, 'Apply post-emergent herbicide if needed', '1 day', '28 days');
 
 -- Assume Bermuda Grass has grassSpeciesId = 4
 
 -- New Lawn Plan (Seed)
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (4, 'new_lawn', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (4, 'new_lawn', 2, 'Adjust soil pH to 6.0-7.0 if necessary', '14 days', NULL),
-  (4, 'new_lawn', 3, 'Remove debris and old grass', '3 days', NULL),
-  (4, 'new_lawn', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
-  (4, 'new_lawn', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
-  (4, 'new_lawn', 6, 'Apply starter fertilizer high in phosphorus', '1 day', '28 days'),
-  (4, 'new_lawn', 7, 'Sow Bermuda Grass seeds at 1-2 lbs per 1000 sq ft', '1 day', NULL),
-  (4, 'new_lawn', 8, 'Lightly rake seeds into soil', '1 day', NULL),
-  (4, 'new_lawn', 9, 'Roll the area to ensure good seed-to-soil contact', '1 day', NULL),
-  (4, 'new_lawn', 10, 'Water lightly and frequently to keep soil moist', '14 days', NULL),
-  (4, 'new_lawn', 11, 'Reduce watering frequency but increase depth as grass establishes', '21 days', NULL),
-  (4, 'new_lawn', 12, 'Mow when grass reaches 1.5 inches height', '21 days', NULL),
-  (4, 'new_lawn', 13, 'Apply nitrogen-rich fertilizer 4-6 weeks after germination', '1 day', '28 days'),
-  (4, 'new_lawn', 14, 'Apply pre-emergent herbicide if needed', '1 day', '28 days'),
-  (4, 'new_lawn', 15, 'Apply post-emergent herbicide if needed', '1 day', '28 days');
+  (4, 'new_lawn', 'seed', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (4, 'new_lawn', 'seed', 2, 'Adjust soil pH to 6.0-7.0 if necessary', '14 days', NULL),
+  (4, 'new_lawn', 'seed', 3, 'Remove debris and old grass', '3 days', NULL),
+  (4, 'new_lawn', 'seed', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
+  (4, 'new_lawn', 'seed', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
+  (4, 'new_lawn', 'seed', 6, 'Apply starter fertilizer high in phosphorus', '1 day', '28 days'),
+  (4, 'new_lawn', 'seed', 7, 'Sow Bermuda Grass seeds at 1-2 lbs per 1000 sq ft', '1 day', NULL),
+  (4, 'new_lawn', 'seed', 8, 'Lightly rake seeds into soil', '1 day', NULL),
+  (4, 'new_lawn', 'seed', 9, 'Roll the area to ensure good seed-to-soil contact', '1 day', NULL),
+  (4, 'new_lawn', 'seed', 10, 'Water lightly and frequently to keep soil moist', '14 days', NULL),
+  (4, 'new_lawn', 'seed', 11, 'Reduce watering frequency but increase depth as grass establishes', '21 days', NULL),
+  (4, 'new_lawn', 'seed', 12, 'Mow when grass reaches 1.5 inches height', '21 days', NULL),
+  (4, 'new_lawn', 'seed', 13, 'Apply nitrogen-rich fertilizer 4-6 weeks after germination', '1 day', '28 days'),
+  (4, 'new_lawn', 'seed', 14, 'Apply pre-emergent herbicide if needed', '1 day', '28 days'),
+  (4, 'new_lawn', 'seed', 15, 'Apply post-emergent herbicide if needed', '1 day', '28 days');
 
 -- New Lawn Plan (Sod)
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (4, 'new_lawn', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (4, 'new_lawn', 2, 'Adjust soil pH to 6.0-7.0 if necessary', '14 days', NULL),
-  (4, 'new_lawn', 3, 'Remove debris and old grass', '3 days', NULL),
-  (4, 'new_lawn', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
-  (4, 'new_lawn', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
-  (4, 'new_lawn', 6, 'Apply starter fertilizer', '1 day', '28 days'),
-  (4, 'new_lawn', 7, 'Lay Bermuda Grass sod', '1 day', NULL),
-  (4, 'new_lawn', 8, 'Roll sod for good soil contact', '1 day', NULL),
-  (4, 'new_lawn', 9, 'Water deeply immediately after laying sod', '1 day', NULL),
-  (4, 'new_lawn', 10, 'Keep sod consistently moist for 2 weeks', '14 days', NULL),
-  (4, 'new_lawn', 11, 'Reduce watering frequency but increase depth', '14 days', NULL),
-  (4, 'new_lawn', 12, 'Mow when grass reaches 1.5 inches height', '14 days', NULL),
-  (4, 'new_lawn', 13, 'Apply nitrogen-rich fertilizer 3-4 weeks after installation', '1 day', '28 days'),
-  (4, 'new_lawn', 14, 'Apply pre-emergent herbicide if needed', '1 day', '28 days'),
-  (4, 'new_lawn', 15, 'Apply post-emergent herbicide if needed', '1 day', '28 days');
+  (4, 'new_lawn', 'sod', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (4, 'new_lawn', 'sod', 2, 'Adjust soil pH to 6.0-7.0 if necessary', '14 days', NULL),
+  (4, 'new_lawn', 'sod', 3, 'Remove debris and old grass', '3 days', NULL),
+  (4, 'new_lawn', 'sod', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
+  (4, 'new_lawn', 'sod', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
+  (4, 'new_lawn', 'sod', 6, 'Apply starter fertilizer', '1 day', '28 days'),
+  (4, 'new_lawn', 'sod', 7, 'Lay Bermuda Grass sod', '1 day', NULL),
+  (4, 'new_lawn', 'sod', 8, 'Roll sod for good soil contact', '1 day', NULL),
+  (4, 'new_lawn', 'sod', 9, 'Water deeply immediately after laying sod', '1 day', NULL),
+  (4, 'new_lawn', 'sod', 10, 'Keep sod consistently moist for 2 weeks', '14 days', NULL),
+  (4, 'new_lawn', 'sod', 11, 'Reduce watering frequency but increase depth', '14 days', NULL),
+  (4, 'new_lawn', 'sod', 12, 'Mow when grass reaches 1.5 inches height', '14 days', NULL),
+  (4, 'new_lawn', 'sod', 13, 'Apply nitrogen-rich fertilizer 3-4 weeks after installation', '1 day', '28 days'),
+  (4, 'new_lawn', 'sod', 14, 'Apply pre-emergent herbicide if needed', '1 day', '28 days'),
+  (4, 'new_lawn', 'sod', 15, 'Apply post-emergent herbicide if needed', '1 day', '28 days');
 
 -- Lawn Improvement Plan
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (4, 'lawn_improvement', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (4, 'lawn_improvement', 2, 'Adjust soil pH to 6.0-7.0 if necessary', '14 days', NULL),
-  (4, 'lawn_improvement', 3, 'Dethatch if thatch is more than 1/2 inch thick', '1 day', NULL),
-  (4, 'lawn_improvement', 4, 'Aerate the lawn in late spring or early summer', '1 day', NULL),
-  (4, 'lawn_improvement', 5, 'Rake out dead grass and debris', '1 day', NULL),
-  (4, 'lawn_improvement', 6, 'Overseed thin areas with Bermuda Grass seeds', '1 day', NULL),
-  (4, 'lawn_improvement', 7, 'Apply nitrogen-rich fertilizer', '1 day', '28 days'),
-  (4, 'lawn_improvement', 8, 'Mow the lawn at 1-2 inches height', '1 day', '5 days'),
-  (4, 'lawn_improvement', 9, 'Water deeply (about 1 inch) if no rainfall', '1 day', '7 days'),
-  (4, 'lawn_improvement', 10, 'Monitor for pests and diseases', NULL, '14 days'),
-  (4, 'lawn_improvement', 11, 'Apply pre-emergent herbicide in early spring and fall', '1 day', '28 days'),
-  (4, 'lawn_improvement', 12, 'Apply post-emergent herbicide if needed', '1 day', '28 days');
+  (4, 'lawn_improvement', null, 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (4, 'lawn_improvement', null, 2, 'Adjust soil pH to 6.0-7.0 if necessary', '14 days', NULL),
+  (4, 'lawn_improvement', null, 3, 'Dethatch if thatch is more than 1/2 inch thick', '1 day', NULL),
+  (4, 'lawn_improvement', null, 4, 'Aerate the lawn in late spring or early summer', '1 day', NULL),
+  (4, 'lawn_improvement', null, 5, 'Rake out dead grass and debris', '1 day', NULL),
+  (4, 'lawn_improvement', null, 6, 'Overseed thin areas with Bermuda Grass seeds', '1 day', NULL),
+  (4, 'lawn_improvement', null, 7, 'Apply nitrogen-rich fertilizer', '1 day', '28 days'),
+  (4, 'lawn_improvement', null, 8, 'Mow the lawn at 1-2 inches height', '1 day', '5 days'),
+  (4, 'lawn_improvement', null, 9, 'Water deeply (about 1 inch) if no rainfall', '1 day', '7 days'),
+  (4, 'lawn_improvement', null, 10, 'Monitor for pests and diseases', NULL, '14 days'),
+  (4, 'lawn_improvement', null, 11, 'Apply pre-emergent herbicide in early spring and fall', '1 day', '28 days'),
+  (4, 'lawn_improvement', null, 12, 'Apply post-emergent herbicide if needed', '1 day', '28 days');
 
 -- Assume Zoysia Grass has grassSpeciesId = 5
 
 -- New Lawn Plan (Seed)
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (5, 'new_lawn', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (5, 'new_lawn', 2, 'Adjust soil pH to 6.0-7.0 if necessary', '14 days', NULL),
-  (5, 'new_lawn', 3, 'Remove debris and old grass', '3 days', NULL),
-  (5, 'new_lawn', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
-  (5, 'new_lawn', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
-  (5, 'new_lawn', 6, 'Apply starter fertilizer', '1 day', '42 days'),
-  (5, 'new_lawn', 7, 'Sow Zoysia Grass seeds at 1-2 lbs per 1000 sq ft', '1 day', NULL),
-  (5, 'new_lawn', 8, 'Lightly rake seeds into soil', '1 day', NULL),
-  (5, 'new_lawn', 9, 'Roll the area to ensure good seed-to-soil contact', '1 day', NULL),
-  (5, 'new_lawn', 10, 'Water lightly and frequently to keep soil moist', '21 days', NULL),
-  (5, 'new_lawn', 11, 'Reduce watering frequency but increase depth as grass establishes', '30 days', NULL),
-  (5, 'new_lawn', 12, 'Mow when grass reaches 2 inches height', '30 days', NULL),
-  (5, 'new_lawn', 13, 'Apply balanced fertilizer 6-8 weeks after germination', '1 day', '42 days'),
-  (5, 'new_lawn', 14, 'Apply pre-emergent herbicide if needed', '1 day', '42 days'),
-  (5, 'new_lawn', 15, 'Apply post-emergent herbicide if needed', '1 day', '42 days');
+  (5, 'new_lawn', 'seed', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (5, 'new_lawn', 'seed', 2, 'Adjust soil pH to 6.0-7.0 if necessary', '14 days', NULL),
+  (5, 'new_lawn', 'seed', 3, 'Remove debris and old grass', '3 days', NULL),
+  (5, 'new_lawn', 'seed', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
+  (5, 'new_lawn', 'seed', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
+  (5, 'new_lawn', 'seed', 6, 'Apply starter fertilizer', '1 day', '42 days'),
+  (5, 'new_lawn', 'seed', 7, 'Sow Zoysia Grass seeds at 1-2 lbs per 1000 sq ft', '1 day', NULL),
+  (5, 'new_lawn', 'seed', 8, 'Lightly rake seeds into soil', '1 day', NULL),
+  (5, 'new_lawn', 'seed', 9, 'Roll the area to ensure good seed-to-soil contact', '1 day', NULL),
+  (5, 'new_lawn', 'seed', 10, 'Water lightly and frequently to keep soil moist', '21 days', NULL),
+  (5, 'new_lawn', 'seed', 11, 'Reduce watering frequency but increase depth as grass establishes', '30 days', NULL),
+  (5, 'new_lawn', 'seed', 12, 'Mow when grass reaches 2 inches height', '30 days', NULL),
+  (5, 'new_lawn', 'seed', 13, 'Apply balanced fertilizer 6-8 weeks after germination', '1 day', '42 days'),
+  (5, 'new_lawn', 'seed', 14, 'Apply pre-emergent herbicide if needed', '1 day', '42 days'),
+  (5, 'new_lawn', 'seed', 15, 'Apply post-emergent herbicide if needed', '1 day', '42 days');
 
 -- New Lawn Plan (Sod or Plugs)
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (5, 'new_lawn', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (5, 'new_lawn', 2, 'Adjust soil pH to 6.0-7.0 if necessary', '14 days', NULL),
-  (5, 'new_lawn', 3, 'Remove debris and old grass', '3 days', NULL),
-  (5, 'new_lawn', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
-  (5, 'new_lawn', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
-  (5, 'new_lawn', 6, 'Apply starter fertilizer', '1 day', '42 days'),
-  (5, 'new_lawn', 7, 'Lay Zoysia Grass sod or plant plugs 6-12 inches apart', '1 day', NULL),
-  (5, 'new_lawn', 8, 'Roll sod or tamp soil around plugs for good contact', '1 day', NULL),
-  (5, 'new_lawn', 9, 'Water deeply immediately after installation', '1 day', NULL),
-  (5, 'new_lawn', 10, 'Keep soil consistently moist for 2-3 weeks', '21 days', NULL),
-  (5, 'new_lawn', 11, 'Reduce watering frequency but increase depth', '14 days', NULL),
-  (5, 'new_lawn', 12, 'Mow when grass reaches 2 inches height', '14 days', NULL),
-  (5, 'new_lawn', 13, 'Apply balanced fertilizer 4-6 weeks after installation', '1 day', '42 days'),
-  (5, 'new_lawn', 14, 'Apply pre-emergent herbicide if needed', '1 day', '42 days'),
-  (5, 'new_lawn', 15, 'Apply post-emergent herbicide if needed', '1 day', '42 days');
+  (5, 'new_lawn', 'sod_plugs', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (5, 'new_lawn', 'sod_plugs', 2, 'Adjust soil pH to 6.0-7.0 if necessary', '14 days', NULL),
+  (5, 'new_lawn', 'sod_plugs', 3, 'Remove debris and old grass', '3 days', NULL),
+  (5, 'new_lawn', 'sod_plugs', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
+  (5, 'new_lawn', 'sod_plugs', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
+  (5, 'new_lawn', 'sod_plugs', 6, 'Apply starter fertilizer', '1 day', '42 days'),
+  (5, 'new_lawn', 'sod_plugs', 7, 'Lay Zoysia Grass sod or plant plugs 6-12 inches apart', '1 day', NULL),
+  (5, 'new_lawn', 'sod_plugs', 8, 'Roll sod or tamp soil around plugs for good contact', '1 day', NULL),
+  (5, 'new_lawn', 'sod_plugs', 9, 'Water deeply immediately after installation', '1 day', NULL),
+  (5, 'new_lawn', 'sod_plugs', 10, 'Keep soil consistently moist for 2-3 weeks', '21 days', NULL),
+  (5, 'new_lawn', 'sod_plugs', 11, 'Reduce watering frequency but increase depth', '14 days', NULL),
+  (5, 'new_lawn', 'sod_plugs', 12, 'Mow when grass reaches 2 inches height', '14 days', NULL),
+  (5, 'new_lawn', 'sod_plugs', 13, 'Apply balanced fertilizer 4-6 weeks after installation', '1 day', '42 days'),
+  (5, 'new_lawn', 'sod_plugs', 14, 'Apply pre-emergent herbicide if needed', '1 day', '42 days'),
+  (5, 'new_lawn', 'sod_plugs', 15, 'Apply post-emergent herbicide if needed', '1 day', '42 days');
 
 -- Lawn Improvement Plan
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (5, 'lawn_improvement', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (5, 'lawn_improvement', 2, 'Adjust soil pH to 6.0-7.0 if necessary', '14 days', NULL),
-  (5, 'lawn_improvement', 3, 'Dethatch if thatch is more than 1/2 inch thick', '1 day', NULL),
-  (5, 'lawn_improvement', 4, 'Aerate the lawn in late spring or early summer', '1 day', NULL),
-  (5, 'lawn_improvement', 5, 'Rake out dead grass and debris', '1 day', NULL),
-  (5, 'lawn_improvement', 6, 'Overseed thin areas with Zoysia Grass seeds or plant plugs', '1 day', NULL),
-  (5, 'lawn_improvement', 7, 'Apply balanced fertilizer', '1 day', '42 days'),
-  (5, 'lawn_improvement', 8, 'Mow the lawn at 1-2 inches height', '1 day', '7 days'),
-  (5, 'lawn_improvement', 9, 'Water deeply (about 1 inch) if no rainfall', '1 day', '7 days'),
-  (5, 'lawn_improvement', 10, 'Monitor for pests and diseases', NULL, '14 days'),
-  (5, 'lawn_improvement', 11, 'Apply pre-emergent herbicide in early spring', '1 day', '42 days'),
-  (5, 'lawn_improvement', 12, 'Apply post-emergent herbicide if needed', '1 day', '42 days');
+  (5, 'lawn_improvement', null, 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (5, 'lawn_improvement', null, 2, 'Adjust soil pH to 6.0-7.0 if necessary', '14 days', NULL),
+  (5, 'lawn_improvement', null, 3, 'Dethatch if thatch is more than 1/2 inch thick', '1 day', NULL),
+  (5, 'lawn_improvement', null, 4, 'Aerate the lawn in late spring or early summer', '1 day', NULL),
+  (5, 'lawn_improvement', null, 5, 'Rake out dead grass and debris', '1 day', NULL),
+  (5, 'lawn_improvement', null, 6, 'Overseed thin areas with Zoysia Grass seeds or plant plugs', '1 day', NULL),
+  (5, 'lawn_improvement', null, 7, 'Apply balanced fertilizer', '1 day', '42 days'),
+  (5, 'lawn_improvement', null, 8, 'Mow the lawn at 1-2 inches height', '1 day', '7 days'),
+  (5, 'lawn_improvement', null, 9, 'Water deeply (about 1 inch) if no rainfall', '1 day', '7 days'),
+  (5, 'lawn_improvement', null, 10, 'Monitor for pests and diseases', NULL, '14 days'),
+  (5, 'lawn_improvement', null, 11, 'Apply pre-emergent herbicide in early spring', '1 day', '42 days'),
+  (5, 'lawn_improvement', null, 12, 'Apply post-emergent herbicide if needed', '1 day', '42 days');
 
 -- Assume St. Augustine Grass has grassSpeciesId = 6
 
 -- New Lawn Plan (Sod)
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (6, 'new_lawn', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (6, 'new_lawn', 2, 'Adjust soil pH to 6.0-7.5 if necessary', '14 days', NULL),
-  (6, 'new_lawn', 3, 'Remove debris and old grass', '3 days', NULL),
-  (6, 'new_lawn', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
-  (6, 'new_lawn', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
-  (6, 'new_lawn', 6, 'Apply starter fertilizer', '1 day', '30 days'),
-  (6, 'new_lawn', 7, 'Lay St. Augustine sod', '1 day', NULL),
-  (6, 'new_lawn', 8, 'Roll sod for good soil contact', '1 day', NULL),
-  (6, 'new_lawn', 9, 'Water deeply immediately after laying sod', '1 day', NULL),
-  (6, 'new_lawn', 10, 'Keep sod consistently moist for 2 weeks', '14 days', NULL),
-  (6, 'new_lawn', 11, 'Reduce watering frequency but increase depth', '14 days', NULL),
-  (6, 'new_lawn', 12, 'Mow when grass reaches 3-4 inches height', '14 days', NULL),
-  (6, 'new_lawn', 13, 'Apply balanced fertilizer 3-4 weeks after installation', '1 day', '30 days'),
-  (6, 'new_lawn', 14, 'Apply pre-emergent herbicide if needed', '1 day', '30 days'),
-  (6, 'new_lawn', 15, 'Apply post-emergent herbicide if needed', '1 day', '30 days');
+  (6, 'new_lawn', 'sod', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (6, 'new_lawn', 'sod', 2, 'Adjust soil pH to 6.0-7.5 if necessary', '14 days', NULL),
+  (6, 'new_lawn', 'sod', 3, 'Remove debris and old grass', '3 days', NULL),
+  (6, 'new_lawn', 'sod', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
+  (6, 'new_lawn', 'sod', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
+  (6, 'new_lawn', 'sod', 6, 'Apply starter fertilizer', '1 day', '30 days'),
+  (6, 'new_lawn', 'sod', 7, 'Lay St. Augustine sod', '1 day', NULL),
+  (6, 'new_lawn', 'sod', 8, 'Roll sod for good soil contact', '1 day', NULL),
+  (6, 'new_lawn', 'sod', 9, 'Water deeply immediately after laying sod', '1 day', NULL),
+  (6, 'new_lawn', 'sod', 10, 'Keep sod consistently moist for 2 weeks', '14 days', NULL),
+  (6, 'new_lawn', 'sod', 11, 'Reduce watering frequency but increase depth', '14 days', NULL),
+  (6, 'new_lawn', 'sod', 12, 'Mow when grass reaches 3-4 inches height', '14 days', NULL),
+  (6, 'new_lawn', 'sod', 13, 'Apply balanced fertilizer 3-4 weeks after installation', '1 day', '30 days'),
+  (6, 'new_lawn', 'sod', 14, 'Apply pre-emergent herbicide if needed', '1 day', '30 days'),
+  (6, 'new_lawn', 'sod', 15, 'Apply post-emergent herbicide if needed', '1 day', '30 days');
 
 -- New Lawn Plan (Plugs)
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (6, 'new_lawn', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (6, 'new_lawn', 2, 'Adjust soil pH to 6.0-7.5 if necessary', '14 days', NULL),
-  (6, 'new_lawn', 3, 'Remove debris and old grass', '3 days', NULL),
-  (6, 'new_lawn', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
-  (6, 'new_lawn', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
-  (6, 'new_lawn', 6, 'Apply starter fertilizer', '1 day', '30 days'),
-  (6, 'new_lawn', 7, 'Plant St. Augustine plugs 6-12 inches apart', '1 day', NULL),
-  (6, 'new_lawn', 8, 'Water deeply immediately after planting', '1 day', NULL),
-  (6, 'new_lawn', 9, 'Keep soil consistently moist for 2 weeks', '14 days', NULL),
-  (6, 'new_lawn', 10, 'Reduce watering frequency but increase depth', '14 days', NULL),
-  (6, 'new_lawn', 11, 'Mow when grass reaches 3-4 inches height', '30 days', NULL),
-  (6, 'new_lawn', 12, 'Apply balanced fertilizer 4-6 weeks after planting', '1 day', '30 days'),
-  (6, 'new_lawn', 13, 'Apply pre-emergent herbicide if needed', '1 day', '30 days'),
-  (6, 'new_lawn', 14, 'Apply post-emergent herbicide if needed', '1 day', '30 days');
+  (6, 'new_lawn', 'plugs', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (6, 'new_lawn', 'plugs', 2, 'Adjust soil pH to 6.0-7.5 if necessary', '14 days', NULL),
+  (6, 'new_lawn', 'plugs', 3, 'Remove debris and old grass', '3 days', NULL),
+  (6, 'new_lawn', 'plugs', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
+  (6, 'new_lawn', 'plugs', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
+  (6, 'new_lawn', 'plugs', 6, 'Apply starter fertilizer', '1 day', '30 days'),
+  (6, 'new_lawn', 'plugs', 7, 'Plant St. Augustine plugs 6-12 inches apart', '1 day', NULL),
+  (6, 'new_lawn', 'plugs', 8, 'Water deeply immediately after planting', '1 day', NULL),
+  (6, 'new_lawn', 'plugs', 9, 'Keep soil consistently moist for 2 weeks', '14 days', NULL),
+  (6, 'new_lawn', 'plugs', 10, 'Reduce watering frequency but increase depth', '14 days', NULL),
+  (6, 'new_lawn', 'plugs', 11, 'Mow when grass reaches 3-4 inches height', '30 days', NULL),
+  (6, 'new_lawn', 'plugs', 12, 'Apply balanced fertilizer 4-6 weeks after planting', '1 day', '30 days'),
+  (6, 'new_lawn', 'plugs', 13, 'Apply pre-emergent herbicide if needed', '1 day', '30 days'),
+  (6, 'new_lawn', 'plugs', 14, 'Apply post-emergent herbicide if needed', '1 day', '30 days');
 
 -- Lawn Improvement Plan
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (6, 'lawn_improvement', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (6, 'lawn_improvement', 2, 'Adjust soil pH to 6.0-7.5 if necessary', '14 days', NULL),
-  (6, 'lawn_improvement', 3, 'Dethatch if thatch is more than 1/2 inch thick', '1 day', NULL),
-  (6, 'lawn_improvement', 4, 'Aerate the lawn in late spring or early summer if soil is compacted', '1 day', NULL),
-  (6, 'lawn_improvement', 5, 'Rake out dead grass and debris', '1 day', NULL),
-  (6, 'lawn_improvement', 6, 'Plant St. Augustine plugs in thin areas', '1 day', NULL),
-  (6, 'lawn_improvement', 7, 'Apply balanced fertilizer', '1 day', '30 days'),
-  (6, 'lawn_improvement', 8, 'Mow the lawn at 2.5-4 inches height', '1 day', '7 days'),
-  (6, 'lawn_improvement', 9, 'Water deeply (about 1 inch)', '1 day', '7 days'),
-  (6, 'lawn_improvement', 10, 'Monitor for pests and diseases, especially chinch bugs', NULL, '14 days'),
-  (6, 'lawn_improvement', 11, 'Apply pre-emergent herbicide in early spring and fall', '1 day', '30 days'),
-  (6, 'lawn_improvement', 12, 'Apply post-emergent herbicide if needed', '1 day', '30 days');
+  (6, 'lawn_improvement', null, 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (6, 'lawn_improvement', null, 2, 'Adjust soil pH to 6.0-7.5 if necessary', '14 days', NULL),
+  (6, 'lawn_improvement', null, 3, 'Dethatch if thatch is more than 1/2 inch thick', '1 day', NULL),
+  (6, 'lawn_improvement', null, 4, 'Aerate the lawn in late spring or early summer if soil is compacted', '1 day', NULL),
+  (6, 'lawn_improvement', null, 5, 'Rake out dead grass and debris', '1 day', NULL),
+  (6, 'lawn_improvement', null, 6, 'Plant St. Augustine plugs in thin areas', '1 day', NULL),
+  (6, 'lawn_improvement', null, 7, 'Apply balanced fertilizer', '1 day', '30 days'),
+  (6, 'lawn_improvement', null, 8, 'Mow the lawn at 2.5-4 inches height', '1 day', '7 days'),
+  (6, 'lawn_improvement', null, 9, 'Water deeply (about 1 inch)', '1 day', '7 days'),
+  (6, 'lawn_improvement', null, 10, 'Monitor for pests and diseases, especially chinch bugs', NULL, '14 days'),
+  (6, 'lawn_improvement', null, 11, 'Apply pre-emergent herbicide in early spring and fall', '1 day', '30 days'),
+  (6, 'lawn_improvement', null, 12, 'Apply post-emergent herbicide if needed', '1 day', '30 days');
 
 -- Assume Centipede Grass has grassSpeciesId = 7
 
 -- New Lawn Plan (Seed)
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (7, 'new_lawn', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (7, 'new_lawn', 2, 'Adjust soil pH to 4.5-6.0 if necessary', '14 days', NULL),
-  (7, 'new_lawn', 3, 'Remove debris and old grass', '3 days', NULL),
-  (7, 'new_lawn', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
-  (7, 'new_lawn', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
-  (7, 'new_lawn', 6, 'Apply starter fertilizer low in nitrogen', '1 day', '84 days'),
-  (7, 'new_lawn', 7, 'Sow Centipede Grass seeds at 1/4 to 1/2 lb per 1000 sq ft', '1 day', NULL),
-  (7, 'new_lawn', 8, 'Lightly rake seeds into soil', '1 day', NULL),
-  (7, 'new_lawn', 9, 'Roll the area to ensure good seed-to-soil contact', '1 day', NULL),
-  (7, 'new_lawn', 10, 'Water lightly and frequently to keep soil moist', '21 days', NULL),
-  (7, 'new_lawn', 11, 'Reduce watering frequency but increase depth as grass establishes', '30 days', NULL),
-  (7, 'new_lawn', 12, 'Mow when grass reaches 2 inches height', '30 days', NULL),
-  (7, 'new_lawn', 13, 'Apply low-nitrogen fertilizer 8-12 weeks after germination', '1 day', '84 days'),
-  (7, 'new_lawn', 14, 'Apply pre-emergent herbicide if needed', '1 day', '84 days'),
-  (7, 'new_lawn', 15, 'Apply post-emergent herbicide if needed', '1 day', '84 days');
+  (7, 'new_lawn', 'seed', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (7, 'new_lawn', 'seed', 2, 'Adjust soil pH to 4.5-6.0 if necessary', '14 days', NULL),
+  (7, 'new_lawn', 'seed', 3, 'Remove debris and old grass', '3 days', NULL),
+  (7, 'new_lawn', 'seed', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
+  (7, 'new_lawn', 'seed', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
+  (7, 'new_lawn', 'seed', 6, 'Apply starter fertilizer low in nitrogen', '1 day', '84 days'),
+  (7, 'new_lawn', 'seed', 7, 'Sow Centipede Grass seeds at 1/4 to 1/2 lb per 1000 sq ft', '1 day', NULL),
+  (7, 'new_lawn', 'seed', 8, 'Lightly rake seeds into soil', '1 day', NULL),
+  (7, 'new_lawn', 'seed', 9, 'Roll the area to ensure good seed-to-soil contact', '1 day', NULL),
+  (7, 'new_lawn', 'seed', 10, 'Water lightly and frequently to keep soil moist', '21 days', NULL),
+  (7, 'new_lawn', 'seed', 11, 'Reduce watering frequency but increase depth as grass establishes', '30 days', NULL),
+  (7, 'new_lawn', 'seed', 12, 'Mow when grass reaches 2 inches height', '30 days', NULL),
+  (7, 'new_lawn', 'seed', 13, 'Apply low-nitrogen fertilizer 8-12 weeks after germination', '1 day', '84 days'),
+  (7, 'new_lawn', 'seed', 14, 'Apply pre-emergent herbicide if needed', '1 day', '84 days'),
+  (7, 'new_lawn', 'seed', 15, 'Apply post-emergent herbicide if needed', '1 day', '84 days');
 
 -- New Lawn Plan (Sod)
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (7, 'new_lawn', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (7, 'new_lawn', 2, 'Adjust soil pH to 4.5-6.0 if necessary', '14 days', NULL),
-  (7, 'new_lawn', 3, 'Remove debris and old grass', '3 days', NULL),
-  (7, 'new_lawn', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
-  (7, 'new_lawn', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
-  (7, 'new_lawn', 6, 'Apply starter fertilizer low in nitrogen', '1 day', '84 days'),
-  (7, 'new_lawn', 7, 'Lay Centipede Grass sod', '1 day', NULL),
-  (7, 'new_lawn', 8, 'Roll sod for good soil contact', '1 day', NULL),
-  (7, 'new_lawn', 9, 'Water deeply immediately after laying sod', '1 day', NULL),
-  (7, 'new_lawn', 10, 'Keep sod consistently moist for 2-3 weeks', '21 days', NULL),
-  (7, 'new_lawn', 11, 'Reduce watering frequency but increase depth', '14 days', NULL),
-  (7, 'new_lawn', 12, 'Mow when grass reaches 2 inches height', '14 days', NULL),
-  (7, 'new_lawn', 13, 'Apply low-nitrogen fertilizer 4-6 weeks after installation', '1 day', '84 days'),
-  (7, 'new_lawn', 14, 'Apply pre-emergent herbicide if needed', '1 day', '84 days'),
-  (7, 'new_lawn', 15, 'Apply post-emergent herbicide if needed', '1 day', '84 days');
+  (7, 'new_lawn', 'sod', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (7, 'new_lawn', 'sod', 2, 'Adjust soil pH to 4.5-6.0 if necessary', '14 days', NULL),
+  (7, 'new_lawn', 'sod', 3, 'Remove debris and old grass', '3 days', NULL),
+  (7, 'new_lawn', 'sod', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
+  (7, 'new_lawn', 'sod', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
+  (7, 'new_lawn', 'sod', 6, 'Apply starter fertilizer low in nitrogen', '1 day', '84 days'),
+  (7, 'new_lawn', 'sod', 7, 'Lay Centipede Grass sod', '1 day', NULL),
+  (7, 'new_lawn', 'sod', 8, 'Roll sod for good soil contact', '1 day', NULL),
+  (7, 'new_lawn', 'sod', 9, 'Water deeply immediately after laying sod', '1 day', NULL),
+  (7, 'new_lawn', 'sod', 10, 'Keep sod consistently moist for 2-3 weeks', '21 days', NULL),
+  (7, 'new_lawn', 'sod', 11, 'Reduce watering frequency but increase depth', '14 days', NULL),
+  (7, 'new_lawn', 'sod', 12, 'Mow when grass reaches 2 inches height', '14 days', NULL),
+  (7, 'new_lawn', 'sod', 13, 'Apply low-nitrogen fertilizer 4-6 weeks after installation', '1 day', '84 days'),
+  (7, 'new_lawn', 'sod', 14, 'Apply pre-emergent herbicide if needed', '1 day', '84 days'),
+  (7, 'new_lawn', 'sod', 15, 'Apply post-emergent herbicide if needed', '1 day', '84 days');
 
 -- Lawn Improvement Plan
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (7, 'lawn_improvement', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (7, 'lawn_improvement', 2, 'Adjust soil pH to 4.5-6.0 if necessary', '14 days', NULL),
-  (7, 'lawn_improvement', 3, 'Dethatch if thatch is more than 1/2 inch thick', '1 day', NULL),
-  (7, 'lawn_improvement', 4, 'Aerate the lawn in late spring if soil is compacted', '1 day', NULL),
-  (7, 'lawn_improvement', 5, 'Rake out dead grass and debris', '1 day', NULL),
-  (7, 'lawn_improvement', 6, 'Overseed thin areas with Centipede Grass seeds', '1 day', NULL),
-  (7, 'lawn_improvement', 7, 'Apply low-nitrogen, high-potassium fertilizer', '1 day', '84 days'),
-  (7, 'lawn_improvement', 8, 'Mow the lawn at 1-2 inches height', '1 day', '14 days'),
-  (7, 'lawn_improvement', 9, 'Water deeply (about 1 inch) if no rainfall', '1 day', '14 days'),
-  (7, 'lawn_improvement', 10, 'Monitor for pests and diseases', NULL, '30 days'),
-  (7, 'lawn_improvement', 11, 'Apply pre-emergent herbicide in early spring if needed', '1 day', '84 days'),
-  (7, 'lawn_improvement', 12, 'Apply post-emergent herbicide if needed', '1 day', '84 days');
+  (7, 'lawn_improvement', null, 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (7, 'lawn_improvement', null, 2, 'Adjust soil pH to 4.5-6.0 if necessary', '14 days', NULL),
+  (7, 'lawn_improvement', null, 3, 'Dethatch if thatch is more than 1/2 inch thick', '1 day', NULL),
+  (7, 'lawn_improvement', null, 4, 'Aerate the lawn in late spring if soil is compacted', '1 day', NULL),
+  (7, 'lawn_improvement', null, 5, 'Rake out dead grass and debris', '1 day', NULL),
+  (7, 'lawn_improvement', null, 6, 'Overseed thin areas with Centipede Grass seeds', '1 day', NULL),
+  (7, 'lawn_improvement', null, 7, 'Apply low-nitrogen, high-potassium fertilizer', '1 day', '84 days'),
+  (7, 'lawn_improvement', null, 8, 'Mow the lawn at 1-2 inches height', '1 day', '14 days'),
+  (7, 'lawn_improvement', null, 9, 'Water deeply (about 1 inch) if no rainfall', '1 day', '14 days'),
+  (7, 'lawn_improvement', null, 10, 'Monitor for pests and diseases', NULL, '30 days'),
+  (7, 'lawn_improvement', null, 11, 'Apply pre-emergent herbicide in early spring if needed', '1 day', '84 days'),
+  (7, 'lawn_improvement', null, 12, 'Apply post-emergent herbicide if needed', '1 day', '84 days');
 
 -- Assume Fine Fescue has grassSpeciesId = 8
 
 -- New Lawn Plan (Seed)
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (8, 'new_lawn', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (8, 'new_lawn', 2, 'Adjust soil pH to 5.5-6.5 if necessary', '14 days', NULL),
-  (8, 'new_lawn', 3, 'Remove debris and old grass', '3 days', NULL),
-  (8, 'new_lawn', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
-  (8, 'new_lawn', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
-  (8, 'new_lawn', 6, 'Apply starter fertilizer', '1 day', '56 days'),
-  (8, 'new_lawn', 7, 'Sow Fine Fescue seeds at 5-8 lbs per 1000 sq ft', '1 day', NULL),
-  (8, 'new_lawn', 8, 'Lightly rake seeds into soil', '1 day', NULL),
-  (8, 'new_lawn', 9, 'Roll the area to ensure good seed-to-soil contact', '1 day', NULL),
-  (8, 'new_lawn', 10, 'Water lightly and frequently to keep soil moist', '14 days', NULL),
-  (8, 'new_lawn', 11, 'Reduce watering frequency but increase depth as grass establishes', '21 days', NULL),
-  (8, 'new_lawn', 12, 'Mow when grass reaches 3 inches height', '21 days', NULL),
-  (8, 'new_lawn', 13, 'Apply balanced fertilizer 6-8 weeks after germination', '1 day', '56 days'),
-  (8, 'new_lawn', 14, 'Apply pre-emergent herbicide if needed', '1 day', '56 days'),
-  (8, 'new_lawn', 15, 'Apply post-emergent herbicide if needed', '1 day', '56 days');
+  (8, 'new_lawn', 'seed', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (8, 'new_lawn', 'seed', 2, 'Adjust soil pH to 5.5-6.5 if necessary', '14 days', NULL),
+  (8, 'new_lawn', 'seed', 3, 'Remove debris and old grass', '3 days', NULL),
+  (8, 'new_lawn', 'seed', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
+  (8, 'new_lawn', 'seed', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
+  (8, 'new_lawn', 'seed', 6, 'Apply starter fertilizer', '1 day', '56 days'),
+  (8, 'new_lawn', 'seed', 7, 'Sow Fine Fescue seeds at 5-8 lbs per 1000 sq ft', '1 day', NULL),
+  (8, 'new_lawn', 'seed', 8, 'Lightly rake seeds into soil', '1 day', NULL),
+  (8, 'new_lawn', 'seed', 9, 'Roll the area to ensure good seed-to-soil contact', '1 day', NULL),
+  (8, 'new_lawn', 'seed', 10, 'Water lightly and frequently to keep soil moist', '14 days', NULL),
+  (8, 'new_lawn', 'seed', 11, 'Reduce watering frequency but increase depth as grass establishes', '21 days', NULL),
+  (8, 'new_lawn', 'seed', 12, 'Mow when grass reaches 3 inches height', '21 days', NULL),
+  (8, 'new_lawn', 'seed', 13, 'Apply balanced fertilizer 6-8 weeks after germination', '1 day', '56 days'),
+  (8, 'new_lawn', 'seed', 14, 'Apply pre-emergent herbicide if needed', '1 day', '56 days'),
+  (8, 'new_lawn', 'seed', 15, 'Apply post-emergent herbicide if needed', '1 day', '56 days');
 
 -- New Lawn Plan (Sod)
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (8, 'new_lawn', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (8, 'new_lawn', 2, 'Adjust soil pH to 5.5-6.5 if necessary', '14 days', NULL),
-  (8, 'new_lawn', 3, 'Remove debris and old grass', '3 days', NULL),
-  (8, 'new_lawn', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
-  (8, 'new_lawn', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
-  (8, 'new_lawn', 6, 'Apply starter fertilizer', '1 day', '56 days'),
-  (8, 'new_lawn', 7, 'Lay Fine Fescue sod', '1 day', NULL),
-  (8, 'new_lawn', 8, 'Roll sod for good soil contact', '1 day', NULL),
-  (8, 'new_lawn', 9, 'Water deeply immediately after laying sod', '1 day', NULL),
-  (8, 'new_lawn', 10, 'Keep sod consistently moist for 2 weeks', '14 days', NULL),
-  (8, 'new_lawn', 11, 'Reduce watering frequency but increase depth', '14 days', NULL),
-  (8, 'new_lawn', 12, 'Mow when grass reaches 3 inches height', '14 days', NULL),
-  (8, 'new_lawn', 13, 'Apply balanced fertilizer 3-4 weeks after installation', '1 day', '56 days'),
-  (8, 'new_lawn', 14, 'Apply pre-emergent herbicide if needed', '1 day', '56 days'),
-  (8, 'new_lawn', 15, 'Apply post-emergent herbicide if needed', '1 day', '56 days');
+  (8, 'new_lawn', 'sod', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (8, 'new_lawn', 'sod', 2, 'Adjust soil pH to 5.5-6.5 if necessary', '14 days', NULL),
+  (8, 'new_lawn', 'sod', 3, 'Remove debris and old grass', '3 days', NULL),
+  (8, 'new_lawn', 'sod', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
+  (8, 'new_lawn', 'sod', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
+  (8, 'new_lawn', 'sod', 6, 'Apply starter fertilizer', '1 day', '56 days'),
+  (8, 'new_lawn', 'sod', 7, 'Lay Fine Fescue sod', '1 day', NULL),
+  (8, 'new_lawn', 'sod', 8, 'Roll sod for good soil contact', '1 day', NULL),
+  (8, 'new_lawn', 'sod', 9, 'Water deeply immediately after laying sod', '1 day', NULL),
+  (8, 'new_lawn', 'sod', 10, 'Keep sod consistently moist for 2 weeks', '14 days', NULL),
+  (8, 'new_lawn', 'sod', 11, 'Reduce watering frequency but increase depth', '14 days', NULL),
+  (8, 'new_lawn', 'sod', 12, 'Mow when grass reaches 3 inches height', '14 days', NULL),
+  (8, 'new_lawn', 'sod', 13, 'Apply balanced fertilizer 3-4 weeks after installation', '1 day', '56 days'),
+  (8, 'new_lawn', 'sod', 14, 'Apply pre-emergent herbicide if needed', '1 day', '56 days'),
+  (8, 'new_lawn', 'sod', 15, 'Apply post-emergent herbicide if needed', '1 day', '56 days');
 
 -- Lawn Improvement Plan
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (8, 'lawn_improvement', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (8, 'lawn_improvement', 2, 'Adjust soil pH to 5.5-6.5 if necessary', '14 days', NULL),
-  (8, 'lawn_improvement', 3, 'Dethatch if thatch is more than 1/2 inch thick', '1 day', NULL),
-  (8, 'lawn_improvement', 4, 'Aerate the lawn in early fall if soil is compacted', '1 day', NULL),
-  (8, 'lawn_improvement', 5, 'Rake out dead grass and debris', '1 day', NULL),
-  (8, 'lawn_improvement', 6, 'Overseed thin areas with Fine Fescue seeds', '1 day', NULL),
-  (8, 'lawn_improvement', 7, 'Apply balanced fertilizer', '1 day', '56 days'),
-  (8, 'lawn_improvement', 8, 'Mow the lawn at 2.5-3.5 inches height', '1 day', '7 days'),
-  (8, 'lawn_improvement', 9, 'Water deeply (about 1 inch) if no rainfall', '1 day', '7 days'),
-  (8, 'lawn_improvement', 10, 'Monitor for pests and diseases', NULL, '30 days'),
-  (8, 'lawn_improvement', 11, 'Apply pre-emergent herbicide in early spring if needed', '1 day', '56 days'),
-  (8, 'lawn_improvement', 12, 'Apply post-emergent herbicide if needed', '1 day', '56 days');
+  (8, 'lawn_improvement', null, 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (8, 'lawn_improvement', null, 2, 'Adjust soil pH to 5.5-6.5 if necessary', '14 days', NULL),
+  (8, 'lawn_improvement', null, 3, 'Dethatch if thatch is more than 1/2 inch thick', '1 day', NULL),
+  (8, 'lawn_improvement', null, 4, 'Aerate the lawn in early fall if soil is compacted', '1 day', NULL),
+  (8, 'lawn_improvement', null, 5, 'Rake out dead grass and debris', '1 day', NULL),
+  (8, 'lawn_improvement', null, 6, 'Overseed thin areas with Fine Fescue seeds', '1 day', NULL),
+  (8, 'lawn_improvement', null, 7, 'Apply balanced fertilizer', '1 day', '56 days'),
+  (8, 'lawn_improvement', null, 8, 'Mow the lawn at 2.5-3.5 inches height', '1 day', '7 days'),
+  (8, 'lawn_improvement', null, 9, 'Water deeply (about 1 inch) if no rainfall', '1 day', '7 days'),
+  (8, 'lawn_improvement', null, 10, 'Monitor for pests and diseases', NULL, '30 days'),
+  (8, 'lawn_improvement', null, 11, 'Apply pre-emergent herbicide in early spring if needed', '1 day', '56 days'),
+  (8, 'lawn_improvement', null, 12, 'Apply post-emergent herbicide if needed', '1 day', '56 days');
 
 -- Assume Buffalo Grass has grassSpeciesId = 9
 
 -- New Lawn Plan (Seed)
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (9, 'new_lawn', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (9, 'new_lawn', 2, 'Adjust soil pH to 6.0-7.5 if necessary', '14 days', NULL),
-  (9, 'new_lawn', 3, 'Remove debris and old grass', '3 days', NULL),
-  (9, 'new_lawn', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
-  (9, 'new_lawn', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
-  (9, 'new_lawn', 6, 'Apply low-nitrogen starter fertilizer', '1 day', '56 days'),
-  (9, 'new_lawn', 7, 'Sow Buffalo Grass seeds at 1-3 lbs per 1000 sq ft', '1 day', NULL),
-  (9, 'new_lawn', 8, 'Lightly rake seeds into soil', '1 day', NULL),
-  (9, 'new_lawn', 9, 'Roll the area to ensure good seed-to-soil contact', '1 day', NULL),
-  (9, 'new_lawn', 10, 'Water lightly and frequently to keep soil moist', '21 days', NULL),
-  (9, 'new_lawn', 11, 'Reduce watering frequency but increase depth as grass establishes', '30 days', NULL),
-  (9, 'new_lawn', 12, 'Mow when grass reaches 2-3 inches height', '30 days', NULL),
-  (9, 'new_lawn', 13, 'Apply low-nitrogen fertilizer 8 weeks after germination', '1 day', '56 days'),
-  (9, 'new_lawn', 14, 'Apply pre-emergent herbicide if needed', '1 day', '56 days'),
-  (9, 'new_lawn', 15, 'Apply post-emergent herbicide if needed', '1 day', '56 days');
+  (9, 'new_lawn', 'seed', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (9, 'new_lawn', 'seed', 2, 'Adjust soil pH to 6.0-7.5 if necessary', '14 days', NULL),
+  (9, 'new_lawn', 'seed', 3, 'Remove debris and old grass', '3 days', NULL),
+  (9, 'new_lawn', 'seed', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
+  (9, 'new_lawn', 'seed', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
+  (9, 'new_lawn', 'seed', 6, 'Apply low-nitrogen starter fertilizer', '1 day', '56 days'),
+  (9, 'new_lawn', 'seed', 7, 'Sow Buffalo Grass seeds at 1-3 lbs per 1000 sq ft', '1 day', NULL),
+  (9, 'new_lawn', 'seed', 8, 'Lightly rake seeds into soil', '1 day', NULL),
+  (9, 'new_lawn', 'seed', 9, 'Roll the area to ensure good seed-to-soil contact', '1 day', NULL),
+  (9, 'new_lawn', 'seed', 10, 'Water lightly and frequently to keep soil moist', '21 days', NULL),
+  (9, 'new_lawn', 'seed', 11, 'Reduce watering frequency but increase depth as grass establishes', '30 days', NULL),
+  (9, 'new_lawn', 'seed', 12, 'Mow when grass reaches 2-3 inches height', '30 days', NULL),
+  (9, 'new_lawn', 'seed', 13, 'Apply low-nitrogen fertilizer 8 weeks after germination', '1 day', '56 days'),
+  (9, 'new_lawn', 'seed', 14, 'Apply pre-emergent herbicide if needed', '1 day', '56 days'),
+  (9, 'new_lawn', 'seed', 15, 'Apply post-emergent herbicide if needed', '1 day', '56 days');
 
 -- New Lawn Plan (Sod or Plugs)
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (9, 'new_lawn', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (9, 'new_lawn', 2, 'Adjust soil pH to 6.0-7.5 if necessary', '14 days', NULL),
-  (9, 'new_lawn', 3, 'Remove debris and old grass', '3 days', NULL),
-  (9, 'new_lawn', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
-  (9, 'new_lawn', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
-  (9, 'new_lawn', 6, 'Apply low-nitrogen starter fertilizer', '1 day', '56 days'),
-  (9, 'new_lawn', 7, 'Lay Buffalo Grass sod or plant plugs 6-12 inches apart', '1 day', NULL),
-  (9, 'new_lawn', 8, 'Roll sod or tamp soil around plugs for good contact', '1 day', NULL),
-  (9, 'new_lawn', 9, 'Water deeply immediately after installation', '1 day', NULL),
-  (9, 'new_lawn', 10, 'Keep soil consistently moist for 2-3 weeks', '21 days', NULL),
-  (9, 'new_lawn', 11, 'Reduce watering frequency but increase depth', '14 days', NULL),
-  (9, 'new_lawn', 12, 'Mow when grass reaches 2-3 inches height', '21 days', NULL),
-  (9, 'new_lawn', 13, 'Apply low-nitrogen fertilizer 4-6 weeks after installation', '1 day', '56 days'),
-  (9, 'new_lawn', 14, 'Apply pre-emergent herbicide if needed', '1 day', '56 days'),
-  (9, 'new_lawn', 15, 'Apply post-emergent herbicide if needed', '1 day', '56 days');
+  (9, 'new_lawn', 'sod_plugs', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (9, 'new_lawn', 'sod_plugs', 2, 'Adjust soil pH to 6.0-7.5 if necessary', '14 days', NULL),
+  (9, 'new_lawn', 'sod_plugs', 3, 'Remove debris and old grass', '3 days', NULL),
+  (9, 'new_lawn', 'sod_plugs', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
+  (9, 'new_lawn', 'sod_plugs', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
+  (9, 'new_lawn', 'sod_plugs', 6, 'Apply low-nitrogen starter fertilizer', '1 day', '56 days'),
+  (9, 'new_lawn', 'sod_plugs', 7, 'Lay Buffalo Grass sod or plant plugs 6-12 inches apart', '1 day', NULL),
+  (9, 'new_lawn', 'sod_plugs', 8, 'Roll sod or tamp soil around plugs for good contact', '1 day', NULL),
+  (9, 'new_lawn', 'sod_plugs', 9, 'Water deeply immediately after installation', '1 day', NULL),
+  (9, 'new_lawn', 'sod_plugs', 10, 'Keep soil consistently moist for 2-3 weeks', '21 days', NULL),
+  (9, 'new_lawn', 'sod_plugs', 11, 'Reduce watering frequency but increase depth', '14 days', NULL),
+  (9, 'new_lawn', 'sod_plugs', 12, 'Mow when grass reaches 2-3 inches height', '21 days', NULL),
+  (9, 'new_lawn', 'sod_plugs', 13, 'Apply low-nitrogen fertilizer 4-6 weeks after installation', '1 day', '56 days'),
+  (9, 'new_lawn', 'sod_plugs', 14, 'Apply pre-emergent herbicide if needed', '1 day', '56 days'),
+  (9, 'new_lawn', 'sod_plugs', 15, 'Apply post-emergent herbicide if needed', '1 day', '56 days');
 
 -- Lawn Improvement Plan
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (9, 'lawn_improvement', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (9, 'lawn_improvement', 2, 'Adjust soil pH to 6.0-7.5 if necessary', '14 days', NULL),
-  (9, 'lawn_improvement', 3, 'Dethatch if thatch is more than 1/2 inch thick', '1 day', NULL),
-  (9, 'lawn_improvement', 4, 'Aerate the lawn in late spring or early summer if soil is compacted', '1 day', NULL),
-  (9, 'lawn_improvement', 5, 'Rake out dead grass and debris', '1 day', NULL),
-  (9, 'lawn_improvement', 6, 'Overseed thin areas with Buffalo Grass seeds or plant plugs', '1 day', NULL),
-  (9, 'lawn_improvement', 7, 'Apply low-nitrogen, slow-release fertilizer', '1 day', '56 days'),
-  (9, 'lawn_improvement', 8, 'Mow the lawn at 2-3 inches height', '1 day', '14 days'),
-  (9, 'lawn_improvement', 9, 'Water deeply (about 1 inch) if no rainfall', '1 day', '14 days'),
-  (9, 'lawn_improvement', 10, 'Monitor for pests and diseases', NULL, '30 days'),
-  (9, 'lawn_improvement', 11, 'Apply pre-emergent herbicide in early spring if needed', '1 day', '56 days'),
-  (9, 'lawn_improvement', 12, 'Apply post-emergent herbicide if needed', '1 day', '56 days');
+  (9, 'lawn_improvement', null, 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (9, 'lawn_improvement', null, 2, 'Adjust soil pH to 6.0-7.5 if necessary', '14 days', NULL),
+  (9, 'lawn_improvement', null, 3, 'Dethatch if thatch is more than 1/2 inch thick', '1 day', NULL),
+  (9, 'lawn_improvement', null, 4, 'Aerate the lawn in late spring or early summer if soil is compacted', '1 day', NULL),
+  (9, 'lawn_improvement', null, 5, 'Rake out dead grass and debris', '1 day', NULL),
+  (9, 'lawn_improvement', null, 6, 'Overseed thin areas with Buffalo Grass seeds or plant plugs', '1 day', NULL),
+  (9, 'lawn_improvement', null, 7, 'Apply low-nitrogen, slow-release fertilizer', '1 day', '56 days'),
+  (9, 'lawn_improvement', null, 8, 'Mow the lawn at 2-3 inches height', '1 day', '14 days'),
+  (9, 'lawn_improvement', null, 9, 'Water deeply (about 1 inch) if no rainfall', '1 day', '14 days'),
+  (9, 'lawn_improvement', null, 10, 'Monitor for pests and diseases', NULL, '30 days'),
+  (9, 'lawn_improvement', null, 11, 'Apply pre-emergent herbicide in early spring if needed', '1 day', '56 days'),
+  (9, 'lawn_improvement', null, 12, 'Apply post-emergent herbicide if needed', '1 day', '56 days');
 
 -- Assume Bahia Grass has grassSpeciesId = 10
 
 -- New Lawn Plan (Seed)
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (10, 'new_lawn', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (10, 'new_lawn', 2, 'Adjust soil pH to 5.5-6.5 if necessary', '14 days', NULL),
-  (10, 'new_lawn', 3, 'Remove debris and old grass', '3 days', NULL),
-  (10, 'new_lawn', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
-  (10, 'new_lawn', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
-  (10, 'new_lawn', 6, 'Apply starter fertilizer high in phosphorus', '1 day', '42 days'),
-  (10, 'new_lawn', 7, 'Sow Bahia Grass seeds at 5-10 lbs per 1000 sq ft', '1 day', NULL),
-  (10, 'new_lawn', 8, 'Lightly rake seeds into soil', '1 day', NULL),
-  (10, 'new_lawn', 9, 'Roll the area to ensure good seed-to-soil contact', '1 day', NULL),
-  (10, 'new_lawn', 10, 'Water lightly and frequently to keep soil moist', '21 days', NULL),
-  (10, 'new_lawn', 11, 'Reduce watering frequency but increase depth as grass establishes', '30 days', NULL),
-  (10, 'new_lawn', 12, 'Mow when grass reaches 3-4 inches height', '30 days', NULL),
-  (10, 'new_lawn', 13, 'Apply balanced fertilizer 6-8 weeks after germination', '1 day', '42 days'),
-  (10, 'new_lawn', 14, 'Apply pre-emergent herbicide', '1 day', '42 days'),
-  (10, 'new_lawn', 15, 'Apply post-emergent herbicide if needed', '1 day', '42 days');
+  (10, 'new_lawn', 'seed', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (10, 'new_lawn', 'seed', 2, 'Adjust soil pH to 5.5-6.5 if necessary', '14 days', NULL),
+  (10, 'new_lawn', 'seed', 3, 'Remove debris and old grass', '3 days', NULL),
+  (10, 'new_lawn', 'seed', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
+  (10, 'new_lawn', 'seed', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
+  (10, 'new_lawn', 'seed', 6, 'Apply starter fertilizer high in phosphorus', '1 day', '42 days'),
+  (10, 'new_lawn', 'seed', 7, 'Sow Bahia Grass seeds at 5-10 lbs per 1000 sq ft', '1 day', NULL),
+  (10, 'new_lawn', 'seed', 8, 'Lightly rake seeds into soil', '1 day', NULL),
+  (10, 'new_lawn', 'seed', 9, 'Roll the area to ensure good seed-to-soil contact', '1 day', NULL),
+  (10, 'new_lawn', 'seed', 10, 'Water lightly and frequently to keep soil moist', '21 days', NULL),
+  (10, 'new_lawn', 'seed', 11, 'Reduce watering frequency but increase depth as grass establishes', '30 days', NULL),
+  (10, 'new_lawn', 'seed', 12, 'Mow when grass reaches 3-4 inches height', '30 days', NULL),
+  (10, 'new_lawn', 'seed', 13, 'Apply balanced fertilizer 6-8 weeks after germination', '1 day', '42 days'),
+  (10, 'new_lawn', 'seed', 14, 'Apply pre-emergent herbicide', '1 day', '42 days'),
+  (10, 'new_lawn', 'seed', 15, 'Apply post-emergent herbicide if needed', '1 day', '42 days');
 
 -- New Lawn Plan (Sod)
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (10, 'new_lawn', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (10, 'new_lawn', 2, 'Adjust soil pH to 5.5-6.5 if necessary', '14 days', NULL),
-  (10, 'new_lawn', 3, 'Remove debris and old grass', '3 days', NULL),
-  (10, 'new_lawn', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
-  (10, 'new_lawn', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
-  (10, 'new_lawn', 6, 'Apply starter fertilizer', '1 day', '42 days'),
-  (10, 'new_lawn', 7, 'Lay Bahia Grass sod', '1 day', NULL),
-  (10, 'new_lawn', 8, 'Roll sod for good soil contact', '1 day', NULL),
-  (10, 'new_lawn', 9, 'Water deeply immediately after laying sod', '1 day', NULL),
-  (10, 'new_lawn', 10, 'Keep sod consistently moist for 2-3 weeks', '21 days', NULL),
-  (10, 'new_lawn', 11, 'Reduce watering frequency but increase depth', '14 days', NULL),
-  (10, 'new_lawn', 12, 'Mow when grass reaches 3-4 inches height', '14 days', NULL),
-  (10, 'new_lawn', 13, 'Apply balanced fertilizer 3-4 weeks after installation', '1 day', '42 days'),
-  (10, 'new_lawn', 14, 'Apply pre-emergent herbicide', '1 day', '42 days'),
-  (10, 'new_lawn', 15, 'Apply post-emergent herbicide if needed', '1 day', '42 days');
+  (10, 'new_lawn', 'sod', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (10, 'new_lawn', 'sod', 2, 'Adjust soil pH to 5.5-6.5 if necessary', '14 days', NULL),
+  (10, 'new_lawn', 'sod', 3, 'Remove debris and old grass', '3 days', NULL),
+  (10, 'new_lawn', 'sod', 4, 'Till the soil to a depth of 4-6 inches', '2 days', NULL),
+  (10, 'new_lawn', 'sod', 5, 'Level the area and create a slight slope for drainage', '2 days', NULL),
+  (10, 'new_lawn', 'sod', 6, 'Apply starter fertilizer', '1 day', '42 days'),
+  (10, 'new_lawn', 'sod', 7, 'Lay Bahia Grass sod', '1 day', NULL),
+  (10, 'new_lawn', 'sod', 8, 'Roll sod for good soil contact', '1 day', NULL),
+  (10, 'new_lawn', 'sod', 9, 'Water deeply immediately after laying sod', '1 day', NULL),
+  (10, 'new_lawn', 'sod', 10, 'Keep sod consistently moist for 2-3 weeks', '21 days', NULL),
+  (10, 'new_lawn', 'sod', 11, 'Reduce watering frequency but increase depth', '14 days', NULL),
+  (10, 'new_lawn', 'sod', 12, 'Mow when grass reaches 3-4 inches height', '14 days', NULL),
+  (10, 'new_lawn', 'sod', 13, 'Apply balanced fertilizer 3-4 weeks after installation', '1 day', '42 days'),
+  (10, 'new_lawn', 'sod', 14, 'Apply pre-emergent herbicide', '1 day', '42 days'),
+  (10, 'new_lawn', 'sod', 15, 'Apply post-emergent herbicide if needed', '1 day', '42 days');
 
 -- Lawn Improvement Plan
-INSERT INTO "PlanStepTemplates" ("grassSpeciesId", "planType", "stepOrder", "stepDescription", "estimatedDuration", "intervalToNextStep")
+INSERT INTO "PlanStepTemplates" (
+  "grassSpeciesId",
+  "planType",
+  "establishmentType",
+  "stepOrder",
+  "stepDescription",
+  "estimatedDuration",
+  "intervalToNextStep"
+)
 VALUES
-  (10, 'lawn_improvement', 1, 'Test soil pH and nutrient levels', '7 days', NULL),
-  (10, 'lawn_improvement', 2, 'Adjust soil pH to 5.5-6.5 if necessary', '14 days', NULL),
-  (10, 'lawn_improvement', 3, 'Dethatch if thatch is more than 1/2 inch thick', '1 day', NULL),
-  (10, 'lawn_improvement', 4, 'Aerate the lawn in late spring or early summer', '1 day', NULL),
-  (10, 'lawn_improvement', 5, 'Rake out dead grass and debris', '1 day', NULL),
-  (10, 'lawn_improvement', 6, 'Overseed thin areas with Bahia Grass seeds', '1 day', NULL),
-  (10, 'lawn_improvement', 7, 'Apply balanced fertilizer', '1 day', '42 days'),
-  (10, 'lawn_improvement', 8, 'Mow the lawn at 2-3 inches height', '1 day', '7 days'),
-  (10, 'lawn_improvement', 9, 'Water deeply (about 1 inch)', '1 day', '7 days'),
-  (10, 'lawn_improvement', 10, 'Monitor for pests and diseases, especially mole crickets', NULL, '30 days'),
-  (10, 'lawn_improvement', 11, 'Apply pre-emergent herbicide in early spring', '1 day', '42 days'),
-  (10, 'lawn_improvement', 12, 'Apply post-emergent herbicide as needed', '1 day', '42 days');
+  (10, 'lawn_improvement', null, 1, 'Test soil pH and nutrient levels', '7 days', NULL),
+  (10, 'lawn_improvement', null, 2, 'Adjust soil pH to 5.5-6.5 if necessary', '14 days', NULL),
+  (10, 'lawn_improvement', null, 3, 'Dethatch if thatch is more than 1/2 inch thick', '1 day', NULL),
+  (10, 'lawn_improvement', null, 4, 'Aerate the lawn in late spring or early summer', '1 day', NULL),
+  (10, 'lawn_improvement', null, 5, 'Rake out dead grass and debris', '1 day', NULL),
+  (10, 'lawn_improvement', null, 6, 'Overseed thin areas with Bahia Grass seeds', '1 day', NULL),
+  (10, 'lawn_improvement', null, 7, 'Apply balanced fertilizer', '1 day', '42 days'),
+  (10, 'lawn_improvement', null, 8, 'Mow the lawn at 2-3 inches height', '1 day', '7 days'),
+  (10, 'lawn_improvement', null, 9, 'Water deeply (about 1 inch)', '1 day', '7 days'),
+  (10, 'lawn_improvement', null, 10, 'Monitor for pests and diseases, especially mole crickets', NULL, '30 days'),
+  (10, 'lawn_improvement', null, 11, 'Apply pre-emergent herbicide in early spring', '1 day', '42 days'),
+  (10, 'lawn_improvement', null, 12, 'Apply post-emergent herbicide as needed', '1 day', '42 days');

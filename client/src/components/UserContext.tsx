@@ -12,6 +12,7 @@ export type UserContextValues = {
   handleSignIn: (user: User, token: string) => void;
   handleSignOut: () => void;
 };
+
 export const UserContext = createContext<UserContextValues>({
   user: undefined,
   token: undefined,
@@ -22,17 +23,17 @@ export const UserContext = createContext<UserContextValues>({
 type Props = {
   children: ReactNode;
 };
+
 export function UserProvider({ children }: Props) {
-  const [user, setUser] = useState<User>();
-  const [token, setToken] = useState<string>();
+  const [user, setUser] = useState<User | undefined>(undefined);
+  const [token, setToken] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     const user = readUser();
-    if (user) {
-      setUser(user);
-    }
     const token = readToken();
-    if (token) {
+
+    if (user && token) {
+      setUser(user);
       setToken(token);
     }
   }, []);

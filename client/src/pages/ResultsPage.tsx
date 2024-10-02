@@ -67,7 +67,7 @@ export function ResultsPage() {
   return (
     <div className="py-12 sm:py-12 min-h-screen w-full">
       <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
-        <h2 className="text-3xl text-emerald-700 sm:text-4xl font-bold text-center tracking-tight mb-10">
+        <h2 className="text-3xl text-teal-800 sm:text-4xl font-bold text-center tracking-tight mb-10">
           Lawn Care Results for {zipcode}
         </h2>
 
@@ -75,7 +75,7 @@ export function ResultsPage() {
           <div className="flex justify-center">
             <Link
               to="/"
-              className="bg-gray-100 text-emerald-800 px-6 py-3 rounded-full text-lg font-semibold hover:bg-emerald-700  transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-emerald-700 to-emerald-600  hover:text-white hover:border-emerald-600">
+              className="bg-gray-100 text-emerald-800 px-6 py-3 rounded-full text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-emerald-700 to-teal-600  hover:text-white hover:border-emerald-600">
               <Home size={20} className="mr-2" />
               Back to Home
             </Link>
@@ -84,7 +84,7 @@ export function ResultsPage() {
           <div className="flex justify-center">
             <Link
               to={user ? '/new-plan' : '/sign-in'}
-              className="bg-gray-100 text-emerald-800 px-6 py-3 rounded-full text-lg font-semibold hover:bg-emerald-700  transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-emerald-700 to-emerald-600  hover:text-white hover:border-emerald-600">
+              className="bg-gray-100 text-emerald-800 px-6 py-3 rounded-full text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-emerald-700 to-teal-600  hover:text-white hover:border-emerald-600">
               <SquarePlus size={23} className="mr-2" />
               {user ? 'New Plan' : 'Login to Create Plan'}
             </Link>
@@ -108,7 +108,7 @@ export function ResultsPage() {
                       <span className="text-xl font-semibold text-emerald-700">
                         {grass.name}
                       </span>
-                      <span className="text-lg font-medium text-emerald-600">
+                      <span className="text-lg font-medium text-emerald-700">
                         {grass.match_percentage.toFixed(0)}% match
                       </span>
                     </div>
@@ -219,7 +219,7 @@ function ClimateDataItem({ icon, label, value }) {
     <div className="flex items-center">
       {icon}
       <div className="ml-3">
-        <p className="font-medium text-gray-700">{label}</p>
+        <p className="font-medium text-teal-900">{label}</p>
         <p className="text-emerald-600">{value}</p>
       </div>
     </div>
@@ -250,7 +250,7 @@ function DetailedClimateData({ climateData }) {
       <div className="grid grid-cols-3 gap-2">
         {months.map((month) => (
           <div key={month} className="text-sm">
-            <p className="font-bold text-gray-600">{month}</p>
+            <p className="font-bold text-teal-900">{month}</p>
             <p className="text-emerald-600">
               {formatNumber(climateData?.monthlyTemperature[month])}°F
             </p>

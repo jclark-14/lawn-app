@@ -97,20 +97,49 @@ app.get('/api/grass-species/:zipcode', async (req, res, next) => {
   }
 });
 
+app.get(
+  '/api/grass-species/:grassSpeciesId/plan-types',
+  async (req, res, next) => {
+    const { grassSpeciesId } = req.params;
+
+    try {
+      const query = `
+      SELECT DISTINCT "planType", "establishmentType"
+      FROM "PlanStepTemplates"
+      WHERE "grassSpeciesId" = $1 AND "planType" != 'lawn_improvement'
+    `;
+
+      const result = await db.query(query, [grassSpeciesId]);
+
+      const planTypes = result.rows.map((row) => ({
+        planType: row.planType,
+        establishmentType: row.establishmentType,
+      }));
+
+      res.json(planTypes);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 // ... (previous imports and setup remain the same)
-app.post('/api/plans/new', async (req, res, next) => {
+app.post('/api/plans/new', authMiddleware, async (req, res, next) => {
   console.log('Received new plan request:', req.body);
   const client = await db.connect();
   try {
-    const { userId, grassSpecies, planType, lawnType } = req.body;
+    const { userId, grassSpeciesId, planType, establishmentType } = req.body;
 
     // Validate input
-    if (!userId || !grassSpecies || !planType) {
+    if (!userId || !grassSpeciesId || !planType) {
       throw new ClientError(400, 'Missing required fields');
     }
 
-    if (planType === 'new_lawn' && !lawnType) {
-      throw new ClientError(400, 'Lawn type is required for new lawn plans');
+    if (planType === 'new_lawn' && !establishmentType) {
+      throw new ClientError(
+        400,
+        'Establishment type is required for new lawn plans'
+      );
     }
 
     // Start a transaction
@@ -118,14 +147,15 @@ app.post('/api/plans/new', async (req, res, next) => {
 
     // Insert the new plan
     const insertPlanSql = `
-      INSERT INTO "UserPlans" ("userId", "grassSpeciesId", "planType")
-      VALUES ($1, $2, $3)
+      INSERT INTO "UserPlans" ("userId", "grassSpeciesId", "planType", "establishmentType")
+      VALUES ($1, $2, $3, $4)
       RETURNING "userPlanId"
     `;
     const planResult = await client.query(insertPlanSql, [
       userId,
-      grassSpecies,
+      grassSpeciesId,
       planType,
+      establishmentType,
     ]);
     const userPlanId = planResult.rows[0].userPlanId;
     console.log('Created new plan with ID:', userPlanId);
@@ -133,12 +163,13 @@ app.post('/api/plans/new', async (req, res, next) => {
     // Fetch the appropriate plan step templates
     const fetchTemplatesSql = `
       SELECT * FROM "PlanStepTemplates"
-      WHERE "grassSpeciesId" = $1 AND "planType" = $2
+      WHERE "grassSpeciesId" = $1 AND "planType" = $2 AND "establishmentType" = $3
       ORDER BY "stepOrder"
     `;
     const templatesResult = await client.query(fetchTemplatesSql, [
-      grassSpecies,
+      grassSpeciesId,
       planType,
+      establishmentType,
     ]);
     console.log('Fetched', templatesResult.rows.length, 'plan step templates');
 

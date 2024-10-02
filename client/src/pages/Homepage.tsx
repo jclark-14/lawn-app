@@ -41,7 +41,7 @@ export function Homepage() {
         <div className="px-4 sm:px-6 lg:px-8 w-full">
           <div className="mx-auto max-w-7xl w-full">
             <div className="text-center mb-12 sm:mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-gray-700">
+              <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-teal-800">
                 Get Your Perfect Lawn
               </h2>
               <p className="text-lg sm:text-xl mb-8 max-w-2xl mx-auto text-gray-700">
@@ -57,7 +57,7 @@ export function Homepage() {
                   <input
                     type="text"
                     placeholder="Enter your zipcode"
-                    className="px-4 py-2 rounded-l-[8px] w-full max-w-[200px] border border-gray-300 focus:outline-none focus:ring-1 focus:ring-emerald-600 focus:border-emerald-600 focus:z-10"
+                    className="px-4 py-2 rounded-l-[8px] w-full max-w-[200px] shadow-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-teal-600 focus:border-teal-600 focus:z-10"
                     value={zipcode}
                     onChange={(e) => setZipcode(e.target.value)}
                   />
@@ -65,7 +65,7 @@ export function Homepage() {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className={`bg-emerald-600 text-white px-4 sm:px-8 py-2.5 text-nowrap rounded-r-[8px] text-lg font-semibold transition-all ease-in-out duration-500 hover:bg-gradient-to-r from-emerald-600 to-emerald-700 shadow-md hover:shadow-lg ${
+                    className={`bg-emerald-600 text-white px-4 sm:px-8 py-2.5 text-nowrap rounded-r-[8px] text-lg font-semibold transition-all ease-in-out duration-500 hover:bg-gradient-to-r from-emerald-700 to-teal-700 shadow-lg hover:shadow-xl ${
                       isLoading ? 'opacity-50 cursor-not-allowed' : ''
                     }`}>
                     {isLoading ? 'Loading...' : 'Get Started'}
