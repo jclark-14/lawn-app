@@ -126,7 +126,7 @@ function DesktopNavigation({ user, handleSignOut }) {
 function MobileMenu({ isOpen, toggleMenu, user, handleSignOut }) {
   return (
     <div
-      className={`fixed inset-y-0.5 right-0 bg-gray-100 text-gray-800 h-fit w-fit rounded-lg shadow-lg px-4 pb-6 text-center transform transition-transform duration-300 ease-in-out z-50 lg:hidden ${
+      className={`fixed inset-y-0.5 right-0 bg-gray-100  text-teal-900 w-full font-medium text-2xl shadow-lg px-4 pb-6 text-center transform transition-transform duration-300 ease-in-out z-50 lg:hidden ${
         isOpen ? 'translate-x-0' : 'translate-x-full'
       }`}>
       <div className="flex flex-wrap justify-end pt-3">
@@ -136,7 +136,7 @@ function MobileMenu({ isOpen, toggleMenu, user, handleSignOut }) {
           <X size={24} />
         </button>
       </div>
-      <nav className="flex flex-col space-y-4 px-6 mobile-menu">
+      <nav className="flex flex-col space-y-14 px-6 mt-10 mobile-menu">
         <NavLinks user={user} handleSignOut={handleSignOut} />
       </nav>
     </div>
@@ -148,8 +148,8 @@ function NavLinks({ user, handleSignOut }) {
   return (
     <>
       <NavLink to="/">Home</NavLink>
-      <NavLink to="/about">About</NavLink>
       {user && <NavLink to="/profile">Profile</NavLink>}
+      <NavLink to="/about">About</NavLink>
       {user ? <LogoutButton handleSignOut={handleSignOut} /> : <LoginButton />}
     </>
   );
@@ -172,7 +172,7 @@ function LogoutButton({ handleSignOut }) {
   return (
     <button
       onClick={handleSignOut}
-      className="bg-teal-700 text-sm text-gray-100 sm:text-lg py-2 px-4 rounded-full border border-solid shadow-lg border-teal-800 transition-all duration-500 ease-in-out hover:bg-gradient-to-r from-slate-600 to-teal-600">
+      className="bg-teal-700 text-xl text-gray-100 sm:text-lg py-4 sm:py-2 px-4 rounded-full border border-solid shadow-lg border-teal-800 transition-all duration-500 ease-in-out hover:bg-gradient-to-r from-slate-600 to-teal-600">
       Logout
     </button>
   );
@@ -183,7 +183,7 @@ function LoginButton() {
   return (
     <Link
       to="/sign-in"
-      className="bg-teal-600 text-sm sm:text-lg py-2 px-5 rounded-full bg-opacity-60 transition-all duration-500 ease-in-out hover:bg-gradient-to-r from-slate-600 to-teal-600">
+      className="bg-teal-700 text-xl text-gray-100 sm:text-lg py-4 sm:py-2 px-4 rounded-full border border-solid shadow-lg border-teal-800 transition-all duration-500 ease-in-out hover:bg-gradient-to-r from-slate-600 to-teal-600">
       <span className="inline-block min-w-[40px] text-center">Login</span>
     </Link>
   );

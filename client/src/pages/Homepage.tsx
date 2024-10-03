@@ -89,7 +89,7 @@ function ZipcodeForm({ zipcode, setZipcode, handleSubmit, error, isLoading }) {
         <input
           type="text"
           placeholder="Enter your zipcode"
-          className="px-4 py-2 rounded-l-full w-full max-w-[200px] shadow-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-teal-600 focus:border-teal-600 focus:z-10"
+          className="px-4 py-3 rounded-l-full w-full max-w-[200px] shadow-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-teal-600 focus:border-teal-600 focus:z-10"
           value={zipcode}
           onChange={(e) => setZipcode(e.target.value)}
         />

@@ -1,13 +1,21 @@
-import { Pool } from 'pg'; // Import PostgreSQL connection pool
-import { fetchClimateDataFromAPI } from './climateApi.js'; // Import function to fetch climate data from external API
-import { ClientError } from './index.js'; // Import custom error handler
+import { Pool } from 'pg';
+import { fetchClimateDataFromAPI } from './climateApi.js';
+import { ClientError } from './index.js';
 import {
   type GrassSpeciesWithClimate,
   type ClimateData,
   GrassSpecies,
-} from '../../client/src/types'; // Import TypeScript types
+} from '../../client/src/types';
 
-// Function to get grass species recommendations for a given zipcode
+/**
+ * Match grass species based on the climate data.
+ * This function uses a tiered approach to find the best matching grass species.
+ * It starts with strict criteria and gradually relaxes them if no matches are found.
+ *
+ * @param db - PostgreSQL connection pool
+ * @param climateData - The climate data to match against
+ * @returns Promise resolving to an array of matched grass species
+ */
 export async function getGrassSpeciesForZipcode(
   db: Pool,
   zipcode: string
@@ -16,19 +24,14 @@ export async function getGrassSpeciesForZipcode(
   if (!/^\d{5}$/.test(zipcode)) {
     throw new ClientError(400, 'Invalid zipcode');
   }
+
   try {
     console.log(`Fetching climate data for zipcode: ${zipcode}`);
 
-    // Try to retrieve climate data from the database
-    let climateData = await getClimateData(db, zipcode);
-
-    // If no data is found, fetch it from an external API and store in the database
-    if (!climateData) {
-      console.log(
-        `Climate data not found in database for zipcode ${zipcode}. Fetching from API.`
-      );
-      climateData = await fetchAndStoreClimateData(db, zipcode);
-    }
+    // Try to retrieve climate data from the database, or fetch from API if not found
+    const climateData =
+      (await getClimateData(db, zipcode)) ||
+      (await fetchAndStoreClimateData(db, zipcode));
 
     console.log(
       `Climate data for ${zipcode}:`,
@@ -47,20 +50,20 @@ export async function getGrassSpeciesForZipcode(
     }
 
     // Combine the climate data with the matched grass species data
-    const result = grassSpecies.map((species) => ({
-      ...species,
-      climateData,
-    }));
-
-    // Return final result containing grass species and corresponding climate data
-    return result;
+    return grassSpecies.map((species) => ({ ...species, climateData }));
   } catch (error) {
     console.error(`Error in getGrassSpeciesForZipcode: ${error}`);
     throw error;
   }
 }
 
-// Helper function to retrieve climate data from the database
+/**
+ * Retrieve climate data from the database.
+ *
+ * @param db - PostgreSQL connection pool
+ * @param zipcode - The zipcode to retrieve climate data for
+ * @returns Promise resolving to climate data or null if not found
+ */
 async function getClimateData(
   db: Pool,
   zipcode: string
@@ -70,26 +73,32 @@ async function getClimateData(
       'SELECT * FROM "ClimateData" WHERE zipcode = $1',
       [zipcode]
     );
-    return result.rows[0] || null; // Return the climate data if found, otherwise return null
+    return result.rows[0] || null;
   } catch (error) {
-    console.error(`Error fetching climate data`);
+    console.error(`Error fetching climate data: ${error}`);
     throw new Error('Failed to fetch climate data');
   }
 }
 
-// Function to fetch climate data from an external API and store it in the database
+/**
+ * Fetch climate data from an external API and store it in the database.
+ *
+ * @param db - PostgreSQL connection pool
+ * @param zipcode - The zipcode to fetch climate data for
+ * @returns Promise resolving to the fetched and stored climate data
+ */
 async function fetchAndStoreClimateData(
   db: Pool,
   zipcode: string
 ): Promise<ClimateData> {
   try {
-    const apiClimateData = await fetchClimateDataFromAPI(zipcode); // Fetch climate data from API
+    const apiClimateData = await fetchClimateDataFromAPI(zipcode);
     if (!apiClimateData) {
       throw new Error('Failed to fetch climate data from API');
     }
 
     // Parse and convert API data to ensure correct types
-    const parsedData = {
+    const parsedData: ClimateData = {
       ...apiClimateData,
       avgTemperature: parseFloat(apiClimateData.avgTemperature.toString()),
       avgRainfall: parseFloat(apiClimateData.avgRainfall.toString()),
@@ -108,22 +117,26 @@ async function fetchAndStoreClimateData(
       fallRainfall: parseFloat(apiClimateData.fallRainfall.toString()),
       winterRainfall: parseFloat(apiClimateData.winterRainfall.toString()),
       growingDays: parseInt(apiClimateData.growingDays.toString(), 10),
-      monthlyTemperature: JSON.stringify(apiClimateData.monthlyTemperature),
-      monthlyRainfall: JSON.stringify(apiClimateData.monthlyRainfall),
+      monthlyTemperature: apiClimateData.monthlyTemperature, // Keep as object
+      monthlyRainfall: apiClimateData.monthlyRainfall, // Keep as object
     };
 
     // Insert or update the climate data in the database
     await db.query(
-      `INSERT INTO "ClimateData" (zipcode, "avgTemperature", "avgRainfall", "hardinessZone", "koppenZone",
-      "springTemperature", "summerTemperature", "fallTemperature", "winterTemperature",
-      "springRainfall", "summerRainfall", "fallRainfall", "winterRainfall", "growingDays", "ecoregion",
-      "monthlyTemperature", "monthlyRainfall")
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
-       ON CONFLICT (zipcode) DO UPDATE
-       SET "avgTemperature" = $2, "avgRainfall" = $3, "hardinessZone" = $4, "koppenZone" = $5,
-       "springTemperature" = $6, "summerTemperature" = $7, "fallTemperature" = $8, "winterTemperature" = $9,
-       "springRainfall" = $10, "summerRainfall" = $11, "fallRainfall" = $12, "winterRainfall" = $13,
-       "growingDays" = $14, "ecoregion" = $15, "monthlyTemperature" = $16, "monthlyRainfall" = $17, "lastUpdated" = NOW()`,
+      `INSERT INTO "ClimateData" (
+        zipcode, "avgTemperature", "avgRainfall", "hardinessZone", "koppenZone",
+        "springTemperature", "summerTemperature", "fallTemperature", "winterTemperature",
+        "springRainfall", "summerRainfall", "fallRainfall", "winterRainfall", "growingDays", "ecoregion",
+        "monthlyTemperature", "monthlyRainfall"
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+      ON CONFLICT (zipcode) DO UPDATE
+      SET
+        "avgTemperature" = $2, "avgRainfall" = $3, "hardinessZone" = $4, "koppenZone" = $5,
+        "springTemperature" = $6, "summerTemperature" = $7, "fallTemperature" = $8, "winterTemperature" = $9,
+        "springRainfall" = $10, "summerRainfall" = $11, "fallRainfall" = $12, "winterRainfall" = $13,
+        "growingDays" = $14, "ecoregion" = $15, "monthlyTemperature" = $16, "monthlyRainfall" = $17,
+        "lastUpdated" = NOW()`,
       [
         zipcode,
         parsedData.avgTemperature,
@@ -140,20 +153,25 @@ async function fetchAndStoreClimateData(
         parsedData.winterRainfall,
         parsedData.growingDays,
         parsedData.ecoregion,
-        parsedData.monthlyTemperature,
-        parsedData.monthlyRainfall,
+        JSON.stringify(parsedData.monthlyTemperature), // Convert to JSON string for storage
+        JSON.stringify(parsedData.monthlyRainfall), // Convert to JSON string for storage
       ]
     );
 
-    // Return the parsed climate data
     return parsedData;
   } catch (error) {
-    console.error(`Error fetching and storing climate data`);
+    console.error(`Error fetching and storing climate data: ${error}`);
     throw new Error('Failed to fetch and store climate data');
   }
 }
 
-// Function to match grass species based on the climate data
+/**
+ * Match grass species based on the climate data.
+ *
+ * @param db - PostgreSQL connection pool
+ * @param climateData - The climate data to match against
+ * @returns Promise resolving to an array of matched grass species
+ */
 async function matchGrassSpecies(
   db: Pool,
   climateData: ClimateData
@@ -163,31 +181,31 @@ async function matchGrassSpecies(
   }
 
   // Helper functions to safely parse float and integer values
-  const safeParseFloat = (value: string | number | undefined): number => {
-    if (typeof value === 'number') return value;
-    if (typeof value === 'string') return parseFloat(value) || 0;
-    return 0;
-  };
+  const safeParseFloat = (value: string | number | undefined): number =>
+    typeof value === 'number' ? value : parseFloat(value as string) || 0;
 
-  const safeParseInt = (value: string | number | undefined): number => {
-    if (typeof value === 'number') return Math.round(value);
-    if (typeof value === 'string') return parseInt(value, 10) || 0;
-    return 0;
-  };
+  const safeParseInt = (value: string | number | undefined): number =>
+    typeof value === 'number'
+      ? Math.round(value)
+      : parseInt(value as string, 10) || 0;
 
   // Define matching tiers with different thresholds and relax factors
+  // Each tier represents a different level of strictness in matching
+  // As we progress through tiers, we relax the matching criteria
   const matchingTiers = [
-    { threshold: 60, relaxFactor: 1.5 },
-    { threshold: 40, relaxFactor: 2 },
-    { threshold: 20, relaxFactor: 2.5 },
+    { threshold: 60, relaxFactor: 1.5 }, // Strict matching
+    { threshold: 40, relaxFactor: 2 }, // Moderate matching
+    { threshold: 20, relaxFactor: 2.5 }, // Relaxed matching
   ];
-
   // Try to match grass species for each tier
   for (const tier of matchingTiers) {
     console.log(
       `Attempting to match grass species with tier: ${tier.threshold}, relaxFactor: ${tier.relaxFactor}`
     );
     try {
+      // The query calculates a score for each grass species based on how well it matches the climate data
+      // Factors considered include temperature, rainfall, growing season length, hardiness zone, and Koppen classification
+      // A popularity bonus is also added for certain grass types in specific climate zones
       const result = await db.query(
         `
         WITH match_calculation AS (
@@ -291,6 +309,8 @@ async function matchGrassSpecies(
       );
 
       // If matches are found, return them with match percentage and tier information
+      // The match percentage represents how well the grass species fits the climate data
+      // The matchTier indicates which level of matching criteria was used (strict, moderate, or relaxed)
       if (result.rows.length > 0) {
         const matchedSpecies = result.rows.map((row) => ({
           ...row,
@@ -313,6 +333,8 @@ async function matchGrassSpecies(
     }
   }
 
+  // If no matches are found across all tiers, return an empty array
+  // This indicates that no suitable grass species were found for the given climate data
   console.log(
     `No matching grass species found for climate data:`,
     JSON.stringify(climateData, null, 2)

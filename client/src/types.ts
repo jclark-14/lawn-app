@@ -77,7 +77,7 @@ export type PlanStep = {
   completed: boolean;
   completedAt: string | null;
   createdAt: string;
-  stepOrder?: number | null;
+  stepOrder: number;
 };
 
 export type UserPlan = {

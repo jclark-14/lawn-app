@@ -3,9 +3,15 @@ import { Pool } from 'pg';
 import { authMiddleware, ClientError } from './index';
 import type { UserPlan, PlanStep } from '../../client/src/types';
 
+/**
+ * Sets up all plan-related routes for the application
+ * @param app - Express application instance
+ * @param pool - PostgreSQL connection pool
+ */
 export function setupPlanRoutes(app: express.Application, pool: Pool): void {
-  // Fetch a specific plan
-
+  /**
+   * Fetch a specific plan
+   */
   app.get('/api/plans/:planId', authMiddleware, async (req, res, next) => {
     const { planId } = req.params;
     const userId = req.user?.userId;
@@ -13,13 +19,12 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
     const db = await pool.connect();
     try {
       // Fetch the plan with grass species name
-
       const planSql = `
-  SELECT up.*, gs.name as "grassSpeciesName"
-  FROM "UserPlans" up
-  JOIN "GrassSpecies" gs ON up."grassSpeciesId" = gs."grassSpeciesId"
-  WHERE up."userPlanId" = $1 AND up."userId" = $2
-`;
+        SELECT up.*, gs.name as "grassSpeciesName"
+        FROM "UserPlans" up
+        JOIN "GrassSpecies" gs ON up."grassSpeciesId" = gs."grassSpeciesId"
+        WHERE up."userPlanId" = $1 AND up."userId" = $2
+      `;
       const planResult = await db.query(planSql, [planId, userId]);
 
       if (planResult.rows.length === 0) {
@@ -30,10 +35,10 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
 
       // Fetch the steps for the plan
       const stepsSql = `
-  SELECT * FROM "PlanSteps"
-  WHERE "userPlanId" = $1
-  ORDER BY "dueDate" ASC
-`;
+        SELECT * FROM "PlanSteps"
+        WHERE "userPlanId" = $1
+        ORDER BY "stepOrder" ASC, "createdAt" ASC
+      `;
       const stepsResult = await db.query(stepsSql, [planId]);
 
       const userPlan: UserPlan = {
@@ -49,6 +54,9 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
     }
   });
 
+  /**
+   * Update a specific plan
+   */
   app.put('/api/plans/:planId', authMiddleware, async (req, res, next) => {
     const { planId } = req.params;
     const userId = req.user?.userId;
@@ -58,12 +66,13 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
     try {
       await db.query('BEGIN');
 
+      // Update the plan
       const updatePlanSql = `
-  UPDATE "UserPlans"
-  SET "grassSpeciesId" = $1, "planType" = $2, "isCompleted" = $3, "isArchived" = $4, "establishmentType" = $5
-  WHERE "userPlanId" = $6 AND "userId" = $7
-  RETURNING *
-`;
+        UPDATE "UserPlans"
+        SET "grassSpeciesId" = $1, "planType" = $2, "isCompleted" = $3, "isArchived" = $4, "establishmentType" = $5
+        WHERE "userPlanId" = $6 AND "userId" = $7
+        RETURNING *
+      `;
       const planResult = await db.query(updatePlanSql, [
         updatedPlan.grassSpeciesId,
         updatedPlan.planType,
@@ -81,11 +90,12 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
       // Update or insert steps
       for (const step of updatedPlan.steps) {
         if (step.planStepId) {
+          // Update existing step
           const updateStepSql = `
-          UPDATE "PlanSteps"
-          SET "stepDescription" = $1, "dueDate" = $2, "completed" = $3
-          WHERE "planStepId" = $4 AND "userPlanId" = $5
-        `;
+            UPDATE "PlanSteps"
+            SET "stepDescription" = $1, "dueDate" = $2, "completed" = $3
+            WHERE "planStepId" = $4 AND "userPlanId" = $5
+          `;
           await db.query(updateStepSql, [
             step.stepDescription,
             step.dueDate,
@@ -94,10 +104,11 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
             planId,
           ]);
         } else {
+          // Insert new step
           const insertStepSql = `
-          INSERT INTO "PlanSteps" ("userPlanId", "templateId", "stepDescription", "dueDate", "completed")
-          VALUES ($1, $2, $3, $4, $5)
-        `;
+            INSERT INTO "PlanSteps" ("userPlanId", "templateId", "stepDescription", "dueDate", "completed")
+            VALUES ($1, $2, $3, $4, $5)
+          `;
           await db.query(insertStepSql, [
             planId,
             null,
@@ -112,13 +123,13 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
 
       // Fetch the updated plan with grass species name
       const updatedPlanSql = `
-      SELECT up.*, gs.name as "grassSpeciesName", ps.*
-      FROM "UserPlans" up
-      JOIN "GrassSpecies" gs ON up."grassSpeciesId" = gs."grassSpeciesId"
-      LEFT JOIN "PlanSteps" ps ON up."userPlanId" = ps."userPlanId"
-      WHERE up."userPlanId" = $1
-      ORDER BY ps."dueDate" ASC
-    `;
+        SELECT up.*, gs.name as "grassSpeciesName", ps.*
+        FROM "UserPlans" up
+        JOIN "GrassSpecies" gs ON up."grassSpeciesId" = gs."grassSpeciesId"
+        LEFT JOIN "PlanSteps" ps ON up."userPlanId" = ps."userPlanId"
+        WHERE up."userPlanId" = $1
+        ORDER BY ps."dueDate" ASC
+      `;
       const updatedPlanResult = await db.query(updatedPlanSql, [planId]);
 
       const finalPlan: UserPlan = {
@@ -140,6 +151,9 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
     }
   });
 
+  /**
+   * Fetch all plans for a specific user
+   */
   app.get(
     '/api/users/:userId/plans',
     authMiddleware,
@@ -156,13 +170,13 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
       const db = await pool.connect();
       try {
         const plansSql = `
-        SELECT up.*, gs.name as "grassSpeciesName", ps.*
-        FROM "UserPlans" up
-        JOIN "GrassSpecies" gs ON up."grassSpeciesId" = gs."grassSpeciesId"
-        LEFT JOIN "PlanSteps" ps ON up."userPlanId" = ps."userPlanId"
-        WHERE up."userId" = $1
-        ORDER BY up."createdAt" DESC, ps."dueDate" ASC
-      `;
+      SELECT up.*, gs.name as "grassSpeciesName", ps.*
+      FROM "UserPlans" up
+      JOIN "GrassSpecies" gs ON up."grassSpeciesId" = gs."grassSpeciesId"
+      LEFT JOIN "PlanSteps" ps ON up."userPlanId" = ps."userPlanId"
+      WHERE up."userId" = $1
+      ORDER BY up."createdAt" DESC, ps."stepOrder" ASC, ps."dueDate" ASC
+    `;
         const plansResult = await db.query(plansSql, [userId]);
 
         const plans: UserPlan[] = [];
@@ -179,7 +193,7 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
               isCompleted: row.isCompleted,
               isArchived: row.isArchived,
               createdAt: row.createdAt,
-              completedAt: row.completedAt, // Include completedAt field
+              completedAt: row.completedAt,
               steps: [],
             };
             plans.push(plan);
@@ -194,6 +208,7 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
               completed: row.completed,
               completedAt: row.completedAt,
               createdAt: row.createdAt,
+              stepOrder: row.stepOrder, // Add this line
             });
           }
         });
@@ -207,7 +222,9 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
     }
   );
 
-  // Update the existing route to complete a step
+  /**
+   * Update a specific step in a plan
+   */
   app.put(
     '/api/plans/:planId/steps/:stepId',
     authMiddleware,
@@ -256,6 +273,9 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
     }
   );
 
+  /**
+   * Mark a plan as complete
+   */
   app.put(
     '/api/plans/:planId/complete',
     authMiddleware,
@@ -269,9 +289,9 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
 
         // Check if the plan exists and belongs to the user
         const checkPlanSql = `
-      SELECT * FROM "UserPlans"
-      WHERE "userPlanId" = $1 AND "userId" = $2
-    `;
+        SELECT * FROM "UserPlans"
+        WHERE "userPlanId" = $1 AND "userId" = $2
+      `;
         const planResult = await db.query(checkPlanSql, [planId, userId]);
 
         if (planResult.rows.length === 0) {
@@ -280,19 +300,19 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
 
         // Update the plan to completed
         const updatePlanSql = `
-      UPDATE "UserPlans"
-      SET "isCompleted" = true
-      WHERE "userPlanId" = $1
-      RETURNING *
-    `;
+        UPDATE "UserPlans"
+        SET "isCompleted" = true
+        WHERE "userPlanId" = $1
+        RETURNING *
+      `;
         const result = await db.query(updatePlanSql, [planId]);
 
         // Mark all steps as completed
         const updateStepsSql = `
-      UPDATE "PlanSteps"
-      SET "completed" = true, "completedAt" = NOW()
-      WHERE "userPlanId" = $1 AND "completed" = false
-    `;
+        UPDATE "PlanSteps"
+        SET "completed" = true, "completedAt" = NOW()
+        WHERE "userPlanId" = $1 AND "completed" = false
+      `;
         await db.query(updateStepsSql, [planId]);
 
         await db.query('COMMIT');
@@ -307,14 +327,15 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
     }
   );
 
-  // Delete a plan
+  /**
+   * Delete a plan
+   */
   app.delete('/api/plans/:planId', authMiddleware, async (req, res, next) => {
     const { planId } = req.params;
     const userId = req.user?.userId;
 
     const db = await pool.connect();
     try {
-      // Start a transaction
       await db.query('BEGIN');
 
       // Delete associated steps
@@ -336,7 +357,6 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
         throw new ClientError(404, 'Plan not found');
       }
 
-      // Commit the transaction
       await db.query('COMMIT');
 
       res.json({ message: 'Plan deleted successfully' });
@@ -348,7 +368,9 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
     }
   });
 
-  // Add a new step to a plan
+  /**
+   * Add a new step to a plan
+   */
   app.post(
     '/api/plans/:planId/steps',
     authMiddleware,
@@ -370,15 +392,6 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
           throw new ClientError(404, 'Plan not found');
         }
 
-        // Get the current maximum stepOrder
-        const maxOrderSql = `
-        SELECT MAX("stepOrder") as "maxOrder"
-        FROM "PlanSteps"
-        WHERE "userPlanId" = $1
-      `;
-        const maxOrderResult = await db.query(maxOrderSql, [planId]);
-        const newStepOrder = (maxOrderResult.rows[0].maxOrder || 0) + 1;
-
         // Insert the new step
         const insertStepSql = `
         INSERT INTO "PlanSteps" ("userPlanId", "templateId", "stepDescription", "dueDate", "completed", "stepOrder")
@@ -387,11 +400,11 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
       `;
         const result = await db.query(insertStepSql, [
           planId,
-          null, // templateId is now explicitly set to null for custom steps
+          newStep.templateId,
           newStep.stepDescription,
           newStep.dueDate,
-          newStep.completed || false,
-          newStepOrder,
+          newStep.completed,
+          newStep.stepOrder,
         ]);
 
         const insertedStep: PlanStep = result.rows[0];
@@ -404,7 +417,9 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
     }
   );
 
-  // Delete a step from a plan
+  /**
+   * Delete a step from a plan
+   */
   app.delete(
     '/api/plans/:planId/steps/:stepId',
     authMiddleware,
@@ -446,7 +461,9 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
     }
   );
 
-  // Save place to profile
+  /**
+   * Save plan to user profile
+   */
   app.post(
     '/api/users/:userId/plans',
     authMiddleware,

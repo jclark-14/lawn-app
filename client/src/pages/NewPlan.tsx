@@ -140,7 +140,7 @@ function BackButton({ zipcode }) {
           to={zipcode ? `/results/${zipcode}` : '/'}
           className="bg-gray-100 text-teal-800 px-6 py-4 rounded-full text-md font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-teal-700 to-teal-600 hover:text-white hover:border-teal-600">
           <ArrowLeft size={20} className="mr-2" />
-          {zipcode ? 'Back to Search Results' : 'Back to Home'}
+          {zipcode ? 'Climate Results' : 'Back to Home'}
         </Link>
       </div>
     </div>

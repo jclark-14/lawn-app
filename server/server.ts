@@ -1,26 +1,29 @@
-/* eslint-disable @typescript-eslint/no-unused-vars -- Remove when used */
 import 'dotenv/config';
 import express from 'express';
-import pg, { PoolClient } from 'pg';
+import pg from 'pg';
 import argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
 import { getGrassSpeciesForZipcode } from './lib/grassSpeciesMatching';
 import { authMiddleware, ClientError, errorMiddleware } from './lib/index.js';
 import { setupPlanRoutes } from './lib/setupPlanRoutes';
 
+// Define types
 type User = {
   userId: number;
   username: string;
   hashedPassword: string;
 };
+
 type Auth = {
   username: string;
   password: string;
 };
 
+// Ensure TOKEN_SECRET is set in environment variables
 const hashKey = process.env.TOKEN_SECRET;
 if (!hashKey) throw new Error('TOKEN_SECRET not found in .env');
 
+// Set up database connection
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -30,23 +33,28 @@ const db = new pg.Pool({
 
 const app = express();
 
-// Create paths for static directories
+// Set up static file serving
 const reactStaticDir = new URL('../client/dist', import.meta.url).pathname;
 const uploadsStaticDir = new URL('public', import.meta.url).pathname;
 
 app.use(express.static(reactStaticDir));
-// Static directory for file uploads server/public/
 app.use(express.static(uploadsStaticDir));
 app.use(express.json());
 
+/**
+ * User sign-up endpoint
+ */
 app.post('/api/auth/sign-up', async (req, res, next) => {
   try {
-    const { username, password } = req.body;
+    const { username, password } = req.body as Auth;
     validateUser({ username, password });
     const hashedPassword = await argon2.hash(password);
-    const sql = `INSERT INTO "Users" (username, "hashedPassword") VALUES ($1, $2) RETURNING "userId"`;
-    const params = [username, hashedPassword];
-    const result = await db.query<User>(sql, params);
+    const sql = `
+      INSERT INTO "Users" (username, "hashedPassword")
+      VALUES ($1, $2)
+      RETURNING "userId"
+    `;
+    const result = await db.query<User>(sql, [username, hashedPassword]);
     const user = result.rows[0];
     res.status(201).json(user);
   } catch (err) {
@@ -54,13 +62,15 @@ app.post('/api/auth/sign-up', async (req, res, next) => {
   }
 });
 
+/**
+ * User sign-in endpoint
+ */
 app.post('/api/auth/sign-in', async (req, res, next) => {
   try {
-    const { username, password } = req.body;
+    const { username, password } = req.body as Auth;
     validateUser({ username, password });
     const sql = `SELECT * FROM "Users" WHERE username = $1`;
-    const params = [username];
-    const result = await db.query<User>(sql, params);
+    const result = await db.query<User>(sql, [username]);
     if (result.rows.length === 0) {
       throw new ClientError(401, 'Invalid login');
     }
@@ -83,6 +93,9 @@ app.post('/api/auth/sign-in', async (req, res, next) => {
   }
 });
 
+/**
+ * Get grass species recommendations for a zipcode
+ */
 app.get('/api/grass-species/:zipcode', async (req, res, next) => {
   const { zipcode } = req.params;
   try {
@@ -97,6 +110,9 @@ app.get('/api/grass-species/:zipcode', async (req, res, next) => {
   }
 });
 
+/**
+ * Get plan types for a specific grass species
+ */
 app.get(
   '/api/grass-species/:grassSpeciesId/plan-types',
   async (req, res, next) => {
@@ -104,10 +120,10 @@ app.get(
 
     try {
       const query = `
-      SELECT DISTINCT "planType", "establishmentType"
-      FROM "PlanStepTemplates"
-      WHERE "grassSpeciesId" = $1 AND "planType" != 'lawn_improvement'
-    `;
+        SELECT DISTINCT "planType", "establishmentType"
+        FROM "PlanStepTemplates"
+        WHERE "grassSpeciesId" = $1 AND "planType" != 'lawn_improvement'
+      `;
 
       const result = await db.query(query, [grassSpeciesId]);
 
@@ -123,7 +139,9 @@ app.get(
   }
 );
 
-// ... (previous imports and setup remain the same)
+/**
+ * Create a new plan
+ */
 app.post('/api/plans/new', authMiddleware, async (req, res, next) => {
   console.log('Received new plan request:', req.body);
   const client = await db.connect();
@@ -158,7 +176,6 @@ app.post('/api/plans/new', authMiddleware, async (req, res, next) => {
       establishmentType,
     ]);
     const userPlanId = planResult.rows[0].userPlanId;
-    console.log('Created new plan with ID:', userPlanId);
 
     // Fetch the appropriate plan step templates
     let fetchTemplatesSql;
@@ -228,22 +245,26 @@ app.post('/api/plans/new', authMiddleware, async (req, res, next) => {
   }
 });
 
-// ... (rest of the server code remains the same)
-
+// Set up additional plan-related routes
 setupPlanRoutes(app, db);
-/*
- * Handles paths that aren't handled by any other route handler.
- * It responds with `index.html` to support page refreshes with React Router.
- * This must be the _last_ route, just before errorMiddleware.
- */
+
+// Catch-all route for React Router
 app.get('*', (req, res) => res.sendFile(`${reactStaticDir}/index.html`));
 
+// Error handling middleware
 app.use(errorMiddleware);
 
-app.listen(process.env.PORT, () => {
-  console.log('Listening on port', process.env.PORT);
+// Start the server
+const port = process.env.PORT;
+app.listen(port, () => {
+  console.log('Listening on port', port);
 });
 
+/**
+ * Validate user input for registration and login
+ * @param user - User input to validate
+ * @throws {ClientError} If validation fails
+ */
 function validateUser(user: Auth): void {
   const { username, password } = user;
   if (!username || username.trim() === '') {

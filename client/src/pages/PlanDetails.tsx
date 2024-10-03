@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useUser } from '../components/useUser';
 import type { UserPlan, PlanStep } from '../types';
 import { Edit2, Trash2, Save, BookmarkPlus, PlusCircle } from 'lucide-react';
+import { ConfirmDeleteModal, SavedToProfileModal } from '../components/Modals';
 
 // Main PlanDetails component
 export function PlanDetails() {
@@ -14,19 +15,14 @@ export function PlanDetails() {
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-
-  useEffect(() => {
-    if (!planId) {
-      setError('Invalid plan ID');
-      return;
-    }
-    fetchPlan();
-  }, [planId, token]);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [stepToDelete, setStepToDelete] = useState<PlanStep | null>(null);
+  const [isSavedModalOpen, setIsSavedModalOpen] = useState(false);
 
   // Fetch plan data
-  const fetchPlan = async () => {
-    if (!token) {
-      console.log('Token not available, waiting...');
+  const fetchPlan = useCallback(async () => {
+    if (!token || !planId) {
+      console.log('Token or planId not available, waiting...');
       return;
     }
 
@@ -41,6 +37,9 @@ export function PlanDetails() {
         throw new Error('Failed to fetch plan');
       }
       const data: UserPlan = await response.json();
+      data.steps.sort(
+        (a, b) => (a.stepOrder ?? Infinity) - (b.stepOrder ?? Infinity)
+      );
       setPlan(data);
       setError(null);
     } catch (err) {
@@ -49,11 +48,26 @@ export function PlanDetails() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [token, planId]);
+
+  useEffect(() => {
+    if (!planId) {
+      setError('Invalid plan ID');
+      return;
+    }
+    fetchPlan();
+  }, [planId, fetchPlan]);
 
   // Add new step
   const handleAddStep = async () => {
     if (!plan || !planId) return;
+
+    // Calculate the next stepOrder
+    const nextStepOrder =
+      plan.steps.length > 0
+        ? Math.max(...plan.steps.map((step) => step.stepOrder ?? 0)) + 1
+        : 1;
+    1;
 
     const newStep: Omit<PlanStep, 'planStepId'> = {
       userPlanId: parseInt(planId),
@@ -63,6 +77,7 @@ export function PlanDetails() {
       completed: false,
       completedAt: null,
       createdAt: new Date().toISOString(),
+      stepOrder: nextStepOrder,
     };
 
     try {
@@ -80,10 +95,14 @@ export function PlanDetails() {
       }
 
       const addedStep: PlanStep = await response.json();
-      setPlan((prevPlan) => ({
-        ...prevPlan!,
-        steps: [addedStep, ...prevPlan!.steps],
-      }));
+      setPlan((prevPlan) => {
+        if (!prevPlan) return null;
+        const newSteps = [...prevPlan.steps, addedStep];
+        newSteps.sort(
+          (a, b) => (a.stepOrder ?? Infinity) - (b.stepOrder ?? Infinity)
+        );
+        return { ...prevPlan, steps: newSteps };
+      });
     } catch (err) {
       setError('Failed to add new step. Please try again.');
     }
@@ -91,18 +110,42 @@ export function PlanDetails() {
 
   // Handle step change
   const handleStepChange = async (
-    index: number,
+    stepId: number,
     field: keyof PlanStep,
     value: string | boolean
   ) => {
     if (!plan) return;
-    const newSteps = [...plan.steps];
-    newSteps[index] = { ...newSteps[index], [field]: value };
-    const updatedPlan = { ...plan, steps: newSteps };
+    const updatedSteps = plan.steps.map((step) =>
+      step.planStepId === stepId ? { ...step, [field]: value } : step
+    );
+    const updatedPlan = { ...plan, steps: updatedSteps };
     setPlan(updatedPlan);
 
     if (!isEditing && field === 'completed') {
-      await handleSavePlan(updatedPlan);
+      try {
+        const response = await fetch(
+          `/api/plans/${plan.userPlanId}/steps/${stepId}`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              [field]: value,
+              completedAt: value ? new Date().toISOString() : null,
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to update step');
+        }
+      } catch (err) {
+        setError('Failed to update step. Please try again.');
+        // Revert the local state change if the API call failed
+        setPlan(plan);
+      }
     }
   };
 
@@ -119,6 +162,10 @@ export function PlanDetails() {
         body: JSON.stringify({
           ...planToSave,
           lawnType: planToSave.establishmentType,
+          steps: planToSave.steps.map((step) => ({
+            ...step,
+            dueDate: new Date(step.dueDate).toISOString(),
+          })),
         }),
       });
       if (!response.ok) {
@@ -157,8 +204,7 @@ export function PlanDetails() {
       if (!response.ok) {
         throw new Error('Failed to save plan to profile');
       }
-      navigate('/profile');
-      alert('Plan saved to your profile successfully!');
+      setIsSavedModalOpen(true);
     } catch (err) {
       setError('Failed to save plan to profile. Please try again.');
     } finally {
@@ -167,27 +213,41 @@ export function PlanDetails() {
   };
 
   // Delete step
-  const handleDeleteStep = async (stepId: number) => {
-    if (!plan || !planId) return;
+  const handleDeleteStep = async (step: PlanStep) => {
+    setStepToDelete(step);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDeleteStep = async () => {
+    if (!plan || !planId || !stepToDelete) return;
 
     try {
-      const response = await fetch(`/api/plans/${planId}/steps/${stepId}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `/api/plans/${planId}/steps/${stepToDelete.planStepId}`,
+        {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error('Failed to delete step');
       }
 
-      const updatedSteps = plan.steps.filter(
-        (step) => step.planStepId !== stepId
-      );
-      setPlan({ ...plan, steps: updatedSteps });
+      setPlan((prevPlan) => {
+        if (!prevPlan) return null;
+        const updatedSteps = prevPlan.steps.filter(
+          (step) => step.planStepId !== stepToDelete.planStepId
+        );
+        return { ...prevPlan, steps: updatedSteps };
+      });
     } catch (err) {
       setError('Failed to delete step. Please try again.');
+    } finally {
+      setIsDeleteModalOpen(false);
+      setStepToDelete(null);
     }
   };
 
@@ -205,6 +265,7 @@ export function PlanDetails() {
     return <div className="text-red-500 text-center py-8">{error}</div>;
   if (!plan) return <div className="text-center py-8">No plan found</div>;
 
+  //Main PlanDetails JSX
   return (
     <div className="py-6 sm:py-12 w-full">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
@@ -220,6 +281,20 @@ export function PlanDetails() {
           formatEstablishmentType={formatEstablishmentType}
         />
       </div>
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDeleteStep}
+        itemName={stepToDelete?.stepDescription || ''}
+        itemType="step"
+      />
+      <SavedToProfileModal
+        isOpen={isSavedModalOpen}
+        onClose={() => {
+          setIsSavedModalOpen(false);
+          navigate('/profile');
+        }}
+      />
     </div>
   );
 }
@@ -257,7 +332,7 @@ function PlanCard({
   );
 }
 
-// Reconfigured Plan Header component
+//Plan Header component
 function PlanHeader({
   plan,
   isEditing,
@@ -270,24 +345,26 @@ function PlanHeader({
   return (
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
       <div className="w-full sm:w-auto mb-4 sm:mb-0">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-50 mb-2">
+        <h1 className="text-2xl sm:text-3xl font-bold w-2/3 sm:w-full text-gray-50 mb-2">
           {plan.grassSpeciesName}
         </h1>
-        {plan.planType === 'new_lawn' && plan.establishmentType && (
-          <p className="text-md sm:text-lg text-gray-50 mb-4">
-            Grow plan using {formatEstablishmentType(plan.establishmentType)}
-          </p>
-        )}
-        {isEditing && (
-          <button
-            onClick={handleAddStep}
-            className="bg-gray-100 text-teal-800 max-w-fit px-3 py-2 mt-2 rounded-full text-sm sm:text-md font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center justify-center w-full hover:bg-gradient-to-r from-slate-600 to-teal-600 hover:text-white hover:border-teal-600">
-            <PlusCircle size={18} className="mr-2" /> Add Step
-          </button>
-        )}
+        <div className="flex sm:flex-wrap justify-between items-center">
+          {plan.planType === 'new_lawn' && plan.establishmentType && (
+            <p className="text-md sm:text-lg text-gray-50 mb-4 inline-block sm:w-full h-2 sm:mb-2">
+              Grow plan using {formatEstablishmentType(plan.establishmentType)}
+            </p>
+          )}
+          {isEditing && (
+            <button
+              onClick={handleAddStep}
+              className="bg-gray-100 text-teal-800 max-w-fit float-right px-3 py-2 mt-2 relative bottom-2 sm:bottom-0 rounded-full text-sm sm:text-md font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center justify-center w-full hover:bg-gradient-to-r from-slate-600 to-teal-600 hover:text-white hover:border-teal-600">
+              <PlusCircle size={18} className="mr-2" /> Add Step
+            </button>
+          )}
+        </div>
       </div>
       <div className="flex flex-col items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
-        <div className="w-full flex justify-end">
+        <div className="w-full flex justify-end sm:my-2">
           <ActionButton
             onClick={handleEditSave}
             disabled={isSaving}
@@ -326,11 +403,10 @@ function ActionButton({ onClick, disabled, icon, text }) {
 function PlanSteps({ steps, isEditing, handleStepChange, handleDeleteStep }) {
   return (
     <div className="space-y-4">
-      {steps.map((step, index) => (
+      {steps.map((step) => (
         <PlanStep
           key={step.planStepId}
           step={step}
-          index={index}
           isEditing={isEditing}
           handleStepChange={handleStepChange}
           handleDeleteStep={handleDeleteStep}
@@ -341,13 +417,7 @@ function PlanSteps({ steps, isEditing, handleStepChange, handleDeleteStep }) {
 }
 
 // Individual Plan Step component
-function PlanStep({
-  step,
-  index,
-  isEditing,
-  handleStepChange,
-  handleDeleteStep,
-}) {
+function PlanStep({ step, isEditing, handleStepChange, handleDeleteStep }) {
   return (
     <div className="bg-gray-50 bg-opacity-100 p-3 sm:p-4 rounded-lg shadow">
       <div className="flex justify-between items-start mb-2">
@@ -357,7 +427,11 @@ function PlanStep({
               type="text"
               value={step.stepDescription}
               onChange={(e) =>
-                handleStepChange(index, 'stepDescription', e.target.value)
+                handleStepChange(
+                  step.planStepId,
+                  'stepDescription',
+                  e.target.value
+                )
               }
               className="w-full p-2 border rounded text-sm sm:text-base"
             />
@@ -366,8 +440,8 @@ function PlanStep({
           )}
         </div>
         <button
-          onClick={() => handleDeleteStep(step.planStepId)}
-          className="ml-2 text-teal-800 hover:text-red-800 transition-colors duration-200 flex-shrink-0"
+          onClick={() => handleDeleteStep(step)}
+          className="ml-2 text-red-800 hover:text-red-600 transition-colors duration-200 flex-shrink-0"
           title="Delete Step">
           <Trash2 size={18} />
         </button>
@@ -376,12 +450,14 @@ function PlanStep({
         <StepDate
           dueDate={step.dueDate}
           isEditing={isEditing}
-          onChange={(e) => handleStepChange(index, 'dueDate', e.target.value)}
+          onChange={(e) =>
+            handleStepChange(step.planStepId, 'dueDate', e.target.value)
+          }
         />
         <StepCompletion
           completed={step.completed}
           onChange={(e) =>
-            handleStepChange(index, 'completed', e.target.checked)
+            handleStepChange(step.planStepId, 'completed', e.target.checked)
           }
         />
       </div>
@@ -419,7 +495,7 @@ function StepCompletion({ completed, onChange }) {
         type="checkbox"
         checked={completed}
         onChange={onChange}
-        className="form-checkbox h-5 w-5 rounded-lg accent-gray-500 hover:ring-1 hover:cursor-pointer"
+        className="form-checkbox h-5 w-5 rounded-lg accent-teal-800 hover:ring-1 hover:cursor-pointer"
       />
     </div>
   );

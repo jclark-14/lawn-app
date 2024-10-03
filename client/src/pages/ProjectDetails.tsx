@@ -13,7 +13,7 @@ export default function ProjectDetails() {
     <div className="relative flex-grow min-h-screen flex flex-col">
       {/* Content */}
       <main className="relative z-10 flex-grow py-12 sm:py-14">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto px-4 pt-8 pb-10 sm:px-6 lg:px-8 bg-teal-900 bg-opacity-70 rounded-xl shadow-xl">
           <PageTitle />
           <ProjectOverview />
           <KeyFeatures />
@@ -29,7 +29,7 @@ export default function ProjectDetails() {
 // Page title component
 function PageTitle() {
   return (
-    <h1 className="text-4xl font-bold text-center mb-12 text-teal-800">
+    <h1 className="text-4xl font-bold text-center mb-12 text-gray-50">
       Project Details
     </h1>
   );
@@ -62,7 +62,7 @@ function ProjectOverview() {
 function KeyFeatures() {
   return (
     <section className="mb-16 opacity-95">
-      <h2 className="text-3xl font-semibold mb-6 text-teal-900 text-center">
+      <h2 className="text-3xl font-semibold mb-6 text-gray-50 text-center">
         Key Features
       </h2>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">

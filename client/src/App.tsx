@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import { Header } from './components/Header';
 import { Homepage } from './pages/Homepage';
-import { ResultsPage } from './pages/ResultsPage';
+import { ResultsPage } from './pages/ClimateResults';
 import ProjectDetails from './pages/ProjectDetails';
 import { Registration } from './pages/Registration';
 import { SignInPage } from './pages/SignInPage';

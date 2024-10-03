@@ -8,6 +8,8 @@ VALUES
   ('mikebrown', 'hashed_password_5');
 
 
+-- GrassSpecies data
+
 INSERT INTO "GrassSpecies" (
   "name", "description", "idealTempMin", "idealTempMax", "idealRainfallMin", "idealRainfallMax",
   "idealHardinessZone", "idealKoppenZone", "idealSpringTempMin", "idealSpringTempMax",
