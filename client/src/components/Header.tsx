@@ -74,7 +74,7 @@ function ContentWrapper({ children }) {
 // Header bar component
 function HeaderBar({ user, toggleMenu, handleSignOut }) {
   return (
-    <div className="bg-teal-900 bg-opacity-90 text-gray-100 w-full">
+    <div className="bg-teal-900 bg-opacity-85 text-gray-100 w-full">
       <header className="py-3.5 px-4 sm:px-6 lg:px-8 w-full">
         <div className="max-w-7xl mx-auto w-full">
           <div className="flex items-center justify-between w-full">
@@ -172,7 +172,7 @@ function LogoutButton({ handleSignOut }) {
   return (
     <button
       onClick={handleSignOut}
-      className="bg-teal-700 text-xl text-gray-100 sm:text-lg py-4 sm:py-2 px-4 rounded-full border border-solid shadow-lg border-teal-800 transition-all duration-500 ease-in-out hover:bg-gradient-to-r from-slate-600 to-teal-600">
+      className="bg-teal-700 text-xl text-gray-100 sm:text-lg py-4 sm:py-2 px-4 rounded-full border border-solid shadow-lg border-teal-800 transition-all duration-500 ease-in-out hover:bg-gradient-to-r from-stone-700 to-teal-500">
       Logout
     </button>
   );
@@ -183,7 +183,7 @@ function LoginButton() {
   return (
     <Link
       to="/sign-in"
-      className="bg-teal-700 text-xl text-gray-100 sm:text-lg py-4 sm:py-2 px-4 rounded-full border border-solid shadow-lg border-teal-800 transition-all duration-500 ease-in-out hover:bg-gradient-to-r from-slate-600 to-teal-600">
+      className="bg-teal-700 text-xl text-gray-100 sm:text-lg py-4 sm:py-2 px-5 rounded-full border border-solid shadow-lg border-teal-800 transition-all duration-500 ease-in-out  hover:bg-gradient-to-r from-stone-700 to-teal-500">
       <span className="inline-block min-w-[40px] text-center">Login</span>
     </Link>
   );

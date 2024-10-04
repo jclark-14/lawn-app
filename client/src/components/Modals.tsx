@@ -43,7 +43,7 @@ export function Modal({ isOpen, onClose, children }: ModalProps) {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4 py-6 sm:p-0">
       <div
         ref={modalRef}
-        className="bg-teal-900 bg-opacity-95 p-4 sm:p-6 rounded-lg shadow-xl w-full max-w-md mx-auto">
+        className="bg-teal-900 p-4 sm:p-6 rounded-lg shadow-xl w-full max-w-md mx-auto">
         {children}
       </div>
     </div>

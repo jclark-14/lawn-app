@@ -1,8 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useUser } from '../components/useUser';
 import type { UserPlan, PlanStep } from '../types';
-import { Edit2, Trash2, Save, BookmarkPlus, PlusCircle } from 'lucide-react';
+import {
+  Edit2,
+  Trash2,
+  Save,
+  BookmarkPlus,
+  PlusSquare,
+  User,
+} from 'lucide-react';
 import { ConfirmDeleteModal, SavedToProfileModal } from '../components/Modals';
 
 // Main PlanDetails component
@@ -18,6 +25,7 @@ export function PlanDetails() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [stepToDelete, setStepToDelete] = useState<PlanStep | null>(null);
   const [isSavedModalOpen, setIsSavedModalOpen] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
 
   // Fetch plan data
   const fetchPlan = useCallback(async () => {
@@ -57,6 +65,33 @@ export function PlanDetails() {
     }
     fetchPlan();
   }, [planId, fetchPlan]);
+
+  //Function to handle editing plan title
+  const handleTitleEdit = async (newTitle: string) => {
+    if (!plan || !planId) return;
+
+    try {
+      const updatedPlan = { ...plan, planTitle: newTitle };
+      const response = await fetch(`/api/plans/${planId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedPlan),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update plan title');
+      }
+
+      const result = await response.json();
+      setPlan(result);
+      setIsEditingTitle(false);
+    } catch (err) {
+      setError('Failed to update plan title. Please try again.');
+    }
+  };
 
   // Add new step
   const handleAddStep = async () => {
@@ -251,14 +286,6 @@ export function PlanDetails() {
     }
   };
 
-  // Format establishment type for display
-  const formatEstablishmentType = (type: string) => {
-    return type
-      .split('_')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' or ');
-  };
-
   if (!token) return <div className="text-center py-8">Authenticating...</div>;
   if (isLoading) return <div className="text-center py-8">Loading...</div>;
   if (error)
@@ -273,12 +300,14 @@ export function PlanDetails() {
           plan={plan}
           isEditing={isEditing}
           isSaving={isSaving}
+          isEditingTitle={isEditingTitle}
+          setIsEditingTitle={setIsEditingTitle}
           handleEditSave={handleEditSave}
           handleSaveToProfile={handleSaveToProfile}
           handleAddStep={handleAddStep}
           handleStepChange={handleStepChange}
           handleDeleteStep={handleDeleteStep}
-          formatEstablishmentType={formatEstablishmentType}
+          handleTitleEdit={handleTitleEdit}
         />
       </div>
       <ConfirmDeleteModal
@@ -304,30 +333,50 @@ function PlanCard({
   plan,
   isEditing,
   isSaving,
+  isEditingTitle,
+  setIsEditingTitle,
   handleEditSave,
   handleSaveToProfile,
   handleAddStep,
   handleStepChange,
   handleDeleteStep,
-  formatEstablishmentType,
+  handleTitleEdit,
 }) {
   return (
-    <div className="bg-teal-900 bg-opacity-60 rounded-lg shadow-lg p-4 sm:p-6 mb-8">
-      <PlanHeader
-        plan={plan}
-        isEditing={isEditing}
-        isSaving={isSaving}
-        handleEditSave={handleEditSave}
-        handleSaveToProfile={handleSaveToProfile}
-        handleAddStep={handleAddStep}
-        formatEstablishmentType={formatEstablishmentType}
-      />
-      <PlanSteps
-        steps={plan.steps}
-        isEditing={isEditing}
-        handleStepChange={handleStepChange}
-        handleDeleteStep={handleDeleteStep}
-      />
+    <div>
+      <div className="flex justify-between mb-6 mx-2">
+        <Link
+          to="/new-plan"
+          className="bg-gray-100 text-teal-800 w-fit px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-stone-600 to-teal-600 hover:text-white hover:border-teal-600">
+          <PlusSquare size={20} className="mr-1 sm:mr-2" />
+          New Plan
+        </Link>
+        <Link
+          to="/profile"
+          className="bg-gray-100 text-teal-800 w-fit px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-stone-600 to-teal-600 hover:text-white hover:border-teal-600">
+          <User size={20} className="mr-1" />
+          Profile
+        </Link>
+      </div>
+      <div className="bg-teal-900 bg-opacity-75 rounded-lg shadow-lg p-4 sm:p-6 mb-8">
+        <PlanHeader
+          plan={plan}
+          isEditing={isEditing}
+          isSaving={isSaving}
+          isEditingTitle={isEditingTitle}
+          setIsEditingTitle={setIsEditingTitle}
+          handleEditSave={handleEditSave}
+          handleSaveToProfile={handleSaveToProfile}
+          handleAddStep={handleAddStep}
+          handleTitleEdit={handleTitleEdit}
+        />
+        <PlanSteps
+          steps={plan.steps}
+          isEditing={isEditing}
+          handleStepChange={handleStepChange}
+          handleDeleteStep={handleDeleteStep}
+        />
+      </div>
     </div>
   );
 }
@@ -337,28 +386,65 @@ function PlanHeader({
   plan,
   isEditing,
   isSaving,
+  isEditingTitle,
+  setIsEditingTitle,
   handleEditSave,
   handleSaveToProfile,
   handleAddStep,
-  formatEstablishmentType,
+  handleTitleEdit,
 }) {
+  const [tempTitle, setTempTitle] = useState(plan.planTitle);
+
   return (
-    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+    <div className="flex flex-col sm:flex-row justify-between w-full items-start sm:items-start mb-6">
       <div className="w-full sm:w-auto mb-4 sm:mb-0">
-        <h1 className="text-2xl sm:text-3xl font-bold w-2/3 sm:w-full text-gray-50 mb-2">
-          {plan.grassSpeciesName}
-        </h1>
+        {isEditingTitle ? (
+          <>
+            <input
+              type="text"
+              value={tempTitle}
+              onChange={(e) => setTempTitle(e.target.value)}
+              className="text-xl bg-white bg-opacity-95 sm:text-2xl font-bold w-full text-gray-900 mb-2 p-1 rounded-lg"
+            />
+            <div className="flex items-center flex-wrap mb-3 mt-1 w-full justify-end">
+              <button
+                onClick={() => handleTitleEdit(tempTitle)}
+                className=" bg-teal-600 text-sm text-white px-5 py-2 rounded-full">
+                Save
+              </button>
+              <button
+                onClick={() => {
+                  setIsEditingTitle(false);
+                  setTempTitle(plan.planTitle);
+                }}
+                className="ml-2 text-sm bg-gray-100 text-gray-800 px-4 py-2 rounded-full">
+                Cancel
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="flex justify-between">
+            <h1 className="text-xl sm:text-2xl font-bold w-2/3 sm:w-full text-gray-50 mb-3">
+              {plan.planTitle}
+            </h1>
+            <Edit2
+              onClick={() => setIsEditingTitle(true)}
+              className="text-gray-50 cursor-pointer ml-3"
+              size={18}
+            />
+          </div>
+        )}
         <div className="flex sm:flex-wrap justify-between items-center">
           {plan.planType === 'new_lawn' && plan.establishmentType && (
-            <p className="text-md sm:text-lg text-gray-50 mb-4 inline-block sm:w-full h-2 sm:mb-2">
-              Grow plan using {formatEstablishmentType(plan.establishmentType)}
+            <p className="text-md sm:text-md text-gray-50 mb-4 inline-block sm:w-full h-2 sm:mb-2">
+              {plan.grassSpeciesName} grow plan using {plan.establishmentType}
             </p>
           )}
           {isEditing && (
             <button
               onClick={handleAddStep}
-              className="bg-gray-100 text-teal-800 max-w-fit float-right px-3 py-2 mt-2 relative bottom-2 sm:bottom-0 rounded-full text-sm sm:text-md font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center justify-center w-full hover:bg-gradient-to-r from-slate-600 to-teal-600 hover:text-white hover:border-teal-600">
-              <PlusCircle size={18} className="mr-2" /> Add Step
+              className="bg-gray-100 text-teal-800 max-w-fit float-right px-3 py-2 mt-2 relative bottom-2 sm:bottom-0 rounded-full text-sm sm:text-md font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center justify-center w-full hover:bg-gradient-to-r from-stone-600 to-teal-600 hover:text-white hover:border-teal-600">
+              <PlusSquare size={18} className="mr-2" /> Add Step
             </button>
           )}
         </div>
@@ -392,7 +478,7 @@ function ActionButton({ onClick, disabled, icon, text }) {
     <button
       onClick={onClick}
       disabled={disabled}
-      className="bg-gray-100 bg-opacity-95 text-teal-800 px-3 py-2 ml-4 mb-3 rounded-full text-sm sm:text-md font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center justify-center hover:bg-gradient-to-r from-slate-600 to-teal-600 hover:text-white hover:border-teal-600 w-full sm:w-auto">
+      className="bg-gray-50 text-teal-800 px-3 py-2 ml-4 mb-3 rounded-full text-sm sm:text-md font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center justify-center hover:bg-gradient-to-r from-stone-600 to-teal-600 hover:text-white hover:border-teal-600 w-full sm:w-auto">
       {icon}
       <span className="ml-2">{text}</span>
     </button>
@@ -446,7 +532,7 @@ function PlanStep({ step, isEditing, handleStepChange, handleDeleteStep }) {
           <Trash2 size={18} />
         </button>
       </div>
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
+      <div className="flex flex-row justify-between items-start sm:items-center sm:space-y-0">
         <StepDate
           dueDate={step.dueDate}
           isEditing={isEditing}

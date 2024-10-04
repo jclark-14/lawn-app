@@ -39,7 +39,7 @@ export function Homepage() {
 
   return (
     <main className="relative flex-grow flex flex-col">
-      <div className="relative z-10 py-12 sm:py-14 flex-grow flex flex-col justify-center">
+      <div className="relative z-10 py-12 sm:py-10 flex-grow flex flex-col justify-center">
         <div className="px-4 sm:px-6 lg:px-8 w-full">
           <div className="mx-auto max-w-7xl w-full">
             <HeroSection
@@ -60,7 +60,7 @@ export function Homepage() {
 // Hero section component
 function HeroSection({ zipcode, setZipcode, handleSubmit, error, isLoading }) {
   return (
-    <div className="text-center mb-12 sm:mb-16">
+    <div className="text-center mb-12 sm:mb-12">
       <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-teal-800">
         Get Your Perfect Lawn
       </h2>
@@ -85,7 +85,7 @@ function ZipcodeForm({ zipcode, setZipcode, handleSubmit, error, isLoading }) {
     <form
       className="flex flex-col items-center relative"
       onSubmit={handleSubmit}>
-      <div className="flex mb-2 w-full max-w-md justify-center">
+      <div className="flex  w-full max-w-md justify-center">
         <input
           type="text"
           placeholder="Enter your zipcode"
@@ -96,7 +96,7 @@ function ZipcodeForm({ zipcode, setZipcode, handleSubmit, error, isLoading }) {
         <button
           type="submit"
           disabled={isLoading}
-          className={`bg-teal-700 text-white px-4 sm:px-8 py-2.5 text-nowrap rounded-r-full text-lg font-semibold transition-all ease-in-out duration-500 hover:bg-gradient-to-r from-slate-600 to-teal-600 shadow-lg hover:shadow-xl ${
+          className={`bg-teal-700 text-white px-4 sm:px-8 py-2.5 text-nowrap rounded-r-full text-lg font-semibold transition-all ease-in-out duration-500 hover:bg-gradient-to-r from-stone-700 to-teal-600 shadow-lg hover:shadow-xl ${
             isLoading ? 'opacity-50 cursor-not-allowed' : ''
           }`}>
           {isLoading ? 'Loading...' : 'Get Started'}
@@ -135,7 +135,7 @@ function FeatureSection() {
 // Feature card component
 function FeatureCard({ icon, title, description }) {
   return (
-    <div className="bg-gray-100 p-8 opacity-95 rounded-lg shadow-md flex-1 min-w-[250px] transition duration-300 hover:shadow-lg">
+    <div className="bg-gray-100 text-teal-900 p-8 opacity-95 rounded-lg shadow-md flex-1 min-w-[250px] transition duration-300 hover:shadow-lg">
       {icon}
       <h3 className="text-2xl font-semibold mb-4 text-center">{title}</h3>
       <p className="text-center text-gray-700">{description}</p>

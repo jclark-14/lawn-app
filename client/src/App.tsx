@@ -2,7 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 import { Header } from './components/Header';
 import { Homepage } from './pages/Homepage';
 import { ResultsPage } from './pages/ClimateResults';
-import ProjectDetails from './pages/ProjectDetails';
+import { About } from './pages/About';
 import { Registration } from './pages/Registration';
 import { SignInPage } from './pages/SignInPage';
 import { NewPlan } from './pages/NewPlan';
@@ -17,7 +17,7 @@ export default function App() {
         {/* Header component wraps all routes */}
         <Route element={<Header />}>
           <Route path="/" element={<Homepage />} />
-          <Route path="/about" element={<ProjectDetails />} />
+          <Route path="/about" element={<About />} />
           <Route path="/results/:zipcode" element={<ResultsPage />} />
           <Route path="/sign-up" element={<Registration />} />
           <Route path="/sign-in" element={<SignInPage />} />

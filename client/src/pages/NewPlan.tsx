@@ -115,7 +115,7 @@ export function NewPlan() {
   }
 
   return (
-    <div className="py-12 sm:pb-20 sm:pt-24 w-full">
+    <div className="py-12 sm:pb-18 sm:pt-18 w-full">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-lg">
         <BackButton zipcode={zipcode} />
         <PlanForm
@@ -138,7 +138,7 @@ function BackButton({ zipcode }) {
       <div className="flex justify-center">
         <Link
           to={zipcode ? `/results/${zipcode}` : '/'}
-          className="bg-gray-100 text-teal-800 px-6 py-4 rounded-full text-md font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-teal-700 to-teal-600 hover:text-white hover:border-teal-600">
+          className="bg-gray-100 text-teal-800 px-6 py-4 rounded-full text-md font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-stone-700 to-teal-500 hover:text-white hover:border-teal-600">
           <ArrowLeft size={20} className="mr-2" />
           {zipcode ? 'Climate Results' : 'Back to Home'}
         </Link>
@@ -245,7 +245,7 @@ function SubmitButton({ isLoading }) {
     <button
       type="submit"
       disabled={isLoading}
-      className="w-full bg-teal-600 border border-solid border-teal-800 bg-opacity-80 text-gray-50 p-3 rounded-full mt-10 transition duration-300 hover:font-semibold hover:bg-gradient-to-r from-teal-800 to-teal-700 hover:border-teal-600 hover:shadow-xl flex items-center justify-center">
+      className="w-full bg-teal-600 border border-solid border-teal-800 bg-opacity-80 text-gray-50 p-3 rounded-full mt-10 transition duration-300 hover:font-semibold hover:bg-gradient-to-r from-stone-700 to-teal-500 hover:border-teal-600 hover:shadow-xl flex items-center justify-center">
       <SquarePlus size={24} className="mr-2" />
       {isLoading ? 'Creating Plan...' : 'Create Plan'}
     </button>

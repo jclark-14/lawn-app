@@ -97,8 +97,8 @@ function SignInForm({
   error,
 }) {
   return (
-    <div className="relative z-10 max-w-md w-full bg-white opacity-90 p-8 rounded-xl shadow-2xl">
-      <h2 className="text-center text-3xl font-extrabold text-teal-900 mb-10">
+    <div className="relative z-10 max-w-md w-full bg-teal-800 opacity-90 p-8 rounded-xl shadow-2xl">
+      <h2 className="text-center text-3xl font-extrabold text-gray-50 mb-10">
         Sign In
       </h2>
       {error && <ErrorMessage message={error} />}
@@ -162,7 +162,7 @@ function SubmitButton({ isLoading }) {
     <button
       type="submit"
       disabled={isLoading}
-      className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-teal-700 hover:bg-gradient-to-r from-slate-700 to-teal-600 transition duration-300 shadow-md hover:shadow-lg hover:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-900 ${
+      className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-full text-gray-50 bg-teal-600 hover:bg-gradient-to-r from-stone-700 to-teal-500 transition duration-300 shadow-md hover:shadow-lg hover:border-teal-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-900 ${
         isLoading ? 'opacity-50 cursor-not-allowed' : ''
       }`}>
       {isLoading ? 'Signing In...' : 'Sign In'}
@@ -174,11 +174,11 @@ function SubmitButton({ isLoading }) {
 function SignUpLink() {
   return (
     <div className="text-center mt-4">
-      <p className="text-sm text-gray-600">
+      <p className="text-sm text-gray-50">
         Don't have an account?{' '}
         <Link
           to="/sign-up"
-          className="font-medium text-teal-700 hover:text-teal-500">
+          className="font-medium text-teal-400 hover:text-emerald-300">
           Sign up
         </Link>
       </p>

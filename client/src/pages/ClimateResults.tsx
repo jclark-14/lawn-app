@@ -90,8 +90,8 @@ export function ResultsPage() {
 // Page Header component
 function PageHeader({ zipcode }) {
   return (
-    <h2 className="text-3xl text-teal-800 sm:text-4xl font-bold text-center tracking-tight mb-10">
-      Lawn Care Results for {zipcode}
+    <h2 className="text-3xl text-teal-800 sm:text-4xl font-bold text-center tracking-tight mb-4">
+      Climate & Grass Results for {zipcode}
     </h2>
   );
 }
@@ -99,21 +99,21 @@ function PageHeader({ zipcode }) {
 // Navigation Buttons component
 function NavigationButtons({ user }) {
   return (
-    <div className="flex justify-between items-center mb-10">
+    <div className="flex justify-between items-center mb-6">
       <div className="flex justify-center">
         <Link
           to="/"
-          className="bg-gray-100 text-teal-800 px-6 py-3 rounded-full text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-slate-600 to-teal-600  hover:text-white hover:border-teal-600">
+          className="bg-gray-100 text-teal-800 px-6 py-3 rounded-full text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-stone-700 to-teal-500  hover:text-white hover:border-teal-600">
           <Home size={20} className="mr-2" />
-          Back to Home
+          Home
         </Link>
       </div>
       <div className="flex justify-center">
         <Link
           to={user ? '/new-plan' : '/sign-in'}
-          className="bg-gray-100 text-teal-800 px-6 py-3 rounded-full text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-slate-600 to-teal-600  hover:text-white hover:border-teal-600">
+          className="bg-gray-100 text-teal-800 px-6 py-3 rounded-full text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-stone-700 to-teal-500  hover:text-white hover:border-teal-700">
           <SquarePlus size={23} className="mr-2" />
-          {user ? 'New Plan' : 'Login to Create Plan'}
+          {user ? 'New Plan' : 'Create Plan'}
         </Link>
       </div>
     </div>

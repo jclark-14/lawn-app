@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../components/useUser';
 import { UserPlan, PlanStep } from '../types';
@@ -14,7 +14,6 @@ import {
 import { ConfirmDeleteModal } from '../components/Modals';
 
 export function UserProfile() {
-  // State management for user plans and UI controls
   const { user, token } = useUser();
   const [plans, setPlans] = useState<UserPlan[]>([]);
   const [expandedPlans, setExpandedPlans] = useState<number[]>([]);
@@ -25,36 +24,35 @@ export function UserProfile() {
   const [planToDelete, setPlanToDelete] = useState<UserPlan | null>(null);
 
   // Function to fetch user plans from the API
-  const fetchUserPlans = async () => {
-    if (!user || !token) return;
 
-    setLoading(true);
-    try {
-      const response = await fetch(`/api/users/${user.userId}/plans`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!response.ok) throw new Error('Failed to fetch plans');
-      const data = await response.json();
-      // Sort steps for each plan before setting the state
-      setPlans(
-        data.map((plan: UserPlan) => ({
-          ...plan,
-          steps: sortSteps(plan.steps),
-        }))
-      );
-    } catch (err) {
-      setError('Error fetching plans. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Use effect to fetch plans when component mounts or user/token changes
   useEffect(() => {
+    const fetchUserPlans = async () => {
+      if (!user || !token) return;
+
+      setLoading(true);
+      try {
+        const response = await fetch(`/api/users/${user.userId}/plans`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!response.ok) throw new Error('Failed to fetch plans');
+        const data = await response.json();
+        console.log('Fetched plans:', data); // Add this line for debugging
+        setPlans(
+          data.map((plan: UserPlan) => ({
+            ...plan,
+            steps: sortSteps(plan.steps),
+          }))
+        );
+      } catch (err) {
+        setError('Error fetching plans. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchUserPlans();
-  }, [user, token]);
+  }, [token, user]);
 
   // Function to sort steps by stepOrder
   const sortSteps = (steps: PlanStep[]): PlanStep[] => {
@@ -91,53 +89,46 @@ export function UserProfile() {
     }
   };
 
-  // Function to toggle step completion status
-  const handleCompleteStep = async (planId: number, stepId: number) => {
+  const handleCompleteSteps = async (planId: number, stepIds: number[]) => {
+    if (!token) return;
+
     try {
-      const plan = plans.find((p) => p.userPlanId === planId);
-      const step = plan?.steps.find((s) => s.planStepId === stepId);
-
-      if (!plan || !step) {
-        throw new Error('Plan or step not found');
-      }
-
-      const newCompletionStatus = !step.completed;
-      const completedAt = newCompletionStatus ? new Date().toISOString() : null;
-
-      const response = await fetch(`/api/plans/${planId}/steps/${stepId}`, {
+      const response = await fetch(`/api/plans/${planId}/complete`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          completed: newCompletionStatus,
-          completedAt: completedAt,
-        }),
+        body: JSON.stringify({ stepIds }),
       });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to complete steps');
+      }
 
-      if (!response.ok) throw new Error('Failed to update step');
+      const updatedSteps = await response.json();
+      console.log('Received response:', updatedSteps);
 
-      // Update the local state with the new step status
       setPlans(
         plans.map((plan) => {
           if (plan.userPlanId === planId) {
-            const updatedSteps = plan.steps.map((step) =>
-              step.planStepId === stepId
+            const updatedPlanSteps = plan.steps.map((step) =>
+              stepIds.includes(step.planStepId)
                 ? {
                     ...step,
-                    completed: newCompletionStatus,
-                    completedAt: completedAt,
+                    completed: true,
+                    completedAt: new Date().toISOString(),
                   }
                 : step
             );
-            return { ...plan, steps: sortSteps(updatedSteps) };
+            return { ...plan, steps: sortSteps(updatedPlanSteps) };
           }
           return plan;
         })
       );
     } catch (err) {
-      setError('Error updating step. Please try again.');
+      console.error('Error completing steps:', err);
+      setError('Error completing steps. Please try again.');
     }
   };
 
@@ -193,7 +184,7 @@ export function UserProfile() {
   if (error)
     return <div className="text-center py-12 text-red-600">{error}</div>;
 
-  // Render the main UserProfile component
+  // main UserProfile component
   return (
     <div className="py-8 sm:py-12 min-h-screen w-full">
       <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
@@ -204,7 +195,7 @@ export function UserProfile() {
           togglePlanExpansion={togglePlanExpansion}
           initiatePlanDeletion={initiatePlanDeletion}
           handleCompletePlan={handleCompletePlan}
-          handleCompleteStep={handleCompleteStep}
+          handleCompleteSteps={handleCompleteSteps}
           navigate={navigate}
         />
       </div>
@@ -225,19 +216,17 @@ function NavButtons() {
       <div className="">
         <Link
           to="/"
-          className="bg-gray-100 text-teal-800 px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-slate-600 to-teal-600 hover:text-white hover:border-teal-600">
+          className="bg-gray-100 text-teal-800 px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-stone-700 to-teal-500 hover:text-white hover:border-teal-500">
           <ArrowLeft size={20} className="mr-1 sm:mr-2" />
           Back to Home
         </Link>
       </div>
-      <div className="">
-        <Link
-          to="/new-plan"
-          className="bg-gray-100 text-teal-800 px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-slate-600 to-teal-600 hover:text-white hover:border-teal-600">
-          <PlusCircle size={20} className="mr-1 sm:mr-2" />
-          Generate New Plan
-        </Link>
-      </div>
+      <Link
+        to="/new-plan"
+        className="bg-gray-100 text-teal-800 px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-stone-700 to-teal-500 hover:text-white hover:border-teal-500">
+        <PlusCircle size={20} className="mr-1 sm:mr-2" />
+        Generate New Plan
+      </Link>
     </div>
   );
 }
@@ -248,16 +237,16 @@ function PlansList({
   togglePlanExpansion,
   initiatePlanDeletion,
   handleCompletePlan,
-  handleCompleteStep,
+  handleCompleteSteps,
   navigate,
 }) {
   return (
-    <div className="bg-teal-900 bg-opacity-60 rounded-lg p-4 sm:p-8">
+    <div className="bg-teal-900 bg-opacity-75 rounded-lg p-4 sm:p-8">
       <h3 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-gray-50">
         Your Lawn Care Plans
       </h3>
       {plans.length === 0 ? (
-        <p className="text-gray-200">
+        <p className="text-gray-50">
           You don't have any plans yet. Create a new plan to get started!
         </p>
       ) : (
@@ -270,7 +259,7 @@ function PlansList({
               togglePlanExpansion={togglePlanExpansion}
               initiatePlanDeletion={initiatePlanDeletion}
               handleCompletePlan={handleCompletePlan}
-              handleCompleteStep={handleCompleteStep}
+              handleCompleteSteps={handleCompleteSteps}
               navigate={navigate}
             />
           ))}
@@ -286,7 +275,7 @@ function PlanCard({
   togglePlanExpansion,
   initiatePlanDeletion,
   handleCompletePlan,
-  handleCompleteStep,
+  handleCompleteSteps,
   navigate,
 }) {
   const allStepsCompleted = plan.steps.every((step) => step.completed);
@@ -299,40 +288,45 @@ function PlanCard({
           initiatePlanDeletion={initiatePlanDeletion}
           navigate={navigate}
         />
-        <PlanStatus plan={plan} />
         {!plan.isCompleted && !allStepsCompleted && (
           <CompletePlanButton
             planId={plan.userPlanId}
             handleCompletePlan={handleCompletePlan}
           />
         )}
+        <PlanStatus plan={plan} />
+
         <ToggleDetailsButton
           isExpanded={isExpanded}
           togglePlanExpansion={() => togglePlanExpansion(plan.userPlanId)}
         />
       </div>
       {isExpanded && (
-        <PlanDetails plan={plan} handleCompleteStep={handleCompleteStep} />
+        <PlanDetails plan={plan} handleCompleteSteps={handleCompleteSteps} />
       )}
     </div>
   );
 }
 
 function PlanHeader({ plan, initiatePlanDeletion, navigate }) {
+  console.log('Plan in PlanHeader:', plan); // Keep this for debugging
+
+  const displayTitle = plan.planTitle || `${plan.grassSpeciesName} Plan`;
+
   return (
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
       <h4 className="text-lg sm:text-xl font-semibold text-teal-800 mb-2 sm:mb-0">
-        {plan.grassSpeciesName} Plan
+        {displayTitle}
       </h4>
       <div className="flex space-x-2 w-full sm:w-auto">
         <button
           onClick={() => navigate(`/plan/${plan.userPlanId}`)}
-          className="bg-teal-700 text-white px-3 py-1 rounded-full text-sm font-semibold transition duration-300 hover:bg-gradient-to-r from-slate-600 to-teal-600 flex items-center flex-1 sm:flex-initial justify-center sm:justify-start">
+          className="bg-teal-700 text-white px-4 py-2 rounded-full w-full text-sm font-semibold transition duration-300 hover:bg-gradient-to-r from-stone-700 to-teal-500 flex items-center sm:flex-initial justify-center sm:justify-start">
           <Edit size={16} className="mr-1" /> Edit
         </button>
         <button
           onClick={() => initiatePlanDeletion(plan)}
-          className="bg-teal-700 text-white px-3 py-1 rounded-full text-sm font-semibold transition duration-300 hover:bg-red-800 flex items-center flex-1 sm:flex-initial justify-center sm:justify-start">
+          className="bg-teal-700 text-white px-3 py-1 rounded-full w-full text-sm font-semibold transition duration-300 hover:bg-red-800 flex items-center  sm:flex-initial justify-center sm:justify-start">
           <Trash2 size={16} className="mr-1" /> Delete
         </button>
       </div>
@@ -342,7 +336,7 @@ function PlanHeader({ plan, initiatePlanDeletion, navigate }) {
 
 function PlanStatus({ plan }) {
   return (
-    <p className="text-gray-600 mb-2 text-sm sm:text-base">
+    <p className="text-teal-800 mb-2 text-sm font-semibold sm:text-base">
       Status: {plan.isCompleted ? 'Completed' : 'In Progress'}
       {plan.isCompleted && plan.completedAt && (
         <span className="ml-2">
@@ -355,11 +349,13 @@ function PlanStatus({ plan }) {
 
 function CompletePlanButton({ planId, handleCompletePlan }) {
   return (
-    <button
-      onClick={() => handleCompletePlan(planId)}
-      className="mb-4 bg-teal-700 text-white px-3 sm:px-4 py-1 sm:py-2 rounded-full text-sm font-semibold transition duration-300 hover:bg-gradient-to-r from-slate-600 to-teal-600 flex items-center w-full sm:w-auto justify-center sm:justify-start">
-      <Check size={16} className="mr-1" /> Mark Plan as Completed
-    </button>
+    <div className="flex justify-center  sm:justify-start w-full">
+      <button
+        onClick={() => handleCompletePlan(planId)}
+        className="mb-4 bg-teal-700 text-white px-3 sm:px-4 py-2 sm:py-2 w-fit rounded-full text-sm font-semibold transition duration-300 hover:bg-gradient-to-r from-stone-700 to-teal-500 flex items-center sm:w-auto sm:justify-start">
+        <Check size={16} className="mr-1" /> Mark Plan as Completed
+      </button>
+    </div>
   );
 }
 
@@ -368,7 +364,7 @@ function ToggleDetailsButton({ isExpanded, togglePlanExpansion }) {
   return (
     <button
       onClick={togglePlanExpansion}
-      className="text-teal-800 hover:text-teal-700 font-medium flex items-center text-sm sm:text-base">
+      className="text-teal-800 hover:text-teal-700 font-medium flex items-center text-sm sm:text-sm">
       {isExpanded ? (
         <>
           <ChevronUp size={18} className="mr-1" /> Hide Details
@@ -383,15 +379,28 @@ function ToggleDetailsButton({ isExpanded, togglePlanExpansion }) {
 }
 
 // Component to display the details of a plan, including its steps
-function PlanDetails({ plan, handleCompleteStep }) {
-  const [showCheckboxes, setShowCheckboxes] = useState(false);
+interface PlanDetailsProps {
+  plan: UserPlan;
+  handleCompleteSteps: (planId: number, stepIds: number[]) => void;
+}
+
+function PlanDetails({ plan, handleCompleteSteps }: PlanDetailsProps) {
+  const [selectedSteps, setSelectedSteps] = useState<number[]>([]);
   const [expandedSteps, setExpandedSteps] = useState<number[]>([]);
 
-  const toggleCheckboxes = () => {
-    setShowCheckboxes(!showCheckboxes);
-    if (showCheckboxes) {
-      setExpandedSteps([]);
+  // Automatically select all steps if the plan is completed
+  useEffect(() => {
+    if (plan.isCompleted) {
+      setSelectedSteps(plan.steps.map((step) => step.planStepId));
     }
+  }, [plan.isCompleted, plan.steps]);
+
+  const toggleStepSelection = (stepId: number) => {
+    setSelectedSteps((prev) =>
+      prev.includes(stepId)
+        ? prev.filter((id) => id !== stepId)
+        : [...prev, stepId]
+    );
   };
 
   const toggleStepExpansion = (stepId: number) => {
@@ -402,26 +411,36 @@ function PlanDetails({ plan, handleCompleteStep }) {
     );
   };
 
+  const handleMarkStepsComplete = () => {
+    handleCompleteSteps(plan.userPlanId, selectedSteps);
+    setSelectedSteps([]);
+  };
+
+  const hasSelectedUncompletedSteps = selectedSteps.some((stepId) =>
+    plan.steps.find((step) => step.planStepId === stepId && !step.completed)
+  );
+
   return (
     <div className="px-4 sm:px-6 pb-4 sm:pb-6">
-      <div className="flex justify-between items-center my-2">
-        <h5 className="font-semibold text-teal-700 text-sm sm:text-base">
+      <div className="flex justify-between items-center w-full h-fit">
+        <h5 className="font-semibold text-teal-700 text-sm sm:text-base mb-2 text-center">
           Steps:
         </h5>
-        <button
-          onClick={toggleCheckboxes}
-          className="sm:hidden text-sm font-semibold text-teal-800 text-right w-1/4">
-          {showCheckboxes ? 'Done' : 'Completed Status:'}
-        </button>
+        {hasSelectedUncompletedSteps && (
+          <button
+            onClick={handleMarkStepsComplete}
+            className="mb-4 bg-teal-700 text-white px-3 sm:px-4 py-1 sm:py-2 w-fit rounded-full text-sm font-semibold transition duration-300 hover:bg-gradient-to-r from-stone-700 to-teal-500 flex items-center w-full sm:w-auto justify-center sm:justify-start">
+            <Check size={16} className="mr-1" /> Complete Selected
+          </button>
+        )}
       </div>
       <ul className="space-y-4 sm:space-y-2">
         {plan.steps.map((step: PlanStep) => (
           <StepItem
             key={step.planStepId}
             step={step}
-            planId={plan.userPlanId}
-            handleCompleteStep={handleCompleteStep}
-            showCheckbox={showCheckboxes}
+            isSelected={selectedSteps.includes(step.planStepId)}
+            toggleSelection={() => toggleStepSelection(step.planStepId)}
             isExpanded={expandedSteps.includes(step.planStepId)}
             toggleExpand={() => toggleStepExpansion(step.planStepId)}
           />
@@ -431,67 +450,60 @@ function PlanDetails({ plan, handleCompleteStep }) {
   );
 }
 
+interface StepItemProps {
+  step: PlanStep;
+  isSelected: boolean;
+  toggleSelection: () => void;
+  isExpanded: boolean;
+  toggleExpand: () => void;
+}
+
 function StepItem({
   step,
-  planId,
-  handleCompleteStep,
-  showCheckbox,
+  isSelected,
+  toggleSelection,
   isExpanded,
   toggleExpand,
-}) {
-  const handleStepCompletion = () => {
-    handleCompleteStep(planId, step.planStepId);
-  };
-
+}: StepItemProps) {
   return (
     <li className="flex flex-col">
       <div className="flex items-center justify-between w-full">
-        <div className="flex items-center flex-1 mr-2">
+        <div className="flex items-center flex-1">
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={toggleSelection}
+            className="form-checkbox h-5 w-5 rounded-lg accent-teal-700 hover:ring-1 hover:cursor-pointer mr-2"
+            disabled={step.completed}
+          />
           <span
-            className={`text-gray-700 text-sm sm:text-base ${
+            className={`text-gray-900 text-sm sm:text-base ${
               step.completed ? 'line-through' : ''
             }`}>
             {step.stepDescription}
           </span>
         </div>
         <div className="flex items-center">
-          {/* Desktop checkbox - always visible */}
-          <input
-            type="checkbox"
-            checked={step.completed}
-            onChange={handleStepCompletion}
-            className="hidden sm:inline-block form-checkbox h-5 w-5 rounded-lg accent-teal-700 hover:ring-1 hover:cursor-pointer mr-2"
-          />
-          {/* Mobile checkbox - toggleable */}
-          {showCheckbox && (
-            <input
-              type="checkbox"
-              checked={step.completed}
-              onChange={handleStepCompletion}
-              className="sm:hidden form-checkbox h-5 w-5 rounded-lg accent-teal-700 hover:ring-1 hover:cursor-pointer mr-2"
-            />
+          {step.completed && step.completedAt && (
+            <span className="text-xs sm:text-sm font-semibold text-teal-800 mr-2 hidden sm:inline">
+              Completed on: {new Date(step.completedAt).toLocaleDateString()}
+            </span>
           )}
-          {!showCheckbox && (
-            <button
-              onClick={toggleExpand}
-              className="text-teal-700 hover:text-teal-600 sm:hidden">
-              {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-            </button>
-          )}
+          <button
+            onClick={toggleExpand}
+            className="text-teal-700 hover:text-teal-500 sm:hidden">
+            {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+          </button>
         </div>
       </div>
-      {/* Desktop view for completion date */}
-      {step.completed && step.completedAt && (
-        <div className="mt-2 ml-4 text-xs sm:text-sm font-semibold text-teal-800 hidden sm:block">
-          Completed on: {new Date(step.completedAt).toLocaleDateString()}
+      {isExpanded && !step.completed && (
+        <div className="mt-2 ml-8 text-xs font-semibold text-teal-800">
+          Not completed yet
         </div>
       )}
-      {/* Mobile view for completion date or not completed status */}
-      {isExpanded && (
-        <div className="mt-2 ml-4 text-xs font-semibold text-teal-800 sm:hidden">
-          {step.completed && step.completedAt
-            ? `Completed on: ${new Date(step.completedAt).toLocaleDateString()}`
-            : 'Not completed yet'}
+      {isExpanded && step.completed && step.completedAt && (
+        <div className="mt-2 ml-8 text-xs font-semibold text-teal-800">
+          Completed on: {new Date(step.completedAt).toLocaleDateString()}
         </div>
       )}
     </li>

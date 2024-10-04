@@ -131,6 +131,7 @@ ALTER TABLE "PlanStepTemplates" ADD COLUMN "establishmentType" text;
 ALTER TABLE "PlanSteps" ALTER COLUMN "templateId" DROP NOT NULL;
 ALTER TABLE "PlanSteps" ADD COLUMN "stepOrder" INTEGER;
 ALTER TABLE "UserPlans" ADD COLUMN "completedAt" TIMESTAMPTZ;
+ALTER TABLE "UserPlans" ADD COLUMN "planTitle" text;
 
 -- Indexes for performance (unchanged)
 CREATE INDEX idx_userplans_userid ON "UserPlans" ("userId");

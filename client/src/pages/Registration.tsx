@@ -81,13 +81,13 @@ function RegistrationForm({
   error,
 }) {
   return (
-    <div className="relative z-10 max-w-md w-full bg-white opacity-90 p-8 rounded-xl shadow-2xl">
-      <h2 className="text-center text-3xl font-extrabold text-teal-900 mb-6">
+    <div className="relative z-10 max-w-md w-full bg-teal-800 opacity-90 p-8 rounded-xl shadow-2xl">
+      <h2 className="text-center text-3xl font-extrabold text-gray-50 mb-6">
         Register Account
       </h2>
       {error && <ErrorMessage message={error} />}
       <form className="space-y-6" onSubmit={handleSubmit}>
-        <div className="rounded-md shadow-sm -space-y-px">
+        <div className="rounded-md shadow-sm space-y-4 my-10">
           <InputField
             id="username"
             name="username"
@@ -95,7 +95,6 @@ function RegistrationForm({
             placeholder="Username"
             value={formData.username}
             onChange={handleChange}
-            className="rounded-t-md"
           />
           <InputField
             id="password"
@@ -112,7 +111,6 @@ function RegistrationForm({
             placeholder="Confirm Password"
             value={formData.confirmPassword}
             onChange={handleChange}
-            className="rounded-b-md"
           />
         </div>
         <SubmitButton isLoading={isLoading} />
@@ -151,7 +149,7 @@ function InputField({
         name={name}
         type={type}
         required
-        className={`appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm ${className}`}
+        className={`appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm ${className}`}
         placeholder={placeholder}
         value={value}
         onChange={onChange}
@@ -166,7 +164,7 @@ function SubmitButton({ isLoading }) {
     <button
       type="submit"
       disabled={isLoading}
-      className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-teal-700 hover:bg-gradient-to-r from-slate-700 to-teal-600 transition duration-300 shadow-md hover:shadow-lg hover:border-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-900 ${
+      className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-semibold rounded-full text-teal-900 bg-gray-50 hover:bg-gradient-to-r from-stone-700 to-teal-500 transition duration-300 shadow-md hover:shadow-lg hover:border-teal-600 hover:text-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-900 ${
         isLoading ? 'opacity-50 cursor-not-allowed' : ''
       }`}>
       {isLoading ? 'Signing Up...' : 'Sign Up'}
@@ -178,11 +176,11 @@ function SubmitButton({ isLoading }) {
 function SignInLink() {
   return (
     <div className="text-center mt-4">
-      <p className="text-sm text-gray-600">
+      <p className="text-sm text-gray-50">
         Already have an account?{' '}
         <Link
           to="/sign-in"
-          className="font-medium text-teal-700 hover:text-teal-500">
+          className="font-medium text-teal-300 hover:text-teal-200">
           Sign in
         </Link>
       </p>

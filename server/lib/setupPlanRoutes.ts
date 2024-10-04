@@ -18,13 +18,12 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
 
     const db = await pool.connect();
     try {
-      // Fetch the plan with grass species name
       const planSql = `
-        SELECT up.*, gs.name as "grassSpeciesName"
-        FROM "UserPlans" up
-        JOIN "GrassSpecies" gs ON up."grassSpeciesId" = gs."grassSpeciesId"
-        WHERE up."userPlanId" = $1 AND up."userId" = $2
-      `;
+      SELECT up.*, gs.name as "grassSpeciesName"
+      FROM "UserPlans" up
+      JOIN "GrassSpecies" gs ON up."grassSpeciesId" = gs."grassSpeciesId"
+      WHERE up."userPlanId" = $1 AND up."userId" = $2
+    `;
       const planResult = await db.query(planSql, [planId, userId]);
 
       if (planResult.rows.length === 0) {
@@ -32,6 +31,13 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
       }
 
       const plan = planResult.rows[0];
+
+      // Generate default planTitle if not set
+      if (!plan.planTitle) {
+        plan.planTitle = `${plan.grassSpeciesName} ${
+          plan.planType === 'new_lawn' ? 'New Grow' : 'Improvement'
+        } Plan`;
+      }
 
       // Fetch the steps for the plan
       const stepsSql = `
@@ -68,17 +74,18 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
 
       // Update the plan
       const updatePlanSql = `
-        UPDATE "UserPlans"
-        SET "grassSpeciesId" = $1, "planType" = $2, "isCompleted" = $3, "isArchived" = $4, "establishmentType" = $5
-        WHERE "userPlanId" = $6 AND "userId" = $7
-        RETURNING *
-      `;
+      UPDATE "UserPlans"
+      SET "grassSpeciesId" = $1, "planType" = $2, "isCompleted" = $3, "isArchived" = $4, "establishmentType" = $5, "planTitle" = $6
+      WHERE "userPlanId" = $7 AND "userId" = $8
+      RETURNING *
+    `;
       const planResult = await db.query(updatePlanSql, [
         updatedPlan.grassSpeciesId,
         updatedPlan.planType,
         updatedPlan.isCompleted || false,
         updatedPlan.isArchived || false,
         updatedPlan.establishmentType,
+        updatedPlan.planTitle,
         planId,
         userId,
       ]);
@@ -123,23 +130,16 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
 
       // Fetch the updated plan with grass species name
       const updatedPlanSql = `
-        SELECT up.*, gs.name as "grassSpeciesName", ps.*
-        FROM "UserPlans" up
-        JOIN "GrassSpecies" gs ON up."grassSpeciesId" = gs."grassSpeciesId"
-        LEFT JOIN "PlanSteps" ps ON up."userPlanId" = ps."userPlanId"
-        WHERE up."userPlanId" = $1
-        ORDER BY ps."dueDate" ASC
-      `;
+      SELECT up.*, gs.name as "grassSpeciesName"
+      FROM "UserPlans" up
+      JOIN "GrassSpecies" gs ON up."grassSpeciesId" = gs."grassSpeciesId"
+      WHERE up."userPlanId" = $1
+    `;
       const updatedPlanResult = await db.query(updatedPlanSql, [planId]);
 
       const finalPlan: UserPlan = {
         ...updatedPlanResult.rows[0],
-        steps: updatedPlanResult.rows.map((row: any) => ({
-          planStepId: row.planStepId,
-          stepDescription: row.stepDescription,
-          dueDate: row.dueDate,
-          completed: row.completed,
-        })),
+        steps: updatedPlan.steps, // Use the steps from the request body
       };
 
       res.json(finalPlan);
@@ -189,6 +189,7 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
               grassSpeciesId: row.grassSpeciesId,
               grassSpeciesName: row.grassSpeciesName,
               establishmentType: row.establishmentType,
+              planTitle: row.planTitle,
               planType: row.planType,
               isCompleted: row.isCompleted,
               isArchived: row.isArchived,
@@ -199,7 +200,7 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
             plans.push(plan);
           }
           if (row.planStepId) {
-            plan.steps.push({
+            const step: PlanStep = {
               planStepId: row.planStepId,
               userPlanId: row.userPlanId,
               templateId: row.templateId,
@@ -208,8 +209,9 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
               completed: row.completed,
               completedAt: row.completedAt,
               createdAt: row.createdAt,
-              stepOrder: row.stepOrder, // Add this line
-            });
+              stepOrder: row.stepOrder,
+            };
+            plan.steps.push(step);
           }
         });
 
@@ -281,6 +283,7 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
     authMiddleware,
     async (req, res, next) => {
       const { planId } = req.params;
+      const { stepIds } = req.body;
       const userId = req.user?.userId;
 
       const db = await pool.connect();
@@ -298,26 +301,71 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
           throw new ClientError(404, 'Plan not found');
         }
 
-        // Update the plan to completed
-        const updatePlanSql = `
-        UPDATE "UserPlans"
-        SET "isCompleted" = true
-        WHERE "userPlanId" = $1
-        RETURNING *
-      `;
-        const result = await db.query(updatePlanSql, [planId]);
+        if (stepIds && stepIds.length > 0) {
+          // Update only the specified steps
+          const updateStepsSql = `
+          UPDATE "PlanSteps"
+          SET "completed" = true, "completedAt" = NOW()
+          WHERE "userPlanId" = $1 AND "planStepId" = ANY($2::int[])
+          RETURNING *
+        `;
+          const result = await db.query(updateStepsSql, [planId, stepIds]);
 
-        // Mark all steps as completed
-        const updateStepsSql = `
-        UPDATE "PlanSteps"
-        SET "completed" = true, "completedAt" = NOW()
-        WHERE "userPlanId" = $1 AND "completed" = false
-      `;
-        await db.query(updateStepsSql, [planId]);
+          // Check if all steps are completed
+          const checkAllCompletedSql = `
+          SELECT COUNT(*) as total, SUM(CASE WHEN completed THEN 1 ELSE 0 END) as completed
+          FROM "PlanSteps"
+          WHERE "userPlanId" = $1
+        `;
+          const completionCheckResult = await db.query(checkAllCompletedSql, [
+            planId,
+          ]);
+          const { total, completed } = completionCheckResult.rows[0];
 
-        await db.query('COMMIT');
+          if (total === completed) {
+            // If all steps are completed, mark the plan as completed
+            const updatePlanSql = `
+            UPDATE "UserPlans"
+            SET "isCompleted" = true, "completedAt" = NOW()
+            WHERE "userPlanId" = $1
+            RETURNING *
+          `;
+            await db.query(updatePlanSql, [planId]);
+          }
 
-        res.json(result.rows[0]);
+          await db.query('COMMIT');
+
+          res.json({
+            message: 'Steps completed successfully',
+            completedSteps: result.rows,
+            planCompleted: total === completed,
+          });
+        } else {
+          // If no stepIds provided, complete all steps (existing behavior)
+          const updatePlanSql = `
+          UPDATE "UserPlans"
+          SET "isCompleted" = true, "completedAt" = NOW()
+          WHERE "userPlanId" = $1
+          RETURNING *
+        `;
+          const planResult = await db.query(updatePlanSql, [planId]);
+
+          const updateStepsSql = `
+          UPDATE "PlanSteps"
+          SET "completed" = true, "completedAt" = NOW()
+          WHERE "userPlanId" = $1 AND "completed" = false
+          RETURNING *
+        `;
+          const stepsResult = await db.query(updateStepsSql, [planId]);
+
+          await db.query('COMMIT');
+
+          res.json({
+            message: 'Plan and all steps completed successfully',
+            completedPlan: planResult.rows[0],
+            completedSteps: stepsResult.rows,
+          });
+        }
       } catch (err) {
         await db.query('ROLLBACK');
         next(err);

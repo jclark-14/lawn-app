@@ -83,6 +83,7 @@ export type PlanStep = {
 export type UserPlan = {
   userPlanId: number;
   userId: number;
+  planTitle: string | null;
   grassSpeciesId: number;
   grassSpeciesName: string;
   establishmentType: 'sod' | 'sod_plugs' | 'plugs' | 'seed' | null;
