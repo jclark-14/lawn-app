@@ -12,7 +12,7 @@ export function About() {
   return (
     <div className="relative flex-grow min-h-screen flex flex-col">
       {/* Content */}
-      <main className="relative z-10 flex-grow py-12 sm:py-14 mx-auto max-w-7xl">
+      <main className="relative z-10 flex-grow py-12 sm:py-14 px-4 mx-auto max-w-7xl">
         <div className="container mx-auto px-4 pt-8 pb-10 sm:px-6 lg:px-8 bg-teal-900 bg-opacity-75 rounded-xl shadow-xl">
           <PageTitle />
           <ProjectOverview />
