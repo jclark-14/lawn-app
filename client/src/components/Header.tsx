@@ -1,4 +1,4 @@
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { Footer } from './Footer';
 import { useUser } from './useUser';
 import { useState, useEffect } from 'react';
@@ -117,7 +117,7 @@ function HamburgerButton({ toggleMenu }) {
 function DesktopNavigation({ user, handleSignOut }) {
   return (
     <nav className="hidden lg:flex items-center space-x-8 text-lg">
-      <NavLinks user={user} handleSignOut={handleSignOut} />
+      <NavLinks user={user} handleSignOut={handleSignOut} isMobile={false} />
     </nav>
   );
 }
@@ -126,7 +126,7 @@ function DesktopNavigation({ user, handleSignOut }) {
 function MobileMenu({ isOpen, toggleMenu, user, handleSignOut }) {
   return (
     <div
-      className={`fixed inset-y-0.5 right-0 bg-gray-100  text-teal-900 w-full font-medium text-2xl shadow-lg px-4 pb-6 text-center transform transition-transform duration-300 ease-in-out z-50 lg:hidden ${
+      className={`fixed inset-y-0.5 right-0 bg-gray-100 text-teal-900 w-full font-medium text-2xl shadow-lg px-4 pb-6 text-center transform transition-transform duration-300 ease-in-out z-50 lg:hidden ${
         isOpen ? 'translate-x-0' : 'translate-x-full'
       }`}>
       <div className="flex flex-wrap justify-end pt-3">
@@ -137,28 +137,92 @@ function MobileMenu({ isOpen, toggleMenu, user, handleSignOut }) {
         </button>
       </div>
       <nav className="flex flex-col space-y-14 px-6 mt-10 mobile-menu">
-        <NavLinks user={user} handleSignOut={handleSignOut} />
+        <NavLinks
+          user={user}
+          handleSignOut={handleSignOut}
+          toggleMenu={toggleMenu}
+          isMobile={true}
+        />
       </nav>
     </div>
   );
 }
 
 // Navigation links
-function NavLinks({ user, handleSignOut }) {
+function NavLinks({
+  user,
+  handleSignOut,
+  toggleMenu,
+  isMobile,
+}: {
+  user: any;
+  handleSignOut: any;
+  toggleMenu?: () => void;
+  isMobile: boolean;
+}) {
+  const navigate = useNavigate();
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    if (isMobile && toggleMenu) {
+      toggleMenu();
+    }
+  };
+
   return (
     <>
-      <NavLink to="/">Home</NavLink>
-      {user && <NavLink to="/profile">Profile</NavLink>}
-      <NavLink to="/about">About</NavLink>
-      {user ? <LogoutButton handleSignOut={handleSignOut} /> : <LoginButton />}
+      <NavLink onClick={() => handleNavigation('/')} isMobile={isMobile}>
+        Home
+      </NavLink>
+      {user && (
+        <NavLink
+          onClick={() => handleNavigation('/profile')}
+          isMobile={isMobile}>
+          Profile
+        </NavLink>
+      )}
+      <NavLink onClick={() => handleNavigation('/about')} isMobile={isMobile}>
+        About
+      </NavLink>
+      {user ? (
+        <LogoutButton
+          handleSignOut={() => {
+            handleSignOut();
+            if (isMobile && toggleMenu) {
+              toggleMenu();
+            }
+          }}
+        />
+      ) : (
+        <LoginButton onClick={() => handleNavigation('/sign-in')} />
+      )}
     </>
   );
 }
 
 // Navigation link component
-function NavLink({ to, children }) {
+function NavLink({
+  onClick,
+  children,
+  isMobile,
+}: {
+  onClick: () => void;
+  children: React.ReactNode;
+  isMobile: boolean;
+}) {
+  if (isMobile) {
+    return (
+      <button onClick={onClick} className="relative group w-full text-left">
+        <span className="hover:text-teal-700 transition-colors duration-300">
+          {children}
+        </span>
+        <span className="absolute left-0 bottom-0 w-full h-0.5 bg-teal-700 opacity-0 transition duration-300 ease-in-out group-hover:opacity-100"></span>
+      </button>
+    );
+  }
+
   return (
-    <Link to={to} className="relative group">
+    <Link to="#" onClick={onClick} className="relative group">
       <span className="hover:text-teal-100 transition-colors duration-300">
         {children}
       </span>
@@ -179,12 +243,12 @@ function LogoutButton({ handleSignOut }) {
 }
 
 // Login button
-function LoginButton() {
+function LoginButton({ onClick }) {
   return (
-    <Link
-      to="/sign-in"
+    <button
+      onClick={onClick}
       className="bg-teal-700 text-xl text-gray-100 sm:text-lg py-4 sm:py-2 px-5 rounded-full border border-solid shadow-lg border-teal-800 transition-all duration-500 ease-in-out  hover:bg-gradient-to-r from-gray-800 to-teal-500">
       <span className="inline-block min-w-[40px] text-center">Login</span>
-    </Link>
+    </button>
   );
 }
