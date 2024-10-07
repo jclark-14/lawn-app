@@ -172,7 +172,7 @@ function LogoutButton({ handleSignOut }) {
   return (
     <button
       onClick={handleSignOut}
-      className="bg-teal-700 text-xl text-gray-100 sm:text-lg py-4 sm:py-2 px-4 rounded-full border border-solid shadow-lg border-teal-800 transition-all duration-500 ease-in-out hover:bg-gradient-to-r from-stone-700 to-teal-500">
+      className="bg-teal-700 text-xl text-gray-100 sm:text-lg py-4 sm:py-2 px-4 rounded-full border border-solid shadow-lg border-teal-800 transition-all duration-500 ease-in-out hover:bg-gradient-to-r from-gray-800 to-teal-500">
       Logout
     </button>
   );
@@ -183,7 +183,7 @@ function LoginButton() {
   return (
     <Link
       to="/sign-in"
-      className="bg-teal-700 text-xl text-gray-100 sm:text-lg py-4 sm:py-2 px-5 rounded-full border border-solid shadow-lg border-teal-800 transition-all duration-500 ease-in-out  hover:bg-gradient-to-r from-stone-700 to-teal-500">
+      className="bg-teal-700 text-xl text-gray-100 sm:text-lg py-4 sm:py-2 px-5 rounded-full border border-solid shadow-lg border-teal-800 transition-all duration-500 ease-in-out  hover:bg-gradient-to-r from-gray-800 to-teal-500">
       <span className="inline-block min-w-[40px] text-center">Login</span>
     </Link>
   );

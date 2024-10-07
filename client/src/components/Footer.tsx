@@ -27,7 +27,7 @@ export function Footer() {
 
           {/* Project details button */}
           <Link to="/about">
-            <button className="bg-gray-200 text-teal-800 px-8 py-3.5 rounded-full text-md font-semibold hover:bg-gradient-to-r from-stone-700 to-teal-500 transition duration-300 shadow-md hover:shadow-lg hover:text-white hover:border-emerald-600">
+            <button className="bg-gray-200 text-teal-800 px-8 py-3.5 rounded-full text-md font-semibold hover:bg-gradient-to-r from-gray-800 to-teal-500 transition duration-300 shadow-md hover:shadow-lg hover:text-white hover:border-emerald-600">
               View Project Details
             </button>
           </Link>

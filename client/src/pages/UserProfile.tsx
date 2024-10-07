@@ -3,13 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../components/useUser';
 import { UserPlan, PlanStep } from '../types';
 import {
-  ArrowLeft,
   Trash2,
   Edit,
   Check,
   ChevronDown,
   ChevronUp,
   PlusCircle,
+  Home,
 } from 'lucide-react';
 import { ConfirmDeleteModal } from '../components/Modals';
 
@@ -216,16 +216,16 @@ function NavButtons() {
       <div className="">
         <Link
           to="/"
-          className="bg-gray-100 text-teal-800 px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-stone-700 to-teal-500 hover:text-white hover:border-teal-500">
-          <ArrowLeft size={20} className="mr-1 sm:mr-2" />
-          Back to Home
+          className="bg-gray-100 text-teal-800 px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-gray-800 to-teal-500 hover:text-white hover:border-teal-500">
+          <Home size={20} className="mr-1 sm:mr-2" />
+          Home
         </Link>
       </div>
       <Link
         to="/new-plan"
-        className="bg-gray-100 text-teal-800 px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-stone-700 to-teal-500 hover:text-white hover:border-teal-500">
+        className="bg-gray-100 text-teal-800 px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-gray-800 to-teal-500 hover:text-white hover:border-teal-500">
         <PlusCircle size={20} className="mr-1 sm:mr-2" />
-        Generate New Plan
+        Add New Plan
       </Link>
     </div>
   );
@@ -321,7 +321,7 @@ function PlanHeader({ plan, initiatePlanDeletion, navigate }) {
       <div className="flex space-x-2 w-full sm:w-auto">
         <button
           onClick={() => navigate(`/plan/${plan.userPlanId}`)}
-          className="bg-teal-700 text-white px-4 py-2 rounded-full w-full text-sm font-semibold transition duration-300 hover:bg-gradient-to-r from-stone-700 to-teal-500 flex items-center sm:flex-initial justify-center sm:justify-start">
+          className="bg-teal-700 text-white px-4 py-2 rounded-full w-full text-sm font-semibold transition duration-300 hover:bg-gradient-to-r from-gray-800 to-teal-500 flex items-center sm:flex-initial justify-center sm:justify-start">
           <Edit size={16} className="mr-1" /> Edit
         </button>
         <button
@@ -352,7 +352,7 @@ function CompletePlanButton({ planId, handleCompletePlan }) {
     <div className="flex justify-center  sm:justify-start w-full">
       <button
         onClick={() => handleCompletePlan(planId)}
-        className="mb-4 bg-teal-700 text-white px-3 sm:px-4 py-2 sm:py-2 w-fit rounded-full text-sm font-semibold transition duration-300 hover:bg-gradient-to-r from-stone-700 to-teal-500 flex items-center sm:w-auto sm:justify-start">
+        className="mb-4 bg-teal-700 text-white px-3 sm:px-4 py-2 sm:py-2 w-fit rounded-full text-sm font-semibold transition duration-300 hover:bg-gradient-to-r from-gray-800 to-teal-500 flex items-center sm:w-auto sm:justify-start">
         <Check size={16} className="mr-1" /> Mark Plan as Completed
       </button>
     </div>
@@ -429,7 +429,7 @@ function PlanDetails({ plan, handleCompleteSteps }: PlanDetailsProps) {
         {hasSelectedUncompletedSteps && (
           <button
             onClick={handleMarkStepsComplete}
-            className="mb-4 bg-teal-700 text-white px-3 sm:px-4 py-1 sm:py-2 w-fit rounded-full text-sm font-semibold transition duration-300 hover:bg-gradient-to-r from-stone-700 to-teal-500 flex items-center w-full sm:w-auto justify-center sm:justify-start">
+            className="mb-4 bg-teal-700 text-white px-3 sm:px-4 py-1 sm:py-2 w-fit rounded-full text-sm font-semibold transition duration-300 hover:bg-gradient-to-r from-gray-800 to-teal-500 flex items-center w-full sm:w-auto justify-center sm:justify-start">
             <Check size={16} className="mr-1" /> Complete Selected
           </button>
         )}

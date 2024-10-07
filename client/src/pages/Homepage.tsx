@@ -96,7 +96,7 @@ function ZipcodeForm({ zipcode, setZipcode, handleSubmit, error, isLoading }) {
         <button
           type="submit"
           disabled={isLoading}
-          className={`bg-teal-700 text-white px-4 sm:px-8 py-2.5 text-nowrap rounded-r-full text-lg font-semibold transition-all ease-in-out duration-500 hover:bg-gradient-to-r from-stone-700 to-teal-600 shadow-lg hover:shadow-xl ${
+          className={`bg-teal-700 text-white px-4 sm:px-8 py-2.5 text-nowrap rounded-r-full text-lg font-semibold transition-all ease-in-out duration-500 hover:bg-gradient-to-r from-gray-800 to-teal-600 shadow-lg hover:shadow-xl ${
             isLoading ? 'opacity-50 cursor-not-allowed' : ''
           }`}>
           {isLoading ? 'Loading...' : 'Get Started'}

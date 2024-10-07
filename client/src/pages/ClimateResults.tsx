@@ -103,7 +103,7 @@ function NavigationButtons({ user }) {
       <div className="flex justify-center">
         <Link
           to="/"
-          className="bg-gray-100 text-teal-800 px-6 py-3 rounded-full text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-stone-700 to-teal-500  hover:text-white hover:border-teal-600">
+          className="bg-gray-100 text-teal-800 px-6 py-3 rounded-full text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-gray-800 to-teal-500  hover:text-white hover:border-teal-600">
           <Home size={20} className="mr-2" />
           Home
         </Link>
@@ -111,7 +111,7 @@ function NavigationButtons({ user }) {
       <div className="flex justify-center">
         <Link
           to={user ? '/new-plan' : '/sign-in'}
-          className="bg-gray-100 text-teal-800 px-6 py-3 rounded-full text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-stone-700 to-teal-500  hover:text-white hover:border-teal-700">
+          className="bg-gray-100 text-teal-800 px-6 py-3 rounded-full text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-gray-800 to-teal-500  hover:text-white hover:border-teal-700">
           <SquarePlus size={23} className="mr-2" />
           {user ? 'New Plan' : 'Create Plan'}
         </Link>

@@ -164,7 +164,7 @@ function SubmitButton({ isLoading }) {
     <button
       type="submit"
       disabled={isLoading}
-      className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-semibold rounded-full text-teal-900 bg-gray-50 hover:bg-gradient-to-r from-stone-700 to-teal-500 transition duration-300 shadow-md hover:shadow-lg hover:border-teal-600 hover:text-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-900 ${
+      className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-semibold rounded-full text-teal-900 bg-gray-50 hover:bg-gradient-to-r from-gray-800 to-teal-500 transition duration-300 shadow-md hover:shadow-lg hover:border-teal-700 hover:text-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-900 ${
         isLoading ? 'opacity-50 cursor-not-allowed' : ''
       }`}>
       {isLoading ? 'Signing Up...' : 'Sign Up'}

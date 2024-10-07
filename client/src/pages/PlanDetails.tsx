@@ -347,13 +347,13 @@ function PlanCard({
       <div className="flex justify-between mb-6 mx-2">
         <Link
           to="/new-plan"
-          className="bg-gray-100 text-teal-800 w-fit px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-stone-600 to-teal-600 hover:text-white hover:border-teal-600">
+          className="bg-gray-100 text-teal-800 w-fit px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-gray-800 to-teal-600 hover:text-white hover:border-teal-600">
           <PlusSquare size={20} className="mr-1 sm:mr-2" />
           New Plan
         </Link>
         <Link
           to="/profile"
-          className="bg-gray-100 text-teal-800 w-fit px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-stone-600 to-teal-600 hover:text-white hover:border-teal-600">
+          className="bg-gray-100 text-teal-800 w-fit px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-gray-800 to-teal-600 hover:text-white hover:border-teal-600">
           <User size={20} className="mr-1" />
           Profile
         </Link>
@@ -429,7 +429,7 @@ function PlanHeader({
             </h1>
             <Edit2
               onClick={() => setIsEditingTitle(true)}
-              className="text-gray-50 cursor-pointer ml-3"
+              className="text-gray-50 cursor-pointer ml-3 hover:text-teal-300"
               size={18}
             />
           </div>
@@ -443,7 +443,7 @@ function PlanHeader({
           {isEditing && (
             <button
               onClick={handleAddStep}
-              className="bg-gray-100 text-teal-800 max-w-fit float-right px-3 py-2 mt-2 relative bottom-2 sm:bottom-0 rounded-full text-sm sm:text-md font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center justify-center w-full hover:bg-gradient-to-r from-stone-600 to-teal-600 hover:text-white hover:border-teal-600">
+              className="bg-gray-100 text-teal-800 max-w-fit float-right px-3 py-2 mt-4 relative bottom-2 sm:bottom-0 rounded-full text-sm sm:text-md font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center justify-center w-full hover:bg-gradient-to-r from-gray-800 to-teal-600 hover:text-white hover:border-teal-600">
               <PlusSquare size={18} className="mr-2" /> Add Step
             </button>
           )}
@@ -478,7 +478,7 @@ function ActionButton({ onClick, disabled, icon, text }) {
     <button
       onClick={onClick}
       disabled={disabled}
-      className="bg-gray-50 text-teal-800 px-3 py-2 ml-4 mb-3 rounded-full text-sm sm:text-md font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center justify-center hover:bg-gradient-to-r from-stone-600 to-teal-600 hover:text-white hover:border-teal-600 w-full sm:w-auto">
+      className="bg-gray-50 text-teal-800 px-3 py-2 ml-4 mb-3 rounded-full text-sm sm:text-md font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center justify-center hover:bg-gradient-to-r from-gray-800 to-teal-600 hover:text-white hover:border-teal-600 w-full sm:w-auto">
       {icon}
       <span className="ml-2">{text}</span>
     </button>

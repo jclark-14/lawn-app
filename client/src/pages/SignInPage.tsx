@@ -162,7 +162,7 @@ function SubmitButton({ isLoading }) {
     <button
       type="submit"
       disabled={isLoading}
-      className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-full text-gray-50 bg-teal-600 hover:bg-gradient-to-r from-stone-700 to-teal-500 transition duration-300 shadow-md hover:shadow-lg hover:border-teal-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-900 ${
+      className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-full text-gray-50 bg-teal-600 hover:bg-gradient-to-r from-gray-800 to-teal-500 transition duration-300 shadow-md hover:shadow-lg hover:border-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-900 ${
         isLoading ? 'opacity-50 cursor-not-allowed' : ''
       }`}>
       {isLoading ? 'Signing In...' : 'Sign In'}

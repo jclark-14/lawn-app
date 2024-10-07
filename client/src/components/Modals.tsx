@@ -76,12 +76,12 @@ export function ConfirmDeleteModal({
       <div className="flex justify-end space-x-2">
         <button
           onClick={onConfirm}
-          className="bg-red-700 text-gray-50 px-3 sm:px-4 py-2 rounded-full text-sm font-semibold transition duration-300 hover:bg-red-500">
+          className="bg-red-700 text-gray-50 px-3 sm:px-4 py-2 rounded-full text-sm font-semibold transition duration-300 hover:bg-gradient-to-r from-red-500 to-red-700">
           Delete
         </button>
         <button
           onClick={onClose}
-          className="bg-gray-100 text-teal-800 px-3 sm:px-4 py-2 rounded-full text-sm font-semibold transition duration-300 hover:bg-gradient-to-r from-slate-600 to-teal-600 hover:text-gray-50">
+          className="bg-gray-100 text-teal-800 px-3 sm:px-4 py-2 rounded-full text-sm font-semibold transition duration-300 hover:bg-gradient-to-r from-gray-800 to-teal-600 hover:text-gray-50">
           Cancel
         </button>
       </div>
@@ -108,7 +108,7 @@ export function SavedToProfileModal({
       </p>
       <button
         onClick={onClose}
-        className="mt-2 sm:mt-4 bg-gray-100 text-teal-800 px-3 sm:px-4 py-2 rounded-full text-sm font-semibold transition duration-300 hover:bg-gradient-to-r from-slate-600 to-teal-600 hover:text-gray-50 w-full sm:w-auto">
+        className="mt-2 sm:mt-4 bg-gray-100 text-teal-800 px-3 sm:px-4 py-2 rounded-full text-sm font-semibold transition duration-300 hover:bg-gradient-to-r from-gray-800 to-teal-600 hover:text-gray-50 w-full sm:w-auto">
         Close
       </button>
     </Modal>
