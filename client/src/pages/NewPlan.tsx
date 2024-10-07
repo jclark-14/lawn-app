@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useUser } from '../components/useUser';
 import { ArrowLeft, SquarePlus } from 'lucide-react';
+import { NewPlanSkeleton } from '../components/Skeleton';
 
 // Main NewPlan component
 export function NewPlan() {
@@ -42,7 +43,6 @@ export function NewPlan() {
         .filter(Boolean);
 
       setAvailableTypes(availableTypes);
-      console.log('Available types:', availableTypes);
     } catch (err) {
       console.error('Error fetching lawn types:', err);
       setError('Failed to load lawn types. Please try again.');
@@ -59,7 +59,6 @@ export function NewPlan() {
     async (e: React.FormEvent) => {
       e.preventDefault();
       if (isLoading) {
-        console.log('Submission already in progress, ignoring');
         return;
       }
       if (!user) {
@@ -88,7 +87,6 @@ export function NewPlan() {
         }
 
         const data = await response.json();
-        console.log('Plan created successfully:', data);
         navigate(`/plan/${data.userPlanId}`);
       } catch (err) {
         console.error('Error creating plan:', err);
@@ -111,7 +109,7 @@ export function NewPlan() {
   const zipcode = localStorage.getItem('zipcode');
 
   if (isLoading) {
-    return <div className="text-center py-12">Loading...</div>;
+    return <NewPlanSkeleton />;
   }
 
   return (

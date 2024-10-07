@@ -11,6 +11,7 @@ import {
   User,
 } from 'lucide-react';
 import { ConfirmDeleteModal, SavedToProfileModal } from '../components/Modals';
+import { PlanDetailsSkeleton } from '../components/Skeleton';
 
 // Main PlanDetails component
 export function PlanDetails() {
@@ -30,7 +31,6 @@ export function PlanDetails() {
   // Fetch plan data
   const fetchPlan = useCallback(async () => {
     if (!token || !planId) {
-      console.log('Token or planId not available, waiting...');
       return;
     }
 
@@ -97,12 +97,8 @@ export function PlanDetails() {
   const handleAddStep = async () => {
     if (!plan || !planId) return;
 
-    // Calculate the next stepOrder
-    const nextStepOrder =
-      plan.steps.length > 0
-        ? Math.max(...plan.steps.map((step) => step.stepOrder ?? 0)) + 1
-        : 1;
-    1;
+    // Set the new step order to 1
+    const newStepOrder = 1;
 
     const newStep: Omit<PlanStep, 'planStepId'> = {
       userPlanId: parseInt(planId),
@@ -112,7 +108,7 @@ export function PlanDetails() {
       completed: false,
       completedAt: null,
       createdAt: new Date().toISOString(),
-      stepOrder: nextStepOrder,
+      stepOrder: newStepOrder,
     };
 
     try {
@@ -132,10 +128,14 @@ export function PlanDetails() {
       const addedStep: PlanStep = await response.json();
       setPlan((prevPlan) => {
         if (!prevPlan) return null;
-        const newSteps = [...prevPlan.steps, addedStep];
-        newSteps.sort(
-          (a, b) => (a.stepOrder ?? Infinity) - (b.stepOrder ?? Infinity)
-        );
+        // Add the new step to the beginning of the array
+        const newSteps = [addedStep, ...prevPlan.steps];
+        // Increment the stepOrder of all other steps
+        newSteps.forEach((step, index) => {
+          if (index > 0) {
+            step.stepOrder = (step.stepOrder ?? 0) + 1;
+          }
+        });
         return { ...prevPlan, steps: newSteps };
       });
     } catch (err) {
@@ -287,7 +287,7 @@ export function PlanDetails() {
   };
 
   if (!token) return <div className="text-center py-8">Authenticating...</div>;
-  if (isLoading) return <div className="text-center py-8">Loading...</div>;
+  if (isLoading) return <PlanDetailsSkeleton />;
   if (error)
     return <div className="text-red-500 text-center py-8">{error}</div>;
   if (!plan) return <div className="text-center py-8">No plan found</div>;

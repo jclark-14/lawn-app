@@ -12,6 +12,7 @@ import {
   Home,
 } from 'lucide-react';
 import { ConfirmDeleteModal } from '../components/Modals';
+import { UserProfileSkeleton } from '../components/Skeleton';
 
 export function UserProfile() {
   const { user, token } = useUser();
@@ -38,7 +39,6 @@ export function UserProfile() {
         });
         if (!response.ok) throw new Error('Failed to fetch plans');
         const data = await response.json();
-        console.log('Fetched plans:', data); // Add this line for debugging
         setPlans(
           data.map((plan: UserPlan) => ({
             ...plan,
@@ -105,9 +105,6 @@ export function UserProfile() {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to complete steps');
       }
-
-      const updatedSteps = await response.json();
-      console.log('Received response:', updatedSteps);
 
       setPlans(
         plans.map((plan) => {
@@ -179,7 +176,7 @@ export function UserProfile() {
   };
 
   // Render loading state
-  if (loading) return <div className="text-center py-12">Loading...</div>;
+  if (loading) return <UserProfileSkeleton />;
   // Render error state
   if (error)
     return <div className="text-center py-12 text-red-600">{error}</div>;
@@ -309,8 +306,6 @@ function PlanCard({
 }
 
 function PlanHeader({ plan, initiatePlanDeletion, navigate }) {
-  console.log('Plan in PlanHeader:', plan); // Keep this for debugging
-
   const displayTitle = plan.planTitle || `${plan.grassSpeciesName} Plan`;
 
   return (

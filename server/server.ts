@@ -143,7 +143,6 @@ app.get(
  * Create a new plan
  */
 app.post('/api/plans/new', authMiddleware, async (req, res, next) => {
-  console.log('Received new plan request:', req.body);
   const client = await db.connect();
   try {
     const { userId, grassSpeciesId, planType, establishmentType } = req.body;
@@ -201,7 +200,6 @@ app.post('/api/plans/new', authMiddleware, async (req, res, next) => {
       fetchTemplatesSql,
       templateParams
     );
-    console.log('Fetched', templatesResult.rows.length, 'plan step templates');
 
     // Insert plan steps for the new plan
     const insertStepSql = `
@@ -229,12 +227,9 @@ app.post('/api/plans/new', authMiddleware, async (req, res, next) => {
         }
       }
     }
-    console.log('Inserted', insertedStepDescriptions.size, 'unique plan steps');
 
     // Commit the transaction
     await client.query('COMMIT');
-    console.log('Transaction committed successfully');
-
     res.status(201).json({ userPlanId });
   } catch (err) {
     console.error('Error creating new plan:', err);

@@ -13,6 +13,7 @@ import {
 import { useState, useEffect } from 'react';
 import { GrassSpeciesWithClimate } from '../types';
 import { useUser } from '../components/useUser';
+import { ClimateResultsSkeleton } from '../components/Skeleton';
 
 // Main ResultsPage component
 export function ResultsPage() {
@@ -56,7 +57,7 @@ export function ResultsPage() {
   };
 
   if (isLoading) {
-    return <div className="text-center py-12">Loading...</div>;
+    return <ClimateResultsSkeleton />;
   }
 
   if (error) {

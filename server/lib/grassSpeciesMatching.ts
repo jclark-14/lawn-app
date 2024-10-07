@@ -26,28 +26,13 @@ export async function getGrassSpeciesForZipcode(
   }
 
   try {
-    console.log(`Fetching climate data for zipcode: ${zipcode}`);
-
     // Try to retrieve climate data from the database, or fetch from API if not found
     const climateData =
       (await getClimateData(db, zipcode)) ||
       (await fetchAndStoreClimateData(db, zipcode));
 
-    console.log(
-      `Climate data for ${zipcode}:`,
-      JSON.stringify(climateData, null, 2)
-    );
-
     // Match grass species based on climate data
     const grassSpecies = await matchGrassSpecies(db, climateData);
-
-    if (grassSpecies.length === 0) {
-      console.log(`No matching grass species found for zipcode ${zipcode}`);
-    } else {
-      console.log(
-        `Found ${grassSpecies.length} matches for zipcode ${zipcode} at tier ${grassSpecies[0].matchTier}`
-      );
-    }
 
     // Combine the climate data with the matched grass species data
     return grassSpecies.map((species) => ({ ...species, climateData }));
@@ -199,9 +184,6 @@ async function matchGrassSpecies(
   ];
   // Try to match grass species for each tier
   for (const tier of matchingTiers) {
-    console.log(
-      `Attempting to match grass species with tier: ${tier.threshold}, relaxFactor: ${tier.relaxFactor}`
-    );
     try {
       // The query calculates a score for each grass species based on how well it matches the climate data
       // Factors considered include temperature, rainfall, growing season length, hardiness zone, and Koppen classification
@@ -303,11 +285,6 @@ async function matchGrassSpecies(
         ]
       );
 
-      console.log(
-        `Query results for tier ${tier.threshold}:`,
-        JSON.stringify(result.rows, null, 2)
-      );
-
       // If matches are found, return them with match percentage and tier information
       // The match percentage represents how well the grass species fits the climate data
       // The matchTier indicates which level of matching criteria was used (strict, moderate, or relaxed)
@@ -317,13 +294,7 @@ async function matchGrassSpecies(
           match_percentage: parseFloat(row.match_percentage),
           matchTier: tier.threshold,
         }));
-        console.log(
-          `Matched species:`,
-          JSON.stringify(matchedSpecies, null, 2)
-        );
         return matchedSpecies;
-      } else {
-        console.log(`No matches found for tier ${tier.threshold}`);
       }
     } catch (error) {
       console.error(
@@ -335,9 +306,6 @@ async function matchGrassSpecies(
 
   // If no matches are found across all tiers, return an empty array
   // This indicates that no suitable grass species were found for the given climate data
-  console.log(
-    `No matching grass species found for climate data:`,
-    JSON.stringify(climateData, null, 2)
-  );
+
   return [];
 }
