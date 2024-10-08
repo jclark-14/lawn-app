@@ -425,15 +425,18 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
     async (req, res, next) => {
       const { planId } = req.params;
       const userId = req.user?.userId;
-      const newStep: Omit<PlanStep, 'planStepId'> = req.body;
+      const newStep: Omit<PlanStep, 'planStepId'> = {
+        ...req.body,
+        completed: false, // Ensure completed is always set to false for new steps
+      };
 
       const db = await pool.connect();
       try {
         // Check if the plan exists and belongs to the user
         const checkPlanSql = `
-        SELECT * FROM "UserPlans"
-        WHERE "userPlanId" = $1 AND "userId" = $2
-      `;
+      SELECT * FROM "UserPlans"
+      WHERE "userPlanId" = $1 AND "userId" = $2
+    `;
         const planResult = await db.query(checkPlanSql, [planId, userId]);
 
         if (planResult.rows.length === 0) {
@@ -442,10 +445,10 @@ export function setupPlanRoutes(app: express.Application, pool: Pool): void {
 
         // Insert the new step
         const insertStepSql = `
-        INSERT INTO "PlanSteps" ("userPlanId", "templateId", "stepDescription", "dueDate", "completed", "stepOrder")
-        VALUES ($1, $2, $3, $4, $5, $6)
-        RETURNING *
-      `;
+      INSERT INTO "PlanSteps" ("userPlanId", "templateId", "stepDescription", "dueDate", "completed", "stepOrder")
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING *
+    `;
         const result = await db.query(insertStepSql, [
           planId,
           newStep.templateId,

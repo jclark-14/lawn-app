@@ -1,9 +1,40 @@
 import { type ClimateData, type ApiClimateData } from '../../client/src/types';
 
-// Ensure API key is available in environment variables
-const apiKey = process.env.API_KEY;
-if (!apiKey) {
-  throw new Error('API_KEY not found in environment variables');
+const API_KEY = process.env.API_KEY;
+
+const API_URL = 'https://climate-by-zip.p.rapidapi.com/climate';
+const API_HOST = 'climate-by-zip.p.rapidapi.com';
+
+export async function fetchClimateDataFromAPI(
+  zipcode: string
+): Promise<ClimateData> {
+  try {
+    const apiData = await fetchFromAPI(zipcode);
+    return parseClimateData(apiData);
+  } catch (error) {
+    console.error('Error fetching climate data:', error);
+    throw new Error('Failed to fetch climate data');
+  }
+}
+
+async function fetchFromAPI(zipcode: string): Promise<ApiClimateData> {
+  if (!API_KEY) {
+    throw new Error('API_KEY is not defined');
+  }
+
+  const response = await fetch(`${API_URL}/${zipcode}`, {
+    method: 'GET',
+    headers: {
+      'x-rapidapi-key': API_KEY,
+      'x-rapidapi-host': API_HOST,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  return response.json();
 }
 
 /**
@@ -12,44 +43,23 @@ if (!apiKey) {
  * @returns Structured ClimateData object
  */
 function parseClimateData(apiData: ApiClimateData): ClimateData {
-  const hardinessZone = apiData.plant_hardiness_zone
-    .split(':')[0]
-    .replace('Zone ', '');
-  const koppenZone = apiData.koppen_zone.split(' - ')[0];
   const monthlyData = Object.values(apiData.annual_averages).slice(0, 12);
   const yearlyData = apiData.annual_averages.Yearly;
 
-  const avgTemperature =
-    (parseFloat(yearlyData.min) + parseFloat(yearlyData.max)) / 2;
-  const avgRainfall = parseFloat(yearlyData.precip);
-
-  const seasonalTemperatures = calculateSeasonalAverages(monthlyData, 'temp');
-  const seasonalRainfall = calculateSeasonalAverages(monthlyData, 'precip');
-
-  const growingDays = calculateGrowingDays(
-    apiData.avg_last_frost,
-    apiData.avg_first_frost
-  );
-
-  // Process monthly temperature and rainfall data
   const { monthlyTemperature, monthlyRainfall } =
     processMonthlyData(monthlyData);
 
   return {
-    avgTemperature,
-    avgRainfall,
-    hardinessZone,
-    koppenZone,
+    avgTemperature: calculateAverage(yearlyData.min, yearlyData.max),
+    avgRainfall: parseFloat(yearlyData.precip),
+    hardinessZone: extractHardinessZone(apiData.plant_hardiness_zone),
+    koppenZone: apiData.koppen_zone.split(' - ')[0],
     ecoregion: apiData.ecoregion,
-    springTemperature: seasonalTemperatures.spring,
-    summerTemperature: seasonalTemperatures.summer,
-    fallTemperature: seasonalTemperatures.fall,
-    winterTemperature: seasonalTemperatures.winter,
-    springRainfall: seasonalRainfall.spring,
-    summerRainfall: seasonalRainfall.summer,
-    fallRainfall: seasonalRainfall.fall,
-    winterRainfall: seasonalRainfall.winter,
-    growingDays,
+    ...calculateSeasonalAverages(monthlyData),
+    growingDays: calculateGrowingDays(
+      apiData.avg_last_frost,
+      apiData.avg_first_frost
+    ),
     monthlyTemperature,
     monthlyRainfall,
   };
@@ -61,34 +71,40 @@ function parseClimateData(apiData: ApiClimateData): ClimateData {
  * @param type - 'temp' for temperature, 'precip' for precipitation
  * @returns Object with seasonal averages
  */
+type SeasonData = {
+  winterTemperature: number;
+  springTemperature: number;
+  summerTemperature: number;
+  fallTemperature: number;
+  winterRainfall: number;
+  springRainfall: number;
+  summerRainfall: number;
+  fallRainfall: number;
+};
+
 function calculateSeasonalAverages(
-  monthlyData: Array<{ min: string; max: string; precip: string }>,
-  type: 'temp' | 'precip'
-): Record<string, number> {
+  monthlyData: Array<{ min: string; max: string; precip: string }>
+): SeasonData {
   const seasons = [
-    { name: 'winter', months: [11, 0, 1] },
-    { name: 'spring', months: [2, 3, 4] },
-    { name: 'summer', months: [5, 6, 7] },
-    { name: 'fall', months: [8, 9, 10] },
+    { name: 'winter' as const, months: [11, 0, 1] },
+    { name: 'spring' as const, months: [2, 3, 4] },
+    { name: 'summer' as const, months: [5, 6, 7] },
+    { name: 'fall' as const, months: [8, 9, 10] },
   ];
 
   return seasons.reduce((acc, season) => {
     const seasonalData = season.months.map((month) => monthlyData[month]);
-    const average =
-      type === 'temp'
-        ? seasonalData.reduce(
-            (sum, month) =>
-              sum + (parseFloat(month.min) + parseFloat(month.max)) / 2,
-            0
-          ) / 3
-        : seasonalData.reduce(
-            (sum, month) => sum + parseFloat(month.precip),
-            0
-          ) / 3;
-
-    acc[season.name] = average;
+    acc[`${season.name}Temperature`] = calculateAverage(
+      ...seasonalData.flatMap((month) => [
+        parseFloat(month.min),
+        parseFloat(month.max),
+      ])
+    );
+    acc[`${season.name}Rainfall`] = calculateAverage(
+      ...seasonalData.map((month) => parseFloat(month.precip))
+    );
     return acc;
-  }, {} as Record<string, number>);
+  }, {} as SeasonData);
 }
 
 /**
@@ -113,21 +129,14 @@ function calculateGrowingDays(lastFrost: string, firstFrost: string): number {
     'December',
   ];
 
-  const [lastFrostMonth, lastFrostDay] = lastFrost.split(' ');
-  const [firstFrostMonth, firstFrostDay] = firstFrost.split(' ');
+  const getDate = (frostDate: string): Date => {
+    const [month, day] = frostDate.split(' ');
+    return new Date(2023, months.indexOf(month), parseInt(day));
+  };
 
-  const lastFrostDate = new Date(
-    2023,
-    months.indexOf(lastFrostMonth),
-    parseInt(lastFrostDay)
-  );
-  const firstFrostDate = new Date(
-    2023,
-    months.indexOf(firstFrostMonth),
-    parseInt(firstFrostDay)
-  );
+  const lastFrostDate = getDate(lastFrost);
+  const firstFrostDate = getDate(firstFrost);
 
-  // Adjust for year wrap-around
   if (firstFrostDate < lastFrostDate) {
     firstFrostDate.setFullYear(2024);
   }
@@ -145,11 +154,9 @@ function calculateGrowingDays(lastFrost: string, firstFrost: string): number {
 function processMonthlyData(
   monthlyData: Array<{ min: string; max: string; precip: string }>
 ): {
-  monthlyTemperature: { [key: string]: number };
-  monthlyRainfall: { [key: string]: number };
+  monthlyTemperature: Record<string, number>;
+  monthlyRainfall: Record<string, number>;
 } {
-  const monthlyTemperature: { [key: string]: number } = {};
-  const monthlyRainfall: { [key: string]: number } = {};
   const months = [
     'Jan',
     'Feb',
@@ -165,43 +172,27 @@ function processMonthlyData(
     'Dec',
   ];
 
-  monthlyData.forEach((data, index) => {
-    const month = months[index];
-    monthlyTemperature[month] =
-      (parseFloat(data.min) + parseFloat(data.max)) / 2;
-    monthlyRainfall[month] = parseFloat(data.precip);
-  });
-
-  return { monthlyTemperature, monthlyRainfall };
+  return monthlyData.reduce(
+    (acc, data, index) => {
+      const month = months[index];
+      acc.monthlyTemperature[month] = calculateAverage(data.min, data.max);
+      acc.monthlyRainfall[month] = parseFloat(data.precip);
+      return acc;
+    },
+    { monthlyTemperature: {}, monthlyRainfall: {} } as {
+      monthlyTemperature: Record<string, number>;
+      monthlyRainfall: Record<string, number>;
+    }
+  );
 }
 
-/**
- * Fetch climate data from the API for a given zipcode
- * @param zipcode - The zipcode to fetch climate data for
- * @returns Promise resolving to structured ClimateData
- * @throws Error if API request fails
- */
-export async function fetchClimateDataFromAPI(
-  zipcode: string
-): Promise<ClimateData> {
-  const url = `https://climate-by-zip.p.rapidapi.com/climate/${zipcode}`;
-  const options: RequestInit = {
-    method: 'GET',
-    headers: {
-      'x-rapidapi-key': apiKey as string,
-      'x-rapidapi-host': 'climate-by-zip.p.rapidapi.com',
-    },
-  };
+function calculateAverage(...values: (string | number)[]): number {
+  const numbers = values.map((v) =>
+    typeof v === 'string' ? parseFloat(v) : v
+  );
+  return numbers.reduce((sum, num) => sum + num, 0) / numbers.length;
+}
 
-  try {
-    const response = await fetch(url, options);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const apiData: ApiClimateData = await response.json();
-    return parseClimateData(apiData);
-  } catch (error) {
-    console.error('Error fetching climate data:', error);
-    throw new Error('Failed to fetch climate data');
-  }
+function extractHardinessZone(zoneString: string): string {
+  return zoneString.split(':')[0].replace('Zone ', '');
 }

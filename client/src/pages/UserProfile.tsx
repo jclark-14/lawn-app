@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useUser } from '../components/useUser';
-import { UserPlan, PlanStep } from '../types';
 import {
   Trash2,
   Edit,
@@ -11,206 +9,83 @@ import {
   PlusCircle,
   Home,
 } from 'lucide-react';
-import { ConfirmDeleteModal } from '../components/Modals';
-import { UserProfileSkeleton } from '../components/Skeleton';
+import { ConfirmDeleteModal } from '../components/Modals'; // Modal for confirming deletions
+import { UserProfileSkeleton } from '../components/Skeleton'; // Skeleton loader for loading state
+import { useFetchUserPlans } from '../hooks/useFetchUserPlans'; // Hook to fetch user's plans
+import { useUserPlanActions } from '../hooks/useUserPlanActions.ts'; // Hook for actions on user plans (delete, complete)
+import { UserPlan, PlanStep } from '../types';
 
+// Main UserProfile component, displaying user plans and allowing actions like delete and complete
 export function UserProfile() {
-  const { user, token } = useUser();
-  const [plans, setPlans] = useState<UserPlan[]>([]);
-  const [expandedPlans, setExpandedPlans] = useState<number[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [planToDelete, setPlanToDelete] = useState<UserPlan | null>(null);
+  const [expandedPlans, setExpandedPlans] = useState<number[]>([]); // State to track which plans are expanded
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // State for controlling delete confirmation modal
+  const [planToDelete, setPlanToDelete] = useState<UserPlan | null>(null); // State to store the plan selected for deletion
 
-  // Function to fetch user plans from the API
+  const { plans, isLoading, error, refetchPlans } = useFetchUserPlans(); // Hook to fetch plans, loading state, and errors
+  const { deletePlan, completePlan, completeSteps } =
+    useUserPlanActions(refetchPlans); // Hook to perform actions on plans (delete, complete), and refresh plans after actions
 
-  useEffect(() => {
-    const fetchUserPlans = async () => {
-      if (!user || !token) return;
-
-      setLoading(true);
-      try {
-        const response = await fetch(`/api/users/${user.userId}/plans`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (!response.ok) throw new Error('Failed to fetch plans');
-        const data = await response.json();
-        setPlans(
-          data.map((plan: UserPlan) => ({
-            ...plan,
-            steps: sortSteps(plan.steps),
-          }))
-        );
-      } catch (err) {
-        setError('Error fetching plans. Please try again.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUserPlans();
-  }, [token, user]);
-
-  // Function to sort steps by stepOrder
-  const sortSteps = (steps: PlanStep[]): PlanStep[] => {
-    return [...steps].sort(
-      (a, b) => (a.stepOrder ?? Infinity) - (b.stepOrder ?? Infinity)
-    );
-  };
-
-  // Function to initiate plan deletion
-  const initiatePlanDeletion = (plan: UserPlan) => {
-    setPlanToDelete(plan);
-    setIsDeleteModalOpen(true);
-  };
-
-  // Function to confirm and execute plan deletion
-  const confirmDeletePlan = async () => {
-    if (!planToDelete) return;
-
-    try {
-      const response = await fetch(`/api/plans/${planToDelete.userPlanId}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!response.ok) throw new Error('Failed to delete plan');
-      setPlans(
-        plans.filter((plan) => plan.userPlanId !== planToDelete.userPlanId)
-      );
-      setIsDeleteModalOpen(false);
-      setPlanToDelete(null);
-    } catch (err) {
-      setError('Error deleting plan. Please try again.');
-    }
-  };
-
-  const handleCompleteSteps = async (planId: number, stepIds: number[]) => {
-    if (!token) return;
-
-    try {
-      const response = await fetch(`/api/plans/${planId}/complete`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ stepIds }),
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to complete steps');
-      }
-
-      setPlans(
-        plans.map((plan) => {
-          if (plan.userPlanId === planId) {
-            const updatedPlanSteps = plan.steps.map((step) =>
-              stepIds.includes(step.planStepId)
-                ? {
-                    ...step,
-                    completed: true,
-                    completedAt: new Date().toISOString(),
-                  }
-                : step
-            );
-            return { ...plan, steps: sortSteps(updatedPlanSteps) };
-          }
-          return plan;
-        })
-      );
-    } catch (err) {
-      console.error('Error completing steps:', err);
-      setError('Error completing steps. Please try again.');
-    }
-  };
-
-  // Function that handles the complete plan option
-  const handleCompletePlan = async (planId: number) => {
-    if (!token) return;
-
-    try {
-      const completedAt = new Date().toISOString();
-      const response = await fetch(`/api/plans/${planId}/complete`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ completedAt }),
-      });
-      if (!response.ok) throw new Error('Failed to complete plan');
-
-      setPlans(
-        plans.map((plan) =>
-          plan.userPlanId === planId
-            ? {
-                ...plan,
-                isCompleted: true,
-                completedAt,
-                steps: plan.steps.map((step) => ({
-                  ...step,
-                  completed: true,
-                  completedAt: step.completedAt || completedAt,
-                })),
-              }
-            : plan
-        )
-      );
-    } catch (err) {
-      setError('Error completing plan. Please try again.');
-    }
-  };
-
-  // Function to toggle plan expansion in the UI
-  const togglePlanExpansion = (planId: number) => {
-    setExpandedPlans((prevExpanded) =>
-      prevExpanded.includes(planId)
-        ? prevExpanded.filter((id) => id !== planId)
-        : [...prevExpanded, planId]
-    );
-  };
-
-  // Render loading state
-  if (loading) return <UserProfileSkeleton />;
-  // Render error state
+  // Show a skeleton loader while loading
+  if (isLoading) return <UserProfileSkeleton />;
+  // Show error message if there is an error fetching plans
   if (error)
     return <div className="text-center py-12 text-red-600">{error}</div>;
 
-  // main UserProfile component
+  // Toggle plan expansion (to show or hide steps)
+  const togglePlanExpansion = (planId: number) => {
+    setExpandedPlans((prev) =>
+      prev.includes(planId)
+        ? prev.filter((id) => id !== planId)
+        : [...prev, planId]
+    );
+  };
+
+  // Initiate the process of deleting a plan by opening the delete confirmation modal
+  const initiatePlanDeletion = (plan: UserPlan) => {
+    setPlanToDelete(plan); // Set the plan to delete
+    setIsDeleteModalOpen(true); // Open the delete confirmation modal
+  };
+
+  // Confirm and delete the selected plan
+  const confirmDeletePlan = async () => {
+    if (planToDelete) {
+      await deletePlan(planToDelete.userPlanId); // Call the delete plan function
+      setIsDeleteModalOpen(false); // Close the delete modal
+      setPlanToDelete(null); // Clear the plan to delete state
+    }
+  };
+
   return (
     <div className="py-8 sm:py-12 min-h-screen w-full">
       <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
-        <NavButtons />
+        <NavButtons /> {/* Render navigation buttons */}
         <PlansList
           plans={plans}
           expandedPlans={expandedPlans}
           togglePlanExpansion={togglePlanExpansion}
           initiatePlanDeletion={initiatePlanDeletion}
-          handleCompletePlan={handleCompletePlan}
-          handleCompleteSteps={handleCompleteSteps}
+          handleCompletePlan={completePlan}
+          handleCompleteSteps={completeSteps}
           navigate={navigate}
         />
       </div>
       <ConfirmDeleteModal
         isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        onConfirm={confirmDeletePlan}
-        itemName={planToDelete?.grassSpeciesName || ''}
-        itemType="plan"
+        onClose={() => setIsDeleteModalOpen(false)} // Close the delete modal
+        onConfirm={confirmDeletePlan} // Confirm the deletion of the plan
+        itemName={planToDelete?.grassSpeciesName || ''} // Show the name of the plan being deleted
+        itemType="plan" // Indicate the type of item (plan) being deleted
       />
     </div>
   );
 }
 
+// Navigation buttons for navigating to the home page or adding a new plan
 function NavButtons() {
   return (
     <div className="flex justify-between items-center mb-6 sm:mb-10">
-      <div className="">
+      <div>
         <Link
           to="/"
           className="bg-gray-100 text-teal-800 px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-gray-800 to-teal-500 hover:text-white hover:border-teal-500">
@@ -228,6 +103,7 @@ function NavButtons() {
   );
 }
 
+// Component that renders the list of user plans
 function PlansList({
   plans,
   expandedPlans,
@@ -252,7 +128,7 @@ function PlansList({
             <PlanCard
               key={plan.userPlanId}
               plan={plan}
-              isExpanded={expandedPlans.includes(plan.userPlanId)}
+              isExpanded={expandedPlans.includes(plan.userPlanId)} // Check if the plan is expanded
               togglePlanExpansion={togglePlanExpansion}
               initiatePlanDeletion={initiatePlanDeletion}
               handleCompletePlan={handleCompletePlan}
@@ -266,6 +142,7 @@ function PlansList({
   );
 }
 
+// Component that renders an individual plan with its details
 function PlanCard({
   plan,
   isExpanded,
@@ -275,7 +152,7 @@ function PlanCard({
   handleCompleteSteps,
   navigate,
 }) {
-  const allStepsCompleted = plan.steps.every((step) => step.completed);
+  const allStepsCompleted = plan.steps.every((step) => step.completed); // Check if all steps in the plan are completed
 
   return (
     <div className="bg-gray-100 rounded-lg shadow-md overflow-hidden">
@@ -292,7 +169,6 @@ function PlanCard({
           />
         )}
         <PlanStatus plan={plan} />
-
         <ToggleDetailsButton
           isExpanded={isExpanded}
           togglePlanExpansion={() => togglePlanExpansion(plan.userPlanId)}
@@ -305,8 +181,9 @@ function PlanCard({
   );
 }
 
+// Header for each plan showing plan details and action buttons
 function PlanHeader({ plan, initiatePlanDeletion, navigate }) {
-  const displayTitle = plan.planTitle || `${plan.grassSpeciesName} Plan`;
+  const displayTitle = plan.planTitle || `${plan.grassSpeciesName} Plan`; // Fallback to grass species name if plan title is not available
 
   return (
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
@@ -321,7 +198,7 @@ function PlanHeader({ plan, initiatePlanDeletion, navigate }) {
         </button>
         <button
           onClick={() => initiatePlanDeletion(plan)}
-          className="bg-teal-700 text-white px-3 py-1 rounded-full w-full text-sm font-semibold transition duration-300 hover:bg-red-800 flex items-center  sm:flex-initial justify-center sm:justify-start">
+          className="bg-teal-700 text-white px-3 py-1 rounded-full w-full text-sm font-semibold transition duration-300 hover:bg-red-800 flex items-center sm:flex-initial justify-center sm:justify-start">
           <Trash2 size={16} className="mr-1" /> Delete
         </button>
       </div>
@@ -329,25 +206,28 @@ function PlanHeader({ plan, initiatePlanDeletion, navigate }) {
   );
 }
 
+// Component that displays the status of the plan (Completed or In Progress)
 function PlanStatus({ plan }) {
   return (
     <p className="text-teal-800 mb-2 text-sm font-semibold sm:text-base">
       Status: {plan.isCompleted ? 'Completed' : 'In Progress'}
       {plan.isCompleted && plan.completedAt && (
         <span className="ml-2">
-          on {new Date(plan.completedAt).toLocaleDateString()}
+          on {new Date(plan.completedAt).toLocaleDateString()}{' '}
+          {/* Display the completion date */}
         </span>
       )}
     </p>
   );
 }
 
+// Button to mark the entire plan as completed
 function CompletePlanButton({ planId, handleCompletePlan }) {
   return (
-    <div className="flex justify-center  sm:justify-start w-full">
+    <div className="flex justify-center sm:justify-start w-full">
       <button
         onClick={() => handleCompletePlan(planId)}
-        className="mb-4 bg-teal-700 text-white px-3 sm:px-4 py-2 sm:py-2 w-fit rounded-full text-sm font-semibold transition duration-300 hover:bg-gradient-to-r from-gray-800 to-teal-500 flex items-center sm:w-auto sm:justify-start">
+        className="mb-4 bg-teal-700 text-white px-3 sm:px-4 py-2 sm:py-2 w-full justify-center rounded-full text-sm font-semibold transition duration-300 hover:bg-gradient-to-r from-gray-800 to-teal-500 flex items-center sm:w-auto sm:justify-start">
         <Check size={16} className="mr-1" /> Mark Plan as Completed
       </button>
     </div>
@@ -380,16 +260,17 @@ interface PlanDetailsProps {
 }
 
 function PlanDetails({ plan, handleCompleteSteps }: PlanDetailsProps) {
-  const [selectedSteps, setSelectedSteps] = useState<number[]>([]);
-  const [expandedSteps, setExpandedSteps] = useState<number[]>([]);
+  const [selectedSteps, setSelectedSteps] = useState<number[]>([]); // State to track selected steps for completion
+  const [expandedSteps, setExpandedSteps] = useState<number[]>([]); // State to track which steps are expanded
 
-  // Automatically select all steps if the plan is completed
+  // Preselect all steps if the plan is completed
   useEffect(() => {
     if (plan.isCompleted) {
-      setSelectedSteps(plan.steps.map((step) => step.planStepId));
+      setSelectedSteps(plan.steps.map((step) => step.planStepId)); // Select all steps if the plan is marked completed
     }
   }, [plan.isCompleted, plan.steps]);
 
+  // Toggle step selection (checkbox)
   const toggleStepSelection = (stepId: number) => {
     setSelectedSteps((prev) =>
       prev.includes(stepId)
@@ -398,6 +279,7 @@ function PlanDetails({ plan, handleCompleteSteps }: PlanDetailsProps) {
     );
   };
 
+  // Toggle step expansion (to show or hide details)
   const toggleStepExpansion = (stepId: number) => {
     setExpandedSteps((prev) =>
       prev.includes(stepId)
@@ -406,14 +288,15 @@ function PlanDetails({ plan, handleCompleteSteps }: PlanDetailsProps) {
     );
   };
 
+  // Mark selected steps as completed
   const handleMarkStepsComplete = () => {
-    handleCompleteSteps(plan.userPlanId, selectedSteps);
-    setSelectedSteps([]);
+    handleCompleteSteps(plan.userPlanId, selectedSteps); // Complete the selected steps
+    setSelectedSteps([]); // Clear the selection after completion
   };
 
   const hasSelectedUncompletedSteps = selectedSteps.some((stepId) =>
     plan.steps.find((step) => step.planStepId === stepId && !step.completed)
-  );
+  ); // Check if any selected steps are not yet completed
 
   return (
     <div className="px-4 sm:px-6 pb-4 sm:pb-6">
@@ -424,7 +307,7 @@ function PlanDetails({ plan, handleCompleteSteps }: PlanDetailsProps) {
         {hasSelectedUncompletedSteps && (
           <button
             onClick={handleMarkStepsComplete}
-            className="mb-4 bg-teal-700 text-white px-3 sm:px-4 py-1 sm:py-2 w-fit rounded-full text-sm font-semibold transition duration-300 hover:bg-gradient-to-r from-gray-800 to-teal-500 flex items-center w-full sm:w-auto justify-center sm:justify-start">
+            className="mb-4 bg-teal-700 text-white px-3 sm:px-4 py-1 sm:py-2 rounded-full w-fit text-sm font-semibold transition duration-300 hover:bg-gradient-to-r from-gray-800 to-teal-500 flex items-center sm:w-auto justify-center sm:justify-start">
             <Check size={16} className="mr-1" /> Complete Selected
           </button>
         )}
@@ -445,6 +328,7 @@ function PlanDetails({ plan, handleCompleteSteps }: PlanDetailsProps) {
   );
 }
 
+// Component for displaying an individual step within a plan
 interface StepItemProps {
   step: PlanStep;
   isSelected: boolean;
@@ -469,7 +353,7 @@ function StepItem({
             checked={isSelected}
             onChange={toggleSelection}
             className="form-checkbox h-5 w-5 rounded-lg accent-teal-700 hover:ring-1 hover:cursor-pointer mr-2"
-            disabled={step.completed}
+            disabled={step.completed} // Disable the checkbox if the step is already completed
           />
           <span
             className={`text-gray-900 text-sm sm:text-base ${

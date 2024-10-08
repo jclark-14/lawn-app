@@ -1,6 +1,6 @@
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { Footer } from './Footer';
-import { useUser } from './useUser';
+import { useUser } from '../hooks/useUser';
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 
@@ -149,6 +149,7 @@ function MobileMenu({ isOpen, toggleMenu, user, handleSignOut }) {
 }
 
 // Navigation links
+// Navigation links
 function NavLinks({
   user,
   handleSignOut,
@@ -171,17 +172,21 @@ function NavLinks({
 
   return (
     <>
-      <NavLink onClick={() => handleNavigation('/')} isMobile={isMobile}>
+      <NavLink path="/" isMobile={isMobile} handleNavigation={handleNavigation}>
         Home
       </NavLink>
       {user && (
         <NavLink
-          onClick={() => handleNavigation('/profile')}
-          isMobile={isMobile}>
+          path="/profile"
+          isMobile={isMobile}
+          handleNavigation={handleNavigation}>
           Profile
         </NavLink>
       )}
-      <NavLink onClick={() => handleNavigation('/about')} isMobile={isMobile}>
+      <NavLink
+        path="/about"
+        isMobile={isMobile}
+        handleNavigation={handleNavigation}>
         About
       </NavLink>
       {user ? (
@@ -202,17 +207,21 @@ function NavLinks({
 
 // Navigation link component
 function NavLink({
-  onClick,
+  path,
   children,
   isMobile,
+  handleNavigation,
 }: {
-  onClick: () => void;
+  path: string;
   children: React.ReactNode;
   isMobile: boolean;
+  handleNavigation: (path: string) => void;
 }) {
   if (isMobile) {
     return (
-      <button onClick={onClick} className="relative group w-full text-left">
+      <button
+        onClick={() => handleNavigation(path)}
+        className="relative group w-full">
         <span className="hover:text-teal-700 transition-colors duration-300">
           {children}
         </span>
@@ -222,7 +231,7 @@ function NavLink({
   }
 
   return (
-    <Link to="#" onClick={onClick} className="relative group">
+    <Link to={path} className="relative group">
       <span className="hover:text-teal-100 transition-colors duration-300">
         {children}
       </span>

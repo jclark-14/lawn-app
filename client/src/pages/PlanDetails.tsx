@@ -1,298 +1,74 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useUser } from '../components/useUser';
-import type { UserPlan, PlanStep } from '../types';
 import {
   Edit2,
-  Trash2,
   Save,
   BookmarkPlus,
   PlusSquare,
   User,
+  Trash2,
 } from 'lucide-react';
-import { ConfirmDeleteModal, SavedToProfileModal } from '../components/Modals';
-import { PlanDetailsSkeleton } from '../components/Skeleton';
+import { ConfirmDeleteModal, SavedToProfileModal } from '../components/Modals'; // Reusable modals for confirmation and notifications
+import { PlanDetailsSkeleton } from '../components/Skeleton'; // Skeleton component for loading state
+import { useFetchPlan } from '../hooks/useFetchPlan'; // Custom hook to fetch plan data
+import { useUpdatePlan } from '../hooks/useUpdatePlan'; // Custom hook to update plan
+import { useStepManagement } from '../hooks/useStepManagement'; // Custom hook for step-related actions
+import { useSavePlanToProfile } from '../hooks/useSavePlanToProfile'; // Custom hook to save plan to profile
+import { type PlanStep } from '../types'; // Type for the plan step structure
 
-// Main PlanDetails component
+// Main component to display plan details and allow editing
 export function PlanDetails() {
-  const { planId } = useParams<{ planId: string }>();
-  const { user, token } = useUser();
-  const navigate = useNavigate();
-  const [plan, setPlan] = useState<UserPlan | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [stepToDelete, setStepToDelete] = useState<PlanStep | null>(null);
-  const [isSavedModalOpen, setIsSavedModalOpen] = useState(false);
-  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const { planId } = useParams<{ planId: string }>(); // Get the plan ID from the URL params
+  const navigate = useNavigate(); // React Router hook for navigation
+  const [isEditing, setIsEditing] = useState(false); // Track whether the user is in editing mode
+  const [isEditingTitle, setIsEditingTitle] = useState(false); // Track whether the title is being edited
+  const [isSavedModalOpen, setIsSavedModalOpen] = useState(false); // Track if the "saved to profile" modal is open
 
-  // Fetch plan data
-  const fetchPlan = useCallback(async () => {
-    if (!token || !planId) {
-      return;
-    }
+  const { plan, isLoading, error, refetchPlan } = useFetchPlan(planId); // Fetch plan data with loading/error state
+  const { updatePlan, isSaving } = useUpdatePlan(planId, refetchPlan); // Hook to handle updating the plan
+  const {
+    addStep,
+    deleteStep,
+    updateStep,
+    isDeleteModalOpen,
+    setIsDeleteModalOpen,
+    stepToDelete,
+    setStepToDelete,
+  } = useStepManagement(planId, refetchPlan); // Hooks for managing steps (add, delete, update)
+  const { savePlanToProfile } = useSavePlanToProfile(); // Hook for saving the plan to the user's profile
 
-    setIsLoading(true);
-    try {
-      const response = await fetch(`/api/plans/${planId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!response.ok) {
-        throw new Error('Failed to fetch plan');
-      }
-      const data: UserPlan = await response.json();
-      data.steps.sort(
-        (a, b) => (a.stepOrder ?? Infinity) - (b.stepOrder ?? Infinity)
-      );
-      setPlan(data);
-      setError(null);
-    } catch (err) {
-      console.error('Error fetching plan:', err);
-      setError('Failed to load plan. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [token, planId]);
-
-  useEffect(() => {
-    if (!planId) {
-      setError('Invalid plan ID');
-      return;
-    }
-    fetchPlan();
-  }, [planId, fetchPlan]);
-
-  //Function to handle editing plan title
-  const handleTitleEdit = async (newTitle: string) => {
-    if (!plan || !planId) return;
-
-    try {
-      const updatedPlan = { ...plan, planTitle: newTitle };
-      const response = await fetch(`/api/plans/${planId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedPlan),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update plan title');
-      }
-
-      const result = await response.json();
-      setPlan(result);
-      setIsEditingTitle(false);
-    } catch (err) {
-      setError('Failed to update plan title. Please try again.');
-    }
-  };
-
-  // Add new step
-  const handleAddStep = async () => {
-    if (!plan || !planId) return;
-
-    // Set the new step order to 1
-    const newStepOrder = 1;
-
-    const newStep: Omit<PlanStep, 'planStepId'> = {
-      userPlanId: parseInt(planId),
-      templateId: null,
-      stepDescription: 'Add step details here',
-      dueDate: new Date().toISOString().split('T')[0],
-      completed: false,
-      completedAt: null,
-      createdAt: new Date().toISOString(),
-      stepOrder: newStepOrder,
-    };
-
-    try {
-      const response = await fetch(`/api/plans/${planId}/steps`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(newStep),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to add new step');
-      }
-
-      const addedStep: PlanStep = await response.json();
-      setPlan((prevPlan) => {
-        if (!prevPlan) return null;
-        // Add the new step to the beginning of the array
-        const newSteps = [addedStep, ...prevPlan.steps];
-        // Increment the stepOrder of all other steps
-        newSteps.forEach((step, index) => {
-          if (index > 0) {
-            step.stepOrder = (step.stepOrder ?? 0) + 1;
-          }
-        });
-        return { ...prevPlan, steps: newSteps };
-      });
-    } catch (err) {
-      setError('Failed to add new step. Please try again.');
-    }
-  };
-
-  // Handle step change
-  const handleStepChange = async (
-    stepId: number,
-    field: keyof PlanStep,
-    value: string | boolean
-  ) => {
-    if (!plan) return;
-    const updatedSteps = plan.steps.map((step) =>
-      step.planStepId === stepId ? { ...step, [field]: value } : step
-    );
-    const updatedPlan = { ...plan, steps: updatedSteps };
-    setPlan(updatedPlan);
-
-    if (!isEditing && field === 'completed') {
-      try {
-        const response = await fetch(
-          `/api/plans/${plan.userPlanId}/steps/${stepId}`,
-          {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              [field]: value,
-              completedAt: value ? new Date().toISOString() : null,
-            }),
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error('Failed to update step');
-        }
-      } catch (err) {
-        setError('Failed to update step. Please try again.');
-        // Revert the local state change if the API call failed
-        setPlan(plan);
-      }
-    }
-  };
-
-  // Save plan
-  const handleSavePlan = async (planToSave: UserPlan) => {
-    setIsSaving(true);
-    try {
-      const response = await fetch(`/api/plans/${planId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          ...planToSave,
-          lawnType: planToSave.establishmentType,
-          steps: planToSave.steps.map((step) => ({
-            ...step,
-            dueDate: new Date(step.dueDate).toISOString(),
-          })),
-        }),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to save plan');
-      }
-      const updatedPlan = await response.json();
-      setPlan(updatedPlan);
-    } catch (err) {
-      setError('Failed to save plan. Please try again.');
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  // Handle edit/save toggle
-  const handleEditSave = () => {
-    if (isEditing) {
-      handleSavePlan(plan!);
-    }
-    setIsEditing(!isEditing);
-  };
-
-  // Save plan to user profile
-  const handleSaveToProfile = async () => {
-    if (!plan) return;
-    setIsSaving(true);
-    try {
-      const response = await fetch(`/api/users/${user?.userId}/plans`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ planId: plan.userPlanId }),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to save plan to profile');
-      }
-      setIsSavedModalOpen(true);
-    } catch (err) {
-      setError('Failed to save plan to profile. Please try again.');
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  // Delete step
-  const handleDeleteStep = async (step: PlanStep) => {
-    setStepToDelete(step);
-    setIsDeleteModalOpen(true);
-  };
-
-  const confirmDeleteStep = async () => {
-    if (!plan || !planId || !stepToDelete) return;
-
-    try {
-      const response = await fetch(
-        `/api/plans/${planId}/steps/${stepToDelete.planStepId}`,
-        {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to delete step');
-      }
-
-      setPlan((prevPlan) => {
-        if (!prevPlan) return null;
-        const updatedSteps = prevPlan.steps.filter(
-          (step) => step.planStepId !== stepToDelete.planStepId
-        );
-        return { ...prevPlan, steps: updatedSteps };
-      });
-    } catch (err) {
-      setError('Failed to delete step. Please try again.');
-    } finally {
-      setIsDeleteModalOpen(false);
-      setStepToDelete(null);
-    }
-  };
-
-  if (!token) return <div className="text-center py-8">Authenticating...</div>;
   if (isLoading) return <PlanDetailsSkeleton />;
   if (error)
     return <div className="text-red-500 text-center py-8">{error}</div>;
   if (!plan) return <div className="text-center py-8">No plan found</div>;
 
-  //Main PlanDetails JSX
+  // Toggle between editing and saving plan changes
+  const handleEditSave = async () => {
+    if (isEditing && plan) {
+      await updatePlan(plan); // Save changes if in editing mode
+    }
+    setIsEditing(!isEditing);
+  };
+
+  // Handle saving plan to the user's profile
+  const handleSaveToProfile = async () => {
+    if (plan) {
+      const success = await savePlanToProfile(plan.userPlanId); // Attempt to save plan to profile
+      if (success) {
+        setIsSavedModalOpen(true); // Show success modal
+        await refetchPlan(); // Refetch plan to reflect saved state
+      }
+    }
+  };
+
+  // Handle deleting a step from the plan
+  const handleDeleteStep = (stepId: number) => {
+    const stepToDelete = plan?.steps.find((step) => step.planStepId === stepId); // Find the step to delete
+    if (stepToDelete) {
+      setIsDeleteModalOpen(true); // Open confirmation modal
+      setStepToDelete(stepToDelete); // Set the step to be deleted
+    }
+  };
   return (
     <div className="py-6 sm:py-12 w-full">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
@@ -304,16 +80,18 @@ export function PlanDetails() {
           setIsEditingTitle={setIsEditingTitle}
           handleEditSave={handleEditSave}
           handleSaveToProfile={handleSaveToProfile}
-          handleAddStep={handleAddStep}
-          handleStepChange={handleStepChange}
+          handleAddStep={addStep}
+          handleStepChange={updateStep}
           handleDeleteStep={handleDeleteStep}
-          handleTitleEdit={handleTitleEdit}
+          handleTitleEdit={(newTitle) =>
+            updatePlan({ ...plan, planTitle: newTitle })
+          }
         />
       </div>
       <ConfirmDeleteModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
-        onConfirm={confirmDeleteStep}
+        onConfirm={() => deleteStep(stepToDelete?.planStepId)}
         itemName={stepToDelete?.stepDescription || ''}
         itemType="step"
       />
@@ -328,7 +106,7 @@ export function PlanDetails() {
   );
 }
 
-// Plan Card component
+// PlanCard component handles the overall display and editing of the plan
 function PlanCard({
   plan,
   isEditing,
@@ -344,20 +122,7 @@ function PlanCard({
 }) {
   return (
     <div>
-      <div className="flex justify-between mb-6 mx-2">
-        <Link
-          to="/new-plan"
-          className="bg-gray-100 text-teal-800 w-fit px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-gray-800 to-teal-600 hover:text-white hover:border-teal-600">
-          <PlusSquare size={20} className="mr-1 sm:mr-2" />
-          New Plan
-        </Link>
-        <Link
-          to="/profile"
-          className="bg-gray-100 text-teal-800 w-fit px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-gray-800 to-teal-600 hover:text-white hover:border-teal-600">
-          <User size={20} className="mr-1" />
-          Profile
-        </Link>
-      </div>
+      <NavigationButtons />
       <div className="bg-teal-900 bg-opacity-75 rounded-lg shadow-lg p-4 sm:p-6 mb-8">
         <PlanHeader
           plan={plan}
@@ -381,7 +146,27 @@ function PlanCard({
   );
 }
 
-//Plan Header component
+// Navigation buttons for easy access to other pages
+function NavigationButtons() {
+  return (
+    <div className="flex justify-between mb-6 mx-2">
+      <Link
+        to="/new-plan"
+        className="bg-gray-100 text-teal-800 px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-gray-800 to-teal-600 hover:text-white hover:border-teal-600">
+        <PlusSquare size={20} className="mr-1 sm:mr-2" />
+        New Plan
+      </Link>
+      <Link
+        to="/profile"
+        className="bg-gray-100 text-teal-800 px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-gray-800 to-teal-600 hover:text-white hover:border-teal-600">
+        <User size={20} className="mr-1" />
+        Profile
+      </Link>
+    </div>
+  );
+}
+
+// PlanHeader component for displaying and editing the title, type, and save actions
 function PlanHeader({
   plan,
   isEditing,
@@ -393,86 +178,141 @@ function PlanHeader({
   handleAddStep,
   handleTitleEdit,
 }) {
-  const [tempTitle, setTempTitle] = useState(plan.planTitle);
+  const [tempTitle, setTempTitle] = useState(plan.planTitle); // Temporary state for title editing
 
   return (
     <div className="flex flex-col sm:flex-row justify-between w-full items-start sm:items-start mb-6">
       <div className="w-full sm:w-auto mb-4 sm:mb-0">
-        {isEditingTitle ? (
-          <>
-            <input
-              type="text"
-              value={tempTitle}
-              onChange={(e) => setTempTitle(e.target.value)}
-              className="text-xl bg-white bg-opacity-95 sm:text-2xl font-bold w-full text-gray-900 mb-2 p-1 rounded-lg"
-            />
-            <div className="flex items-center flex-wrap mb-3 mt-1 w-full justify-end">
-              <button
-                onClick={() => handleTitleEdit(tempTitle)}
-                className=" bg-teal-600 text-sm text-white px-5 py-2 rounded-full">
-                Save
-              </button>
-              <button
-                onClick={() => {
-                  setIsEditingTitle(false);
-                  setTempTitle(plan.planTitle);
-                }}
-                className="ml-2 text-sm bg-gray-100 text-gray-800 px-4 py-2 rounded-full">
-                Cancel
-              </button>
-            </div>
-          </>
-        ) : (
-          <div className="flex justify-between">
-            <h1 className="text-xl sm:text-2xl font-bold w-2/3 sm:w-full text-gray-50 mb-3">
-              {plan.planTitle}
-            </h1>
-            <Edit2
-              onClick={() => setIsEditingTitle(true)}
-              className="text-gray-50 cursor-pointer ml-3 hover:text-teal-300"
-              size={18}
-            />
-          </div>
-        )}
-        <div className="flex sm:flex-wrap justify-between items-center">
-          {plan.planType === 'new_lawn' && plan.establishmentType && (
-            <p className="text-md sm:text-md text-gray-50 mb-4 inline-block sm:w-full h-2 sm:mb-2">
-              {plan.grassSpeciesName} grow plan using {plan.establishmentType}
-            </p>
-          )}
-          {isEditing && (
-            <button
-              onClick={handleAddStep}
-              className="bg-gray-100 text-teal-800 max-w-fit float-right px-3 py-2 mt-4 relative bottom-2 sm:bottom-0 rounded-full text-sm sm:text-md font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center justify-center w-full hover:bg-gradient-to-r from-gray-800 to-teal-600 hover:text-white hover:border-teal-600">
-              <PlusSquare size={18} className="mr-2" /> Add Step
-            </button>
-          )}
-        </div>
+        <PlanTitle
+          isEditingTitle={isEditingTitle}
+          tempTitle={tempTitle}
+          setTempTitle={setTempTitle}
+          setIsEditingTitle={setIsEditingTitle}
+          handleTitleEdit={handleTitleEdit}
+          planTitle={plan.planTitle}
+        />
+        <PlanInfo
+          plan={plan}
+          isEditing={isEditing}
+          handleAddStep={handleAddStep}
+        />
       </div>
-      <div className="flex flex-col items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
-        <div className="w-full flex justify-end sm:my-2">
-          <ActionButton
-            onClick={handleEditSave}
-            disabled={isSaving}
-            icon={isEditing ? <Save size={18} /> : <Edit2 size={18} />}
-            text={isEditing ? 'Save Changes' : 'Edit Steps'}
-          />
-          <ActionButton
-            onClick={handleSaveToProfile}
-            disabled={isSaving}
-            icon={<BookmarkPlus size={18} />}
-            text="Add to Profile"
-          />
-        </div>
-        <p className="text-gray-50 text-sm sm:text-md text-center sm:text-right">
-          Add, change or delete steps then add it to your profile.
-        </p>
-      </div>
+      <PlanActions
+        isEditing={isEditing}
+        isSaving={isSaving}
+        handleEditSave={handleEditSave}
+        handleSaveToProfile={handleSaveToProfile}
+      />
     </div>
   );
 }
 
-// Action Button component
+// Editable plan title section
+function PlanTitle({
+  isEditingTitle,
+  tempTitle,
+  setTempTitle,
+  setIsEditingTitle,
+  handleTitleEdit,
+  planTitle,
+}) {
+  const handleSaveTitle = () => {
+    handleTitleEdit(tempTitle); // Save the new title
+    setIsEditingTitle(false); // Hide the input and show the updated title
+  };
+
+  if (isEditingTitle) {
+    return (
+      <>
+        <input
+          type="text"
+          value={tempTitle}
+          onChange={(e) => setTempTitle(e.target.value)}
+          className="text-xl bg-white bg-opacity-95 sm:text-2xl font-bold w-full text-gray-900 mb-2 p-1 rounded-lg"
+        />
+        <div className="flex items-center flex-wrap mb-3 mt-1 w-full justify-end">
+          <button
+            onClick={handleSaveTitle} // Call the modified save handler
+            className="bg-teal-600 text-sm text-white px-5 py-2 rounded-full">
+            Save
+          </button>
+          <button
+            onClick={() => {
+              setIsEditingTitle(false);
+              setTempTitle(planTitle);
+            }}
+            className="ml-2 text-sm bg-gray-100 text-gray-800 px-4 py-2 rounded-full">
+            Cancel
+          </button>
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <div className="flex justify-between">
+      <h1 className="text-xl sm:text-2xl font-bold w-2/3 sm:w-full text-gray-50 mb-3">
+        {planTitle} {/* Display the updated title */}
+      </h1>
+      <Edit2
+        onClick={() => setIsEditingTitle(true)} // Show the input field for editing
+        className="text-gray-50 cursor-pointer ml-3 hover:text-teal-300"
+        size={18}
+      />
+    </div>
+  );
+}
+
+// Component for displaying plan type and adding new steps
+function PlanInfo({ plan, isEditing, handleAddStep }) {
+  return (
+    <div className="flex sm:flex-wrap justify-between items-center">
+      {plan.planType === 'new_lawn' && plan.establishmentType && (
+        <p className="text-md sm:text-md text-gray-50 mb-4 inline-block sm:w-full h-2 sm:mb-2">
+          {plan.grassSpeciesName} grow plan using {plan.establishmentType}
+        </p>
+      )}
+      {isEditing && (
+        <button
+          onClick={handleAddStep}
+          className="bg-gray-100 text-teal-800 max-w-fit float-right px-3 py-2 mt-4 relative bottom-2 sm:bottom-0 rounded-full text-sm sm:text-md font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center justify-center w-full hover:bg-gradient-to-r from-gray-800 to-teal-600 hover:text-white hover:border-teal-600">
+          <PlusSquare size={18} className="mr-2" /> Add Step
+        </button>
+      )}
+    </div>
+  );
+}
+
+// Component for editing or saving plan changes
+function PlanActions({
+  isEditing,
+  isSaving,
+  handleEditSave,
+  handleSaveToProfile,
+}) {
+  return (
+    <div className="flex flex-col items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+      <div className="w-full flex justify-end sm:my-2">
+        <ActionButton
+          onClick={handleEditSave}
+          disabled={isSaving}
+          icon={isEditing ? <Save size={18} /> : <Edit2 size={18} />}
+          text={isEditing ? 'Save Changes' : 'Edit Steps'}
+        />
+        <ActionButton
+          onClick={handleSaveToProfile}
+          disabled={isSaving}
+          icon={<BookmarkPlus size={18} />}
+          text="Add to Profile"
+        />
+      </div>
+      <p className="text-gray-50 text-sm sm:text-md text-center sm:text-right">
+        Add, change or delete steps then add it to your profile.
+      </p>
+    </div>
+  );
+}
+
 function ActionButton({ onClick, disabled, icon, text }) {
   return (
     <button
@@ -485,8 +325,22 @@ function ActionButton({ onClick, disabled, icon, text }) {
   );
 }
 
-// Plan Steps component
-function PlanSteps({ steps, isEditing, handleStepChange, handleDeleteStep }) {
+// Component to render the list of plan steps
+function PlanSteps({
+  steps,
+  isEditing,
+  handleStepChange,
+  handleDeleteStep,
+}: {
+  steps: PlanStep[];
+  isEditing: boolean;
+  handleStepChange: (
+    stepId: number,
+    field: keyof PlanStep,
+    value: string | boolean
+  ) => void;
+  handleDeleteStep: (stepId: number) => void;
+}) {
   return (
     <div className="space-y-4">
       {steps.map((step) => (
@@ -503,7 +357,21 @@ function PlanSteps({ steps, isEditing, handleStepChange, handleDeleteStep }) {
 }
 
 // Individual Plan Step component
-function PlanStep({ step, isEditing, handleStepChange, handleDeleteStep }) {
+function PlanStep({
+  step,
+  isEditing,
+  handleStepChange,
+  handleDeleteStep,
+}: {
+  step: PlanStep;
+  isEditing: boolean;
+  handleStepChange: (
+    stepId: number,
+    field: keyof PlanStep,
+    value: string | boolean
+  ) => void;
+  handleDeleteStep: (stepId: number) => void;
+}) {
   return (
     <div className="bg-gray-50 bg-opacity-100 p-3 sm:p-4 rounded-lg shadow">
       <div className="flex justify-between items-start mb-2">
@@ -526,7 +394,7 @@ function PlanStep({ step, isEditing, handleStepChange, handleDeleteStep }) {
           )}
         </div>
         <button
-          onClick={() => handleDeleteStep(step)}
+          onClick={() => handleDeleteStep(step.planStepId)}
           className="ml-2 text-red-800 hover:text-red-600 transition-colors duration-200 flex-shrink-0"
           title="Delete Step">
           <Trash2 size={18} />

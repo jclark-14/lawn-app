@@ -26,7 +26,7 @@ export function Homepage() {
       // If the request is successful, navigate to the results page
       navigate(`/results/${zipcode}`);
     } catch (err) {
-      console.error('Error fetching data:', err);
+      console.error('Error fetching climate data:', err);
       setError(
         err instanceof Error
           ? err.message
@@ -85,7 +85,7 @@ function ZipcodeForm({ zipcode, setZipcode, handleSubmit, error, isLoading }) {
     <form
       className="flex flex-col items-center relative"
       onSubmit={handleSubmit}>
-      <div className="flex  w-full max-w-md justify-center">
+      <div className="flex w-full max-w-md justify-center">
         <input
           type="text"
           placeholder="Enter your zipcode"
@@ -135,7 +135,7 @@ function FeatureSection() {
 // Feature card component
 function FeatureCard({ icon, title, description }) {
   return (
-    <div className="bg-gray-100 text-teal-900 p-8 opacity-95 rounded-lg shadow-md flex-1 min-w-[250px] transition duration-300 hover:shadow-lg">
+    <div className="bg-gray-50 text-teal-900 p-8 opacity-95 rounded-lg shadow-md flex-1 min-w-[250px] transition duration-300 hover:shadow-lg">
       {icon}
       <h3 className="text-2xl font-semibold mb-4 text-center">{title}</h3>
       <p className="text-center text-gray-700">{description}</p>

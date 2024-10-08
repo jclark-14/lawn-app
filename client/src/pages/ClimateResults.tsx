@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { GrassSpeciesWithClimate } from '../types';
-import { useUser } from '../components/useUser';
+import { useUser } from '../hooks/useUser';
 import { ClimateResultsSkeleton } from '../components/Skeleton';
 
 // Main ResultsPage component
@@ -27,11 +27,12 @@ export function ResultsPage() {
   const [error, setError] = useState<string | null>(null);
   const [showDetailedClimate, setShowDetailedClimate] = useState(false);
 
+  //Fetch climate data and find grass matches
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
       try {
-        setIsLoading(true);
-        setError(null);
         const response = await fetch(`/api/grass-species/${zipcode}`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -52,14 +53,9 @@ export function ResultsPage() {
     }
   }, [zipcode]);
 
-  const toggleExpand = (index: number) => {
-    setExpandedGrass(expandedGrass === index ? null : index);
-  };
-
   if (isLoading) {
     return <ClimateResultsSkeleton />;
   }
-
   if (error) {
     return <div className="text-center py-12 text-red-600">{error}</div>;
   }
@@ -75,7 +71,7 @@ export function ResultsPage() {
           <GrassMatchesSection
             grassMatches={grassMatches}
             expandedGrass={expandedGrass}
-            toggleExpand={toggleExpand}
+            setExpandedGrass={setExpandedGrass}
           />
           <ClimateDataSection
             climateData={climateData}
@@ -104,7 +100,7 @@ function NavigationButtons({ user }) {
       <div className="flex justify-center">
         <Link
           to="/"
-          className="bg-gray-100 text-teal-800 px-6 py-3 rounded-full text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-gray-800 to-teal-500  hover:text-white hover:border-teal-600">
+          className="bg-gray-100 text-teal-800 px-6 py-3 rounded-full text-lg font-semibold transition duration-300 shadow-md hover:shadow-xl flex items-center hover:bg-gradient-to-r from-gray-800 to-teal-500  hover:text-white hover:border-teal-700">
           <Home size={20} className="mr-2" />
           Home
         </Link>
@@ -122,7 +118,11 @@ function NavigationButtons({ user }) {
 }
 
 // Grass Matches Section component
-function GrassMatchesSection({ grassMatches, expandedGrass, toggleExpand }) {
+function GrassMatchesSection({
+  grassMatches,
+  expandedGrass,
+  setExpandedGrass,
+}) {
   return (
     <div className="w-full lg:w-2/3  bg-teal-900 bg-opacity-60 rounded-lg p-4">
       <h3 className="text-2xl font-semibold mb-4 text-gray-50">
@@ -133,9 +133,10 @@ function GrassMatchesSection({ grassMatches, expandedGrass, toggleExpand }) {
           <GrassMatchCard
             key={index}
             grass={grass}
-            index={index}
             isExpanded={expandedGrass === index}
-            toggleExpand={toggleExpand}
+            toggleExpand={() =>
+              setExpandedGrass(expandedGrass === index ? null : index)
+            }
           />
         ))}
       </div>
@@ -144,7 +145,7 @@ function GrassMatchesSection({ grassMatches, expandedGrass, toggleExpand }) {
 }
 
 // Grass Match Card component
-function GrassMatchCard({ grass, index, isExpanded, toggleExpand }) {
+function GrassMatchCard({ grass, isExpanded, toggleExpand }) {
   return (
     <div className="bg-gray-100 rounded-lg shadow-md overflow-hidden">
       <div className="p-6">
@@ -156,21 +157,33 @@ function GrassMatchCard({ grass, index, isExpanded, toggleExpand }) {
             {grass.match_percentage.toFixed(0)}% match
           </span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-          <div
-            className="bg-teal-600 h-2.5 rounded-full"
-            style={{ width: `${grass.match_percentage}%` }}
-          />
-        </div>
-        <button
-          onClick={() => toggleExpand(index)}
-          className="text-teal-700 hover:text-teal-600 font-medium flex items-center">
-          {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-          <span className="ml-2">View Details</span>
-        </button>
+        <MatchPercentageBar percentage={grass.match_percentage} />
+        <ExpandButton isExpanded={isExpanded} toggleExpand={toggleExpand} />
         {isExpanded && <GrassDetails grass={grass} />}
       </div>
     </div>
+  );
+}
+
+function MatchPercentageBar({ percentage }) {
+  return (
+    <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+      <div
+        className="bg-teal-600 h-2.5 rounded-full"
+        style={{ width: `${percentage}%` }}
+      />
+    </div>
+  );
+}
+
+function ExpandButton({ isExpanded, toggleExpand }) {
+  return (
+    <button
+      onClick={toggleExpand}
+      className="text-teal-700 hover:text-teal-600 font-medium flex items-center">
+      {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+      <span className="ml-2">View Details</span>
+    </button>
   );
 }
 
@@ -209,51 +222,47 @@ function ClimateDataSection({
         Climate Data Summary
       </h3>
       <div className="bg-gray-100 bg-opacity-100 rounded-lg shadow-md p-4">
-        <div className="space-y-4">
-          <ClimateDataItem
-            icon={<Thermometer className="text-teal-600" size={24} />}
-            label="Average Temperature"
-            value={`${formatNumber(climateData?.avgTemperature)}°F`}
-          />
-          <ClimateDataItem
-            icon={<Droplets className="text-teal-600" size={24} />}
-            label="Average Rainfall"
-            value={`${formatNumber(climateData?.avgRainfall)}" per year`}
-          />
-          <ClimateDataItem
-            icon={<Calendar className="text-teal-600" size={24} />}
-            label="Growing Days"
-            value={climateData?.growingDays ?? 'N/A'}
-          />
-          <ClimateDataItem
-            icon={<Sprout className="text-teal-600" size={24} />}
-            label="Hardiness Zone"
-            value={climateData?.hardinessZone ?? 'N/A'}
-          />
-          <ClimateDataItem
-            icon={<Globe className="text-teal-600" size={24} />}
-            label="Köppen Climate Zone"
-            value={climateData?.koppenZone ?? 'N/A'}
-          />
-        </div>
-        <button
-          onClick={() => setShowDetailedClimate(!showDetailedClimate)}
-          className="mt-4 text-teal-700 hover:text-teal-600 font-medium flex items-center">
-          {showDetailedClimate ? (
-            <ChevronUp size={20} />
-          ) : (
-            <ChevronDown size={20} />
-          )}
-          <span className="ml-2">
-            {showDetailedClimate
-              ? 'Hide Detailed Climate Data'
-              : 'View Detailed Climate Data'}
-          </span>
-        </button>
+        <ClimateDataSummary climateData={climateData} />
+        <ToggleDetailedClimateButton
+          showDetailedClimate={showDetailedClimate}
+          setShowDetailedClimate={setShowDetailedClimate}
+        />
         {showDetailedClimate && (
           <DetailedClimateData climateData={climateData} />
         )}
       </div>
+    </div>
+  );
+}
+
+function ClimateDataSummary({ climateData }) {
+  return (
+    <div className="space-y-4">
+      <ClimateDataItem
+        icon={<Thermometer className="text-teal-600" size={24} />}
+        label="Average Temperature"
+        value={`${formatNumber(climateData?.avgTemperature)}°F`}
+      />
+      <ClimateDataItem
+        icon={<Droplets className="text-teal-600" size={24} />}
+        label="Average Rainfall"
+        value={`${formatNumber(climateData?.avgRainfall)}" per year`}
+      />
+      <ClimateDataItem
+        icon={<Calendar className="text-teal-600" size={24} />}
+        label="Growing Days"
+        value={climateData?.growingDays ?? 'N/A'}
+      />
+      <ClimateDataItem
+        icon={<Sprout className="text-teal-600" size={24} />}
+        label="Hardiness Zone"
+        value={climateData?.hardinessZone ?? 'N/A'}
+      />
+      <ClimateDataItem
+        icon={<Globe className="text-teal-600" size={24} />}
+        label="Köppen Climate Zone"
+        value={climateData?.koppenZone ?? 'N/A'}
+      />
     </div>
   );
 }
@@ -268,6 +277,28 @@ function ClimateDataItem({ icon, label, value }) {
         <p className="text-teal-600">{value}</p>
       </div>
     </div>
+  );
+}
+
+function ToggleDetailedClimateButton({
+  showDetailedClimate,
+  setShowDetailedClimate,
+}) {
+  return (
+    <button
+      onClick={() => setShowDetailedClimate(!showDetailedClimate)}
+      className="mt-4 text-teal-700 hover:text-teal-600 font-medium flex items-center">
+      {showDetailedClimate ? (
+        <ChevronUp size={20} />
+      ) : (
+        <ChevronDown size={20} />
+      )}
+      <span className="ml-2">
+        {showDetailedClimate
+          ? 'Hide Detailed Climate Data'
+          : 'View Detailed Climate Data'}
+      </span>
+    </button>
   );
 }
 
@@ -295,17 +326,24 @@ function DetailedClimateData({ climateData }) {
       </h4>
       <div className="grid grid-cols-3 gap-2">
         {months.map((month) => (
-          <div key={month} className="text-sm">
-            <p className="font-bold text-teal-900">{month}</p>
-            <p className="text-teal-600">
-              {formatNumber(climateData?.monthlyTemperature[month])}°F
-            </p>
-            <p className="text-blue-500">
-              {formatNumber(climateData?.monthlyRainfall[month])}"
-            </p>
-          </div>
+          <MonthlyClimateData
+            key={month}
+            month={month}
+            temperature={climateData?.monthlyTemperature[month]}
+            rainfall={climateData?.monthlyRainfall[month]}
+          />
         ))}
       </div>
+    </div>
+  );
+}
+
+function MonthlyClimateData({ month, temperature, rainfall }) {
+  return (
+    <div className="text-sm">
+      <p className="font-bold text-teal-900">{month}</p>
+      <p className="text-teal-600">{formatNumber(temperature)}°F</p>
+      <p className="text-blue-500">{formatNumber(rainfall)}"</p>
     </div>
   );
 }
