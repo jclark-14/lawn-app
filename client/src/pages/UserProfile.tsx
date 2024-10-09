@@ -424,7 +424,7 @@ function PlanDetails({ plan, handleCompleteSteps }: PlanDetailsProps) {
         {hasSelectedUncompletedSteps && (
           <button
             onClick={handleMarkStepsComplete}
-            className="mb-4 bg-teal-700 text-white px-3 sm:px-4 py-1 sm:py-2 w-fit rounded-full text-sm font-semibold transition duration-300 hover:bg-gradient-to-r from-gray-800 to-teal-500 flex items-center w-full sm:w-auto justify-center sm:justify-start">
+            className="mb-4 bg-teal-700 text-white px-3 sm:px-4 py-1 sm:py-2 w-fit rounded-full text-sm font-semibold transition duration-300 hover:bg-gradient-to-r from-gray-800 to-teal-500 flex items-center sm:w-auto justify-center sm:justify-start">
             <Check size={16} className="mr-1" /> Complete Selected
           </button>
         )}

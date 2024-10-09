@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useUser } from '../components/useUser';
 import { ArrowLeft, SquarePlus } from 'lucide-react';
-import { NewPlanSkeleton } from '../components/Skeleton';
+import { PlanDetailsSkeleton } from '../components/Skeleton';
 
 // Main NewPlan component
 export function NewPlan() {
@@ -109,7 +109,7 @@ export function NewPlan() {
   const zipcode = localStorage.getItem('zipcode');
 
   if (isLoading) {
-    return <NewPlanSkeleton />;
+    return <PlanDetailsSkeleton />;
   }
 
   return (

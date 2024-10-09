@@ -149,20 +149,10 @@ function MobileMenu({ isOpen, toggleMenu, user, handleSignOut }) {
 }
 
 // Navigation links
-function NavLinks({
-  user,
-  handleSignOut,
-  toggleMenu,
-  isMobile,
-}: {
-  user: any;
-  handleSignOut: any;
-  toggleMenu?: () => void;
-  isMobile: boolean;
-}) {
+function NavLinks({ user, handleSignOut, toggleMenu, isMobile }) {
   const navigate = useNavigate();
 
-  const handleNavigation = (path: string) => {
+  const handleNavigation = (path) => {
     navigate(path);
     if (isMobile && toggleMenu) {
       toggleMenu();
@@ -171,17 +161,21 @@ function NavLinks({
 
   return (
     <>
-      <NavLink onClick={() => handleNavigation('/')} isMobile={isMobile}>
+      <NavLink to="/" onClick={() => handleNavigation('/')} isMobile={isMobile}>
         Home
       </NavLink>
       {user && (
         <NavLink
+          to="/profile"
           onClick={() => handleNavigation('/profile')}
           isMobile={isMobile}>
           Profile
         </NavLink>
       )}
-      <NavLink onClick={() => handleNavigation('/about')} isMobile={isMobile}>
+      <NavLink
+        to="/about"
+        onClick={() => handleNavigation('/about')}
+        isMobile={isMobile}>
         About
       </NavLink>
       {user ? (
@@ -201,28 +195,23 @@ function NavLinks({
 }
 
 // Navigation link component
-function NavLink({
-  onClick,
-  children,
-  isMobile,
-}: {
-  onClick: () => void;
-  children: React.ReactNode;
-  isMobile: boolean;
-}) {
+function NavLink({ to, onClick, children, isMobile }) {
   if (isMobile) {
     return (
-      <button onClick={onClick} className="relative group w-full text-left">
+      <Link
+        to={to}
+        onClick={onClick}
+        className="relative group w-full text-left flex justify-center">
         <span className="hover:text-teal-700 transition-colors duration-300">
           {children}
         </span>
         <span className="absolute left-0 bottom-0 w-full h-0.5 bg-teal-700 opacity-0 transition duration-300 ease-in-out group-hover:opacity-100"></span>
-      </button>
+      </Link>
     );
   }
 
   return (
-    <Link to="#" onClick={onClick} className="relative group">
+    <Link to={to} onClick={onClick} className="relative group">
       <span className="hover:text-teal-100 transition-colors duration-300">
         {children}
       </span>

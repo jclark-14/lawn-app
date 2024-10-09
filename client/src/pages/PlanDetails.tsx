@@ -409,7 +409,7 @@ function PlanHeader({
             <div className="flex items-center flex-wrap mb-3 mt-1 w-full justify-end">
               <button
                 onClick={() => handleTitleEdit(tempTitle)}
-                className=" bg-teal-600 text-sm text-white px-5 py-2 rounded-full">
+                className=" bg-teal-600 text-sm text-white px-5 py-2 rounded-full hover:bg-gradient-to-r from-gray-800 to-teal-500">
                 Save
               </button>
               <button

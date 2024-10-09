@@ -76,7 +76,7 @@ export function ConfirmDeleteModal({
       <div className="flex justify-end space-x-2">
         <button
           onClick={onConfirm}
-          className="bg-red-700 text-gray-50 px-3 sm:px-4 py-2 rounded-full text-sm font-semibold transition duration-300 hover:bg-gradient-to-r from-red-500 to-red-700">
+          className="bg-red-700 text-gray-50 px-3 sm:px-4 py-2 rounded-full text-sm font-semibold transition duration-300 hover:bg-red-900">
           Delete
         </button>
         <button
