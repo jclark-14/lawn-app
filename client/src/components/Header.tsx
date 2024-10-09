@@ -80,7 +80,11 @@ function HeaderBar({ user, toggleMenu, handleSignOut }) {
           <div className="flex items-center justify-between w-full">
             <LogoAndGreeting user={user} />
             <HamburgerButton toggleMenu={toggleMenu} />
-            <DesktopNavigation user={user} handleSignOut={handleSignOut} />
+            <DesktopNavigation
+              user={user}
+              handleSignOut={handleSignOut}
+              toggleMenu={toggleMenu}
+            />
           </div>
         </div>
       </header>
