@@ -114,10 +114,15 @@ function HamburgerButton({ toggleMenu }) {
 }
 
 // Desktop navigation
-function DesktopNavigation({ user, handleSignOut }) {
+function DesktopNavigation({ user, handleSignOut, toggleMenu }) {
   return (
     <nav className="hidden lg:flex items-center space-x-8 text-lg">
-      <NavLinks user={user} handleSignOut={handleSignOut} isMobile={false} />
+      <NavLinks
+        user={user}
+        handleSignOut={handleSignOut}
+        toggleMenu={toggleMenu}
+        isMobile={false}
+      />
     </nav>
   );
 }
