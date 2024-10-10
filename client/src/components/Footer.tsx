@@ -48,7 +48,7 @@ function SocialLink({ href, icon, label }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="hover:text-teal-400 text-gray-100 transition-colors duration-300"
+      className="hover:text-emerald-400 text-gray-100 transition-colors duration-300"
       aria-label={label}>
       {icon}
     </a>

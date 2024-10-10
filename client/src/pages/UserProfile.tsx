@@ -25,7 +25,6 @@ export function UserProfile() {
   const [planToDelete, setPlanToDelete] = useState<UserPlan | null>(null);
 
   // Function to fetch user plans from the API
-
   useEffect(() => {
     const fetchUserPlans = async () => {
       if (!user || !token) return;
@@ -89,6 +88,7 @@ export function UserProfile() {
     }
   };
 
+  // Function to handle completing steps of a plan
   const handleCompleteSteps = async (planId: number, stepIds: number[]) => {
     if (!token) return;
 
@@ -106,6 +106,7 @@ export function UserProfile() {
         throw new Error(errorData.message || 'Failed to complete steps');
       }
 
+      // Update local state to reflect completed steps
       setPlans(
         plans.map((plan) => {
           if (plan.userPlanId === planId) {
@@ -145,6 +146,7 @@ export function UserProfile() {
       });
       if (!response.ok) throw new Error('Failed to complete plan');
 
+      // Update local state to reflect completed plan
       setPlans(
         plans.map((plan) =>
           plan.userPlanId === planId
@@ -175,9 +177,8 @@ export function UserProfile() {
     );
   };
 
-  // Render loading state
   if (loading) return <UserProfileSkeleton />;
-  // Render error state
+
   if (error)
     return <div className="text-center py-12 text-red-600">{error}</div>;
 

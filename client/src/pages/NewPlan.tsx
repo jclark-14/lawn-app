@@ -6,6 +6,7 @@ import { PlanDetailsSkeleton } from '../components/Skeleton';
 
 // Main NewPlan component
 export function NewPlan() {
+  // State management for form data, available lawn types, loading state, and errors
   const [formData, setFormData] = useState({
     grassSpecies: '',
     planType: '',
@@ -14,54 +15,58 @@ export function NewPlan() {
   const [availableTypes, setAvailableTypes] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<null | string>(null);
+
+  // Hooks for navigation and user authentication
   const navigate = useNavigate();
   const { user, token } = useUser();
 
-  // Fetch available lawn types
-  const fetchAvailableLawnTypes = useCallback(async () => {
-    if (!formData.grassSpecies || formData.planType !== 'new_lawn' || !token) {
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `/api/grass-species/${formData.grassSpecies}/plan-types`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error('Failed to fetch lawn types');
+  // Function to fetch available lawn types based on selected grass species
+  useEffect(() => {
+    async function fetchAvailableLawnTypes() {
+      // Only fetch if necessary conditions are met
+      if (
+        !formData.grassSpecies ||
+        formData.planType !== 'new_lawn' ||
+        !token
+      ) {
+        return;
       }
-      const data = await response.json();
 
-      const availableTypes = data
-        .filter((item) => item.planType === 'new_lawn')
-        .map((item) => item.establishmentType)
-        .filter(Boolean);
+      try {
+        // API call to get available lawn types
+        const response = await fetch(
+          `/api/grass-species/${formData.grassSpecies}/plan-types`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (!response.ok) {
+          throw new Error('Failed to fetch lawn types');
+        }
+        const data = await response.json();
 
-      setAvailableTypes(availableTypes);
-    } catch (err) {
-      console.error('Error fetching lawn types:', err);
-      setError('Failed to load lawn types. Please try again.');
+        // Filter and set available establishment types
+        const availableTypes = data
+          .filter((item) => item.planType === 'new_lawn')
+          .map((item) => item.establishmentType)
+          .filter(Boolean);
+
+        setAvailableTypes(availableTypes);
+      } catch (err) {
+        console.error('Error fetching lawn types:', err);
+        setError('Failed to load lawn types. Please try again.');
+      }
     }
+    fetchAvailableLawnTypes();
   }, [formData.grassSpecies, formData.planType, token]);
 
-  // Fetch available lawn types when grassSpecies and planType are selected
-  useEffect(() => {
-    fetchAvailableLawnTypes();
-  }, [fetchAvailableLawnTypes]);
-
-  // Handle form submission
+  // Function to handle form submission
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      if (isLoading) {
-        return;
-      }
-      if (!user) {
+      if (isLoading || !user) {
         setError('You must be logged in to create a plan');
         return;
       }
@@ -69,6 +74,7 @@ export function NewPlan() {
       setError(null);
 
       try {
+        // API call to create a new plan
         const response = await fetch('/api/plans/new', {
           method: 'POST',
           headers: {
@@ -87,6 +93,7 @@ export function NewPlan() {
         }
 
         const data = await response.json();
+        // Navigate to the newly created plan
         navigate(`/plan/${data.userPlanId}`);
       } catch (err) {
         console.error('Error creating plan:', err);
@@ -100,18 +107,21 @@ export function NewPlan() {
     [user, formData, navigate, isLoading, token]
   );
 
-  // Handle input changes
+  // Function to handle input changes in the form
   const handleInputChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Retrieve zipcode from local storage
   const zipcode = localStorage.getItem('zipcode');
 
+  // Show loading skeleton while data is being fetched
   if (isLoading) {
     return <PlanDetailsSkeleton />;
   }
 
+  // Render the main component
   return (
     <div className="py-12 sm:pb-18 sm:pt-18 w-full">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-lg">
@@ -129,7 +139,7 @@ export function NewPlan() {
   );
 }
 
-// Back Button component
+// Back Button component for navigation
 function BackButton({ zipcode }) {
   return (
     <div className="flex justify-between items-center mb-10">
@@ -145,7 +155,7 @@ function BackButton({ zipcode }) {
   );
 }
 
-// Plan Form component
+// Plan Form component for creating a new lawn plan
 function PlanForm({
   formData,
   handleInputChange,
@@ -210,7 +220,7 @@ function PlanForm({
   );
 }
 
-// Select Field component
+// Reusable Select Field component
 function SelectField({ id, label, value, onChange, options }) {
   return (
     <div>

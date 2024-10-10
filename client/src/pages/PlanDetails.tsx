@@ -103,7 +103,7 @@ export function PlanDetails() {
     const newStep: Omit<PlanStep, 'planStepId'> = {
       userPlanId: parseInt(planId),
       templateId: null,
-      stepDescription: 'Add step details here',
+      stepDescription: '***New Step - Add step details here**',
       dueDate: new Date().toISOString().split('T')[0],
       completed: false,
       completedAt: null,
@@ -395,6 +395,14 @@ function PlanHeader({
 }) {
   const [tempTitle, setTempTitle] = useState(plan.planTitle);
 
+  // Function to format the establishment type
+  const formatEstablishmentType = (type) => {
+    if (type === 'sod_plugs') {
+      return 'sod or plugs';
+    }
+    return type;
+  };
+
   return (
     <div className="flex flex-col sm:flex-row justify-between w-full items-start sm:items-start mb-6">
       <div className="w-full sm:w-auto mb-4 sm:mb-0">
@@ -429,7 +437,7 @@ function PlanHeader({
             </h1>
             <Edit2
               onClick={() => setIsEditingTitle(true)}
-              className="text-gray-50 cursor-pointer ml-3 hover:text-teal-300"
+              className="text-gray-50 cursor-pointer ml-3 hover:text-emerald-400"
               size={18}
             />
           </div>
@@ -437,7 +445,8 @@ function PlanHeader({
         <div className="flex sm:flex-wrap justify-between items-center">
           {plan.planType === 'new_lawn' && plan.establishmentType && (
             <p className="text-md sm:text-md text-gray-50 mb-4 inline-block sm:w-full h-2 sm:mb-2">
-              {plan.grassSpeciesName} grow plan using {plan.establishmentType}
+              {plan.grassSpeciesName} grow plan using{' '}
+              {formatEstablishmentType(plan.establishmentType)}
             </p>
           )}
           {isEditing && (

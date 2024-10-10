@@ -19,6 +19,7 @@ import { ClimateResultsSkeleton } from '../components/Skeleton';
 export function ResultsPage() {
   const { user } = useUser();
   const { zipcode } = useParams<{ zipcode: string }>();
+
   const [grassMatches, setGrassMatches] = useState<GrassSpeciesWithClimate[]>(
     []
   );
@@ -27,6 +28,7 @@ export function ResultsPage() {
   const [error, setError] = useState<string | null>(null);
   const [showDetailedClimate, setShowDetailedClimate] = useState(false);
 
+  // Effect hook to fetch grass species data based on zipcode
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -52,20 +54,25 @@ export function ResultsPage() {
     }
   }, [zipcode]);
 
+  // Function to toggle expanded grass details
   const toggleExpand = (index: number) => {
     setExpandedGrass(expandedGrass === index ? null : index);
   };
 
+  // Show loading skeleton while data is being fetched
   if (isLoading) {
     return <ClimateResultsSkeleton />;
   }
 
+  // Show error message if data fetch fails
   if (error) {
     return <div className="text-center py-12 text-red-600">{error}</div>;
   }
 
+  // Extract climate data from the first grass match
   const climateData = grassMatches[0]?.climateData;
 
+  // Render the main component
   return (
     <div className="py-12 sm:py-12 min-h-screen w-full">
       <div className="container mx-auto px-4 sm:px-6 max-w-7xl">

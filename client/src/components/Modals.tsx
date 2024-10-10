@@ -1,15 +1,20 @@
 import { useEffect, useRef, ReactNode } from 'react';
 
+// Define the props for the Modal component
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
 }
 
+// Main Modal component
 export function Modal({ isOpen, onClose, children }: ModalProps) {
+  // Create a ref for the modal content
   const modalRef = useRef<HTMLDivElement>(null);
 
+  // Effect to handle clicks outside the modal and escape key press
   useEffect(() => {
+    // Function to handle clicks outside the modal
     function handleClickOutside(event: MouseEvent) {
       if (
         modalRef.current &&
@@ -20,25 +25,30 @@ export function Modal({ isOpen, onClose, children }: ModalProps) {
       }
     }
 
+    // Function to handle escape key press
     function handleEscapeKey(event: KeyboardEvent) {
       if (event.key === 'Escape') {
         onClose();
       }
     }
 
+    // Add event listeners when the modal is open
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
       document.addEventListener('keydown', handleEscapeKey);
     }
 
+    // Clean up event listeners on component unmount or when modal closes
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleEscapeKey);
     };
   }, [isOpen, onClose]);
 
+  // Don't render anything if the modal is not open
   if (!isOpen) return null;
 
+  // Render the modal
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4 py-6 sm:p-0">
       <div
@@ -50,6 +60,7 @@ export function Modal({ isOpen, onClose, children }: ModalProps) {
   );
 }
 
+// Define the props for the ConfirmDeleteModal component
 interface ConfirmDeleteModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -58,6 +69,7 @@ interface ConfirmDeleteModalProps {
   itemType: string;
 }
 
+// ConfirmDeleteModal component
 export function ConfirmDeleteModal({
   isOpen,
   onClose,
@@ -89,11 +101,13 @@ export function ConfirmDeleteModal({
   );
 }
 
+// Define the props for the SavedToProfileModal component
 interface SavedToProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+// SavedToProfileModal component
 export function SavedToProfileModal({
   isOpen,
   onClose,

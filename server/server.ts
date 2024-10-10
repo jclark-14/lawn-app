@@ -111,7 +111,7 @@ app.get('/api/grass-species/:zipcode', async (req, res, next) => {
 });
 
 /**
- * Get plan types for a specific grass species
+ * Get plan establishment types for a specific grass species to dynamically update selector
  */
 app.get(
   '/api/grass-species/:grassSpeciesId/plan-types',
