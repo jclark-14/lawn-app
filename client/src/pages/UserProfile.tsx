@@ -92,6 +92,8 @@ export function UserProfile() {
   const handleCompleteSteps = async (planId: number, stepIds: number[]) => {
     if (!token) return;
 
+    const completionDate = new Date().toISOString();
+
     try {
       const response = await fetch(`/api/plans/${planId}/complete`, {
         method: 'PUT',
@@ -99,7 +101,7 @@ export function UserProfile() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ stepIds }),
+        body: JSON.stringify({ stepIds, completionDate }),
       });
       if (!response.ok) {
         const errorData = await response.json();
@@ -467,7 +469,7 @@ function StepItem({
         <div className="flex items-center flex-1">
           <input
             type="checkbox"
-            checked={isSelected}
+            checked={isSelected || step.completed}
             onChange={toggleSelection}
             className="form-checkbox h-5 w-5 rounded-lg accent-teal-700 hover:ring-1 hover:cursor-pointer mr-2"
             disabled={step.completed}
@@ -478,28 +480,26 @@ function StepItem({
             }`}>
             {step.stepDescription}
           </span>
-        </div>
-        <div className="flex items-center">
-          {step.completed && step.completedAt && (
-            <span className="text-xs sm:text-sm font-semibold text-teal-800 mr-2 hidden sm:inline">
-              Completed on: {new Date(step.completedAt).toLocaleDateString()}
+          {step.dueDate && !step.completed && (
+            <span className="ml-2 text-xs sm:text-sm text-gray-600">
+              (Due: {new Date(step.dueDate).toLocaleDateString()})
             </span>
           )}
-          <button
-            onClick={toggleExpand}
-            className="text-teal-700 hover:text-teal-500 sm:hidden">
-            {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-          </button>
+          {step.completed && step.completedAt && (
+            <span className="ml-2 text-xs sm:text-sm text-teal-600 font-semibold">
+              (Completed: {new Date(step.completedAt).toLocaleDateString()})
+            </span>
+          )}
         </div>
+        <button
+          onClick={toggleExpand}
+          className="text-teal-700 hover:text-teal-500 sm:hidden">
+          {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+        </button>
       </div>
       {isExpanded && !step.completed && (
         <div className="mt-2 ml-8 text-xs font-semibold text-teal-800">
           Not completed yet
-        </div>
-      )}
-      {isExpanded && step.completed && step.completedAt && (
-        <div className="mt-2 ml-8 text-xs font-semibold text-teal-800">
-          Completed on: {new Date(step.completedAt).toLocaleDateString()}
         </div>
       )}
     </li>
