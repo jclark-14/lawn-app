@@ -115,6 +115,7 @@ app.get('/api/grass-species/:zipcode', async (req, res, next) => {
  */
 app.get(
   '/api/grass-species/:grassSpeciesId/plan-types',
+  authMiddleware,
   async (req, res, next) => {
     const { grassSpeciesId } = req.params;
 
