@@ -81,4 +81,4 @@ Check out the live demo: [LawnCare Pro](http://ec2-18-215-127-121.compute-1.amaz
     npm run dev
     ```
 
-6. Access the application by navigating to `http://localhost:3000` in your browser.
+6. Access the application by navigating to `http://localhost:5173` in your browser.
