@@ -22,8 +22,8 @@ export function NewPlan() {
 
   // Function to fetch available lawn types based on selected grass species
   useEffect(() => {
-    async function fetchAvailableEstablishmentTypes() {
-      // Only fetch if necessary conditions are met
+    async function fetchEstablishmentTypes() {
+      // Only fetch if conditions are met
       if (
         !formData.grassSpecies ||
         formData.planType !== 'new_lawn' ||
@@ -59,7 +59,7 @@ export function NewPlan() {
         setError('Failed to load lawn types. Please try again.');
       }
     }
-    fetchAvailableEstablishmentTypes();
+    fetchEstablishmentTypes();
   }, [formData.grassSpecies, formData.planType, token]);
 
   // Function to handle form submission
