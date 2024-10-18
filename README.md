@@ -8,7 +8,7 @@ I built LawnCare Pro to address a common problem for homeowners: managing lawn c
 
 ## Live Demo
 
-Check out the live demo: [LawnCare Pro](http://ec2-18-215-127-121.compute-1.amazonaws.com/)
+Check out the live demo at the deployed site: [LawnCare Pro](http://ec2-18-215-127-121.compute-1.amazonaws.com/)
 
 ## Technologies Used
 
