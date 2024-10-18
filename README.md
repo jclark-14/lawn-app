@@ -49,7 +49,7 @@ Check out the live demo at the deployed site: [LawnCare Pro](http://ec2-18-215-1
 1. Clone the repository.
 
     ```shell
-    git clone https://github.com/yourusername/lawn-app
+    git clone https://github.com/yourusername/lawncare-pro
     cd client
     ```
 
